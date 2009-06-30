@@ -24,6 +24,11 @@
         
     <resource type="i18n" name="i18n" location="cmis"/>
 
+    <macro name='cmis-search' class='com.sourcesense.confluence.cmis.SearchMacro' key='cmis-search'>
+        <description>Performs a search on a CMIS repository and presents the results.</description>
+    </macro>
+
+	<!--
     <macro name='cmis-doclink' class='com.sourcesense.confluence.cmis.DoclinkMacro' key='cmis-doclink'>
         <description>Provides a link to a document stored in a CMIS repository.</description>
     </macro>
@@ -32,14 +37,11 @@
         <description>Embeds a document stored in a CMIS repository in the current page.</description>
     </macro>
 
-    <macro name='cmis-search' class='com.sourcesense.confluence.cmis.SearchMacro' key='cmis-search'>
-        <description>Performs a search on a CMIS repository and presents the results.</description>
-    </macro>
-
     <macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.DocinfoMacro' key='cmis-docinfo'>
         <description>Displays properties of a CMIS document.</description>
     </macro>
-
+	-->
+	  
 	<xwork name="Configure CMIS plugin" key="configure-cmis">
 		<package name="cmis" extends="default" namespace="/admin/plugins/cmis">
 			<default-interceptor-ref name="defaultStack" />
