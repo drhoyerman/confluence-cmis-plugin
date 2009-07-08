@@ -57,12 +57,14 @@ public abstract class BaseChemistryCMISMacro extends BaseMacro {
                 return "NO PARSER!";
             }
         
+            /*
             try {
                 StaxReader reader = StaxReader.newReader(System.in);
             } catch (XMLStreamException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            */
     
             String serverUrl = (String) params.get("s");
             String repositoryUsername = (String) params.get("u");
