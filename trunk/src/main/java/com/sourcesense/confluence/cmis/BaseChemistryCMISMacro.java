@@ -15,11 +15,15 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.abdera.Abdera;
+import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.atompub.client.APPConnection;
 import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -93,6 +97,25 @@ public abstract class BaseChemistryCMISMacro extends BaseMacro {
                 List<String> up = credsMap.get(realm);
                 return new UsernamePasswordCredentials(up.get(0), up.get(1));
             }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a CMISObject using its ID.
+     * We temprarily use this method until Chemistry's 
+     * {@link APPConnection#getObject(org.apache.chemistry.ObjectId, org.apache.chemistry.ReturnVersion)} works properly.
+     * 
+     * @param repository The {@link Repository to query}
+     * @param id The object's ID.
+     * @return The object with the given ID, if it exists, otherwise null.
+     */
+    protected CMISObject getEntryViaID(Repository repository, String id) {
+        String cmisQuery = "SELECT * FROM DOCUMENT WHERE ObjectId = '" + id + "'";
+        Connection conn = repository.getConnection(null);
+        Collection<CMISObject> res = conn.query(cmisQuery, false);
+        for (CMISObject cmisObject : res) {
+            return cmisObject;
         }
         return null;
     }
