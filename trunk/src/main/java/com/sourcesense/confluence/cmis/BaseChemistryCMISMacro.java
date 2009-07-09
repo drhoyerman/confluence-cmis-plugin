@@ -18,13 +18,10 @@ package com.sourcesense.confluence.cmis;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.abdera.Abdera;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.chemistry.xml.stax.StaxReader;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.bandana.BandanaManager;
