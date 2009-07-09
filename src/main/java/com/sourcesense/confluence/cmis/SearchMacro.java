@@ -17,6 +17,9 @@ package com.sourcesense.confluence.cmis;
 
 
 
+import java.net.URI;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 
@@ -50,17 +53,10 @@ public class SearchMacro extends BaseChemistryCMISMacro {
 
     private String renderFeed(Collection<CMISObject> res) {
         StringBuilder out = new StringBuilder();
-        out.append("||Title||Description||\n");
+        out.append("||Title||Updated||\n");
         for (CMISObject entry : res) {
-            String url = null;
-            /*
-            if (entry.getContentSrc() != null) {
-                url = entry.getContentSrc().toString();
-            } else if(entry.getLink(CMISConstants.LINK_STREAM) != null) {
-                url = entry.getLink(CMISConstants.LINK_STREAM).getHref().toString();
-            }
-            */
             out.append("|");
+            URI url = entry.getURI("ContentStreamUri"); // XXX Should there be a constant definition in CMIS class for this?
             if (url != null) {
                 out.append("[");
                 out.append(entry.getName());
@@ -71,7 +67,13 @@ public class SearchMacro extends BaseChemistryCMISMacro {
                 out.append(entry.getName());
             }
             out.append("|");
-            // out.append(entry.getSummary() != null ? entry.getSummary() : " ");
+            Calendar cal = entry.getDateTime("LastModificationDate");
+            if (cal != null) {
+                DateFormat df = DateFormat.getDateTimeInstance();
+                out.append(df.format(cal.getTime()));
+            } else {
+                out.append(" ");
+            }
             out.append("|\n");
         }
         return out.toString();
