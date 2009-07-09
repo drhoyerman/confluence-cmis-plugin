@@ -17,25 +17,26 @@ package com.sourcesense.confluence.cmis;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.abdera.model.Document;
-import org.apache.abdera.model.Entry;
-import org.apache.abdera.protocol.client.AbderaClient;
-import org.apache.abdera.protocol.client.ClientResponse;
-import org.apache.commons.httpclient.Credentials;
+import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Repository;
+import org.apache.chemistry.atompub.client.APPRepository;
+import org.apache.chemistry.atompub.client.connector.APPContentManager;
+import org.apache.chemistry.atompub.client.connector.Connector;
+import org.apache.chemistry.atompub.client.connector.Request;
+import org.apache.chemistry.atompub.client.connector.Response;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-public class EmbedMacro extends BaseCMISMacro {
+public class EmbedMacro extends BaseChemistryCMISMacro {
 
     public boolean isInline() {
-        return true;
+        return false;
     }
 
     public boolean hasBody() {
@@ -46,56 +47,33 @@ public class EmbedMacro extends BaseCMISMacro {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public String doExecute(Map params, String body, RenderContext renderContext, AbderaClient client) throws MacroException {
-        String repositoryUsername = (String) params.get("u");
-        String repositoryPassword = (String) params.get("p");
-        String url = (String) params.get("s");
+    protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         String id = (String) params.get("id");
         String nf = (String) params.get("nf");
         boolean noformat = nf != null && nf.startsWith("y"); 
-        
-        
-        Credentials credentials = getCredentials(url, repositoryUsername, repositoryPassword);
-        if (credentials != null) {
-            try {
-                client.addCredentials(null, null, null, credentials);
-            } catch (URISyntaxException e) {
-                throw new MacroException("Error during addCredentials for: " + repositoryUsername, e);
-            }
+        CMISObject obj = getEntryViaID(repository, id);
+        if (obj == null) {
+            throw new MacroException("No such object: " + id);
         }
-        
-        if (id != null) { // Search by ObjectId
-            Entry entry = getEntryViaID(client, url, id);
-            if (entry != null) {
-                return renderDocument(entry, client, noformat);
-            } else {
-                throw new MacroException("No such document");
-            }
-        } else { // Fetch entry via its URI
-            ClientResponse clientResponse = client.get(url);
-            if (clientResponse.getStatus() == HttpServletResponse.SC_OK) {
-                Document<Entry> doc = clientResponse.getDocument();
-                return renderDocument(doc.getRoot(), client, noformat);
-            } else {
-                throw new MacroException(clientResponse.getStatus() + " " + clientResponse.getStatusText());
-            }
-        }
+        return renderDocument(obj, repository, noformat);
     }
-
-    private String renderDocument(Entry entry, AbderaClient client, boolean noformat) throws MacroException {
+        
+        
+    private String renderDocument(CMISObject entry, Repository repository, boolean noformat) throws MacroException {
         StringBuilder out = new StringBuilder();
-        String url = null;
-        if (entry.getContentSrc() != null) {
-            url = entry.getContentSrc().toString();
-        } else if(entry.getLink(CMISConstants.LINK_STREAM) != null) {
-            url = entry.getLink(CMISConstants.LINK_STREAM).getHref().toString();
-        } else {
+        URI url = entry.getURI("ContentStreamUri"); // XXX Should there be a constant definition in CMIS class for this?
+        if (url == null) {
             throw new MacroException("Document has no content!");
         }
-        ClientResponse clientResponse = client.get(url);
+        
+        // XXX A rather convoluted way to fetch a document when all you have is a Repository
+        APPRepository appRepo = (APPRepository) repository;
+        APPContentManager cm = (APPContentManager) appRepo.getContentManager();
+        Connector conn = cm.getConnector();
+        Response response = conn.get(new Request(url.toString()));
+        
         try {
-            BufferedReader reader = new BufferedReader(clientResponse.getReader());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getStream()));
             String line = null;
             if (noformat) {
                 out.append("{noformat}");
@@ -109,10 +87,6 @@ public class EmbedMacro extends BaseCMISMacro {
             }
        } catch (IOException e) {
             throw new MacroException(e.getMessage(), e);
-        } finally {
-            if (clientResponse != null) {
-                clientResponse.release();
-            }
         }
         return out.toString();
     }

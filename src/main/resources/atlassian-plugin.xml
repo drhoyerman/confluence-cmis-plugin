@@ -32,11 +32,11 @@
         <description>Provides a link to a document stored in a CMIS repository.</description>
     </macro>
 
-	<!--
     <macro name='cmis-embed' class='com.sourcesense.confluence.cmis.EmbedMacro' key='cmis-embed'>
         <description>Embeds a document stored in a CMIS repository in the current page.</description>
     </macro>
 
+	<!--
     <macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.DocinfoMacro' key='cmis-docinfo'>
         <description>Displays properties of a CMIS document.</description>
     </macro>
