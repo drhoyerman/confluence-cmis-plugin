@@ -18,16 +18,11 @@ package com.sourcesense.confluence.cmis;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Document;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.APPRepository;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.chemistry.atompub.client.connector.Connector;
-import org.apache.chemistry.atompub.client.connector.Request;
-import org.apache.chemistry.atompub.client.connector.Response;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
@@ -60,35 +55,30 @@ public class EmbedMacro extends BaseChemistryCMISMacro {
         
         
     private String renderDocument(CMISObject entry, Repository repository, boolean noformat) throws MacroException {
-        StringBuilder out = new StringBuilder();
-        URI url = entry.getURI("ContentStreamUri"); // XXX Should there be a constant definition in CMIS class for this?
-        if (url == null) {
-            throw new MacroException("Document has no content!");
-        }
         
-        // XXX A rather convoluted way to fetch a document when all you have is a Repository
-        APPRepository appRepo = (APPRepository) repository;
-        APPContentManager cm = (APPContentManager) appRepo.getContentManager();
-        Connector conn = cm.getConnector();
-        Response response = conn.get(new Request(url.toString()));
-        
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getStream()));
-            String line = null;
-            if (noformat) {
-                out.append("{noformat}");
+        if (entry instanceof Document) {
+            Document doc = (Document) entry;
+            StringBuilder out = new StringBuilder();
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(doc.getStream()));
+                String line = null;
+                if (noformat) {
+                    out.append("{noformat}");
+                }
+                while ((line = reader.readLine()) != null) {
+                    out.append(line);
+                    out.append("\n");
+                }
+                if (noformat) {
+                    out.append("{noformat}");
+                }
+           } catch (IOException e) {
+                throw new MacroException(e.getMessage(), e);
             }
-            while ((line = reader.readLine()) != null) {
-                out.append(line);
-                out.append("\n");
-            }
-            if (noformat) {
-                out.append("{noformat}");
-            }
-       } catch (IOException e) {
-            throw new MacroException(e.getMessage(), e);
+            return out.toString();
+        } else {
+            throw new MacroException("Entry is not a document!");
         }
-        return out.toString();
     }
 
 }
