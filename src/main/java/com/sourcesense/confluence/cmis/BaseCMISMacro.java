@@ -22,7 +22,9 @@ import java.util.Map;
 import org.apache.abdera.Abdera;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.SPI;
 import org.apache.chemistry.atompub.client.APPConnection;
 import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
@@ -113,9 +115,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
     protected CMISObject getEntryViaID(Repository repository, String id) {
         String cmisQuery = "SELECT * FROM DOCUMENT WHERE ObjectId = '" + id + "'";
         Connection conn = repository.getConnection(null);
-        Collection<CMISObject> res = conn.query(cmisQuery, false);
-        for (CMISObject cmisObject : res) {
-            return cmisObject;
+        SPI spi = conn.getSPI();
+        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, 1, 0, new boolean[1]);
+        for (ObjectEntry entry : res) {
+            return conn.getObject(entry, null);
         }
         return null;
     }
