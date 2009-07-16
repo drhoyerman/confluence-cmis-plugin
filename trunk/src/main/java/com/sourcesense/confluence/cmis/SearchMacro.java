@@ -25,7 +25,9 @@ import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
+import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
+import org.apache.chemistry.SPI;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
@@ -47,14 +49,16 @@ public class SearchMacro extends BaseCMISMacro {
 
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         Connection conn = repository.getConnection(null);
-        Collection<CMISObject> res = conn.query(body, false);
-        return renderFeed(res);
+        SPI spi = conn.getSPI();
+        Collection<ObjectEntry> res = spi.query(body, false, false, false, 100, 0, new boolean[1]);
+        return renderFeed(res, conn);
     }
 
-    private String renderFeed(Collection<CMISObject> res) {
+    private String renderFeed(Collection<ObjectEntry> res, Connection conn) {
         StringBuilder out = new StringBuilder();
         out.append("||Title||Updated||\n");
-        for (CMISObject entry : res) {
+        for (ObjectEntry oe : res) {
+            CMISObject entry = conn.getObject(oe, null);
             out.append("|");
             URI url = entry.getURI("ContentStreamUri"); // XXX Should there be a constant definition in CMIS class for this?
             if (url != null) {
