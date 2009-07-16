@@ -35,7 +35,7 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 
-public abstract class BaseChemistryCMISMacro extends BaseMacro {
+public abstract class BaseCMISMacro extends BaseMacro {
 
     private BandanaManager bandanaManager;
     

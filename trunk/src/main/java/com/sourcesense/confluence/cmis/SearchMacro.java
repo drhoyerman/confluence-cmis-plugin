@@ -31,7 +31,7 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-public class SearchMacro extends BaseChemistryCMISMacro {
+public class SearchMacro extends BaseCMISMacro {
 
     public boolean isInline() {
         return false;

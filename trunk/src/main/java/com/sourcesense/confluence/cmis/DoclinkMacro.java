@@ -25,7 +25,7 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-public class DoclinkMacro extends BaseChemistryCMISMacro {
+public class DoclinkMacro extends BaseCMISMacro {
 
     public boolean isInline() {
         return true;
