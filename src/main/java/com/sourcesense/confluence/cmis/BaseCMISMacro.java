@@ -116,9 +116,9 @@ public abstract class BaseCMISMacro extends BaseMacro {
         String cmisQuery = "SELECT * FROM DOCUMENT WHERE ObjectId = '" + id + "'";
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
-        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, 1, 0, new boolean[1]);
+        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, false, 1, 0, new boolean[1]);
         for (ObjectEntry entry : res) {
-            return conn.getObject(entry, null);
+            return conn.getObject(entry);
         }
         return null;
     }
