@@ -60,7 +60,7 @@ public class EmbedMacro extends BaseCMISMacro {
             Document doc = (Document) entry;
             StringBuilder out = new StringBuilder();
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(doc.getStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(doc.getContentStream().getStream()));
                 String line = null;
                 if (noformat) {
                     out.append("{noformat}");

@@ -50,7 +50,7 @@ public class SearchMacro extends BaseCMISMacro {
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
-        Collection<ObjectEntry> res = spi.query(body, false, false, false, 100, 0, new boolean[1]);
+        Collection<ObjectEntry> res = spi.query(body, false, false, false, false, 100, 0, new boolean[1]);
         return renderFeed(res, conn);
     }
 
@@ -58,7 +58,7 @@ public class SearchMacro extends BaseCMISMacro {
         StringBuilder out = new StringBuilder();
         out.append("||Title||Updated||\n");
         for (ObjectEntry oe : res) {
-            CMISObject entry = conn.getObject(oe, null);
+            CMISObject entry = conn.getObject(oe);
             out.append("|");
             URI url = entry.getURI("ContentStreamUri"); // XXX Should there be a constant definition in CMIS class for this?
             if (url != null) {
