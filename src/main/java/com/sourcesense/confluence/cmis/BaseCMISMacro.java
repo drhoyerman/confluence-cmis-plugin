@@ -20,11 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.abdera.Abdera;
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
+import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.APPConnection;
 import org.apache.chemistry.atompub.client.ContentManager;
 import org.apache.chemistry.atompub.client.connector.APPContentManager;
@@ -113,12 +115,16 @@ public abstract class BaseCMISMacro extends BaseMacro {
      * @return The object with the given ID, if it exists, otherwise null.
      */
     protected CMISObject getEntryViaID(Repository repository, String id) {
-        String cmisQuery = "SELECT * FROM DOCUMENT WHERE ObjectId = '" + id + "'";
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
-        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, false, 1, 0, new boolean[1]);
-        for (ObjectEntry entry : res) {
-            return conn.getObject(entry);
+        Collection<Type> types = repository.getTypes(BaseType.DOCUMENT.getId());
+        for(Type t : types){
+        	String cmisQuery = "SELECT * FROM %1 WHERE ObjectId = '" + id + "'";// XXX It is not sure that DOCUMENT is the doc query name;
+	        Connection conn = repository.getConnection(null);
+	        SPI spi = conn.getSPI();
+	        cmisQuery = cmisQuery.replace("%1",t.getQueryName());
+	        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, false, 1, 0, new boolean[1]);
+	        for (ObjectEntry entry : res) {
+	            return conn.getObject(entry);
+	        }
         }
         return null;
     }
