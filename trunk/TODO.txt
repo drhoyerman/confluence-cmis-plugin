@@ -1,0 +1,3 @@
+- CMIS Link Proxy
+- CMIS Search Macro should be configurable (properties=list of properties to be shown)
+- External Attachments view (using CMIS queries)
