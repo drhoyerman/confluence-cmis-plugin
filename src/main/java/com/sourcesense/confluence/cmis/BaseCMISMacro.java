@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.abdera.Abdera;
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ObjectEntry;
@@ -54,12 +53,6 @@ public abstract class BaseCMISMacro extends BaseMacro {
         try {
             ClassLoader cl = this.getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
-
-            Abdera abdera = new Abdera();
-
-            if (abdera.getParser() == null) {
-                return "NO PARSER!";
-            }
 
             /*
             try {
