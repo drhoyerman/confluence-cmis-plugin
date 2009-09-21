@@ -45,19 +45,18 @@ public class EmbedMacro extends BaseCMISMacro {
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         String id = (String) params.get("id");
         String nf = (String) params.get("nf");
-        boolean noformat = nf != null && nf.startsWith("y"); 
-        CMISObject obj = getEntryViaID(repository, id);
+        boolean noformat = nf != null && nf.startsWith("y");
+        CMISObject obj = repository.getConnection(null).getObject(getEntryViaID(repository, id), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }
         return renderDocument(obj, repository, noformat);
     }
-        
-        
-    private String renderDocument(CMISObject entry, Repository repository, boolean noformat) throws MacroException {
-        
-        if (entry instanceof Document) {
-            Document doc = (Document) entry;
+
+    private String renderDocument(CMISObject obj, Repository repository, boolean noformat) throws MacroException {
+
+        if (obj instanceof Document) {
+            Document doc = (Document) obj;
             StringBuilder out = new StringBuilder();
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(doc.getContentStream().getStream()));
@@ -72,7 +71,7 @@ public class EmbedMacro extends BaseCMISMacro {
                 if (noformat) {
                     out.append("{noformat}");
                 }
-           } catch (IOException e) {
+            } catch (IOException e) {
                 throw new MacroException(e.getMessage(), e);
             }
             return out.toString();

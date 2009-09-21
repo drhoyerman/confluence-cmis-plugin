@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.abdera.Abdera;
 import org.apache.chemistry.BaseType;
-import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
@@ -42,26 +41,26 @@ import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 public abstract class BaseCMISMacro extends BaseMacro {
 
     private BandanaManager bandanaManager;
-    
+
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
     }
-    
+
     @SuppressWarnings("unchecked")
     public String execute(Map params, String body, RenderContext renderContext) throws MacroException {
-        
+
         // Work around Abdera trying to be smart with class loading
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             ClassLoader cl = this.getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
-            
+
             Abdera abdera = new Abdera();
-            
+
             if (abdera.getParser() == null) {
                 return "NO PARSER!";
             }
-        
+
             /*
             try {
                 StaxReader reader = StaxReader.newReader(System.in);
@@ -70,7 +69,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
                 e.printStackTrace();
             }
             */
-    
+
             String serverUrl = (String) params.get("s");
             String repositoryUsername = (String) params.get("u");
             String repositoryPassword = (String) params.get("p");
@@ -79,19 +78,19 @@ public abstract class BaseCMISMacro extends BaseMacro {
             cm.login(credentials.getUserName(), credentials.getPassword());
             Repository repository = cm.getDefaultRepository();
             return doExecute(params, body, renderContext, repository);
-        
+
         } finally {
             // Restore original classloader
             Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     protected UsernamePasswordCredentials getCredentials(String url, String username, String password) {
         if (username != null && password != null) {
-            return new UsernamePasswordCredentials(username , password);
+            return new UsernamePasswordCredentials(username, password);
         }
-        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(), 
+        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
                                         ConfigureCMISPluginAction.CREDENTIALS_KEY);
         if (credsMap == null) {
             return null;
@@ -114,17 +113,14 @@ public abstract class BaseCMISMacro extends BaseMacro {
      * @param id The object's ID.
      * @return The object with the given ID, if it exists, otherwise null.
      */
-    protected CMISObject getEntryViaID(Repository repository, String id) {
-        Collection<Type> types = repository.getTypes(BaseType.DOCUMENT.getId());
-        for(Type t : types){
-        	String cmisQuery = "SELECT * FROM %1 WHERE ObjectId = '" + id + "'";// XXX It is not sure that DOCUMENT is the doc query name;
-	        Connection conn = repository.getConnection(null);
-	        SPI spi = conn.getSPI();
-	        cmisQuery = cmisQuery.replace("%1",t.getQueryName());
-	        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, false, 1, 0, new boolean[1]);
-	        for (ObjectEntry entry : res) {
-	            return conn.getObject(entry);
-	        }
+    protected ObjectEntry getEntryViaID(Repository repository, String id) {
+        Type t = repository.getType(BaseType.DOCUMENT.toString());
+        String cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName() + " WHERE ObjectId = '" + id + "'"; //cmis:document is the actual (0.62Spec) common query name
+        Connection conn = repository.getConnection(null);
+        SPI spi = conn.getSPI();
+        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, 1, 0, new boolean[1]);
+        for (ObjectEntry entry : res) {
+            return entry;
         }
         return null;
     }
