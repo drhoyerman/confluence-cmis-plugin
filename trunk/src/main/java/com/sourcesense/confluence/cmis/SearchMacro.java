@@ -15,8 +15,6 @@
  */
 package com.sourcesense.confluence.cmis;
 
-
-
 import java.net.URI;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -26,6 +24,7 @@ import java.util.Map;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ObjectEntry;
+import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 
@@ -50,7 +49,7 @@ public class SearchMacro extends BaseCMISMacro {
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
-        Collection<ObjectEntry> res = spi.query(body, false, false, false, false, 100, 0, new boolean[1]);
+        Collection<ObjectEntry> res = spi.query(body, false, false, false, 100, 0, new boolean[1]);
         return renderFeed(res, conn);
     }
 
@@ -58,9 +57,9 @@ public class SearchMacro extends BaseCMISMacro {
         StringBuilder out = new StringBuilder();
         out.append("||Title||Updated||\n");
         for (ObjectEntry oe : res) {
-            CMISObject entry = conn.getObject(oe);
+            CMISObject entry = conn.getObject(oe, null);
             out.append("|");
-            URI url = entry.getURI("ContentStreamUri"); // XXX Should there be a constant definition in CMIS class for this?
+            URI url = entry.getURI(Property.CONTENT_STREAM_URI);
             if (url != null) {
                 out.append("[");
                 out.append(entry.getName());
@@ -71,7 +70,7 @@ public class SearchMacro extends BaseCMISMacro {
                 out.append(entry.getName());
             }
             out.append("|");
-            Calendar cal = entry.getDateTime("LastModificationDate");
+            Calendar cal = entry.getLastModificationDate();
             if (cal != null) {
                 DateFormat df = DateFormat.getDateTimeInstance();
                 out.append(df.format(cal.getTime()));

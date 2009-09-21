@@ -18,6 +18,7 @@ package com.sourcesense.confluence.cmis;
 import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
+import org.apache.chemistry.Connection;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
@@ -42,7 +43,8 @@ public class DocinfoMacro extends BaseCMISMacro {
 
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         String id = (String) params.get("id");
-        CMISObject obj = getEntryViaID(repository, id);
+        Connection conn = repository.getConnection(null);
+        CMISObject obj = conn.getObject(getEntryViaID(repository, id), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }
@@ -52,15 +54,17 @@ public class DocinfoMacro extends BaseCMISMacro {
     private String renderInfo(CMISObject cmisObject, Repository repository) {
         StringBuilder out = new StringBuilder();
         out.append("||Property||Value||\n");
-        for (String name : cmisObject.getProperties().keySet()) {
+        for (String name : cmisObject.getProperties().keySet()) { //it return all properties name if the properties don't exists return null
             Property property = cmisObject.getProperties().get(name);
             String value = " ";
-            if (PropertyType.BOOLEAN.equals(property.getDefinition().getType())) {
-                value = Boolean.TRUE.equals(property.getValue()) ? "(/)" : "(x)";
-            } else if (PropertyType.URI.equals(property.getDefinition().getType())) {
-                value = "[LINK|" + property.getValue() + "]";
-            } else if (property.getValue() != null) {
-                value = property.getValue().toString();
+            if (property != null) {
+                if (PropertyType.BOOLEAN.equals(property.getDefinition().getType())) {
+                    value = Boolean.TRUE.equals(property.getValue()) ? "(/)" : "(x)";
+                } else if (PropertyType.URI.equals(property.getDefinition().getType())) {
+                    value = "[LINK|" + property.getValue() + "]";
+                } else if (property.getValue() != null) {
+                    value = property.getValue().toString();
+                }
             }
             out.append("|");
             out.append(name);
