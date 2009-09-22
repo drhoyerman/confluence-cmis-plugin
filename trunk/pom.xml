@@ -79,6 +79,7 @@
 		<maven.release.scm.url>https://confluence-cmis-plugin.googlecode.com/svn</maven.release.scm.url>
 		<maven.release.goals>install deploy</maven.release.goals>
 		<maven.release.arguments>-Dmaven.test.skip=true</maven.release.arguments>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 
 	<dependencies>
