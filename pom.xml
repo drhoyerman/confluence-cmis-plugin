@@ -16,9 +16,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<parent>
-		<groupId>com.atlassian.confluence.plugin.base</groupId>
-		<artifactId>confluence-plugin-base</artifactId>
-		<version>22</version>
+		<groupId>com.sourcesense.maven</groupId>
+		<artifactId>atlassian-sourcesense-parent</artifactId>
+		<version>1.0.22</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -30,8 +30,7 @@
 	<packaging>atlassian-plugin</packaging>
 
 	<properties>
-		<atlassian.plugin.key>com.sourcesense.confluence.cmis
-		</atlassian.plugin.key>
+		<atlassian.plugin.key>com.sourcesense.confluence.cmis</atlassian.plugin.key>
 
 		<!-- Confluence version -->
 		<atlassian.product.version>3.0-beta2-r3</atlassian.product.version>
@@ -39,8 +38,10 @@
 		<atlassian.product.test-lib.version>1.4.1
 		</atlassian.product.test-lib.version>
 		<!-- Confluence data version -->
-		<atlassian.product.data.version>3.0-SNAPSHOT
-		</atlassian.product.data.version>
+		<atlassian.product.data.version>3.0-SNAPSHOT</atlassian.product.data.version>
+		<maven.release.scm.url>https://confluence-cmis-plugin.googlecode.com/svn</maven.release.scm.url>
+		<maven.release.goals>install deploy</maven.release.goals>
+		<maven.release.arguments>-Dmaven.test.skip=true</maven.release.arguments>
 	</properties>
 
 	<dependencies>
@@ -156,11 +157,12 @@
 		Company</organization> </developer> </developers>
 	-->
 
-	<!-- TODO: Complete source control details -->
-	<!--
-		<scm> <connection></connection>
-		<developerConnection></developerConnection> <url></url> </scm>
-	-->
+	<scm>
+		<connection>${maven.release.scm.connection}</connection>
+		<developerConnection>${maven.release.scm.developerConnection}</developerConnection>
+		<url>${maven.release.scm.url}</url>
+	</scm>
+
 	<repositories>
 		<repository>
 			<id>sose-public</id>
@@ -168,12 +170,5 @@
 			</url>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>sose-public</id>
-			<url>http://repository.sourcesense.com/nexus/content/groups/public
-			</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 </project>
