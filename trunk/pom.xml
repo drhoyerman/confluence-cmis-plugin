@@ -47,7 +47,7 @@
 		<maven.release.scm.url>https://confluence-cmis-plugin.googlecode.com/svn</maven.release.scm.url>
 		<maven.release.goals>install deploy</maven.release.goals>
 		<maven.release.arguments>-Dmaven.test.skip=true</maven.release.arguments>
-		<maven.test.skip>true</maven.test.skip>
+		<maven.test.skip>false</maven.test.skip>
 	</properties>
 
 	<dependencies>
@@ -107,6 +107,11 @@
 			<artifactId>jetty-util</artifactId>
 			<version>6.1.5</version>
 			<scope>compile</scope> <!-- override -->
+		</dependency>
+		<dependency>
+  			<groupId>org.antlr</groupId>
+  			<artifactId>antlr-runtime</artifactId>
+  			<version>3.1.3</version>
 		</dependency>
 	</dependencies>
 
