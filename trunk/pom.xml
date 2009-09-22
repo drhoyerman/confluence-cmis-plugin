@@ -23,7 +23,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sourcesense.confluence</groupId>
 	<artifactId>cmis-confluence-plugin</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 
 	<name>CMIS Plugin</name>
 	<packaging>atlassian-plugin</packaging>
@@ -163,8 +163,8 @@
 	-->
 
 	<scm>
-		<connection>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/tags/cmis-confluence-plugin-1.0</connection>
-		<developerConnection>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/tags/cmis-confluence-plugin-1.0</developerConnection>
-		<url>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/tags/cmis-confluence-plugin-1.0</url>
+		<connection>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/trunk</developerConnection>
+		<url>https://confluence-cmis-plugin.googlecode.com/svn</url>
 	</scm>
 </project>
