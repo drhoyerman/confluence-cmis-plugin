@@ -12,8 +12,7 @@
 		limitations under the License.
 	-->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
       <groupId>com.sourcesense.maven</groupId>
@@ -24,7 +23,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sourcesense.confluence</groupId>
 	<artifactId>cmis-confluence-plugin</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 
 	<name>CMIS Plugin</name>
 	<packaging>atlassian-plugin</packaging>
@@ -164,8 +163,8 @@
 	-->
 
 	<scm>
-		<connection>${maven.release.scm.connection}</connection>
-		<developerConnection>${maven.release.scm.developerConnection}</developerConnection>
-		<url>${maven.release.scm.url}</url>
+		<connection>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/tags/cmis-confluence-plugin-1.0</connection>
+		<developerConnection>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/tags/cmis-confluence-plugin-1.0</developerConnection>
+		<url>scm:svn:https://confluence-cmis-plugin.googlecode.com/svn/tags/cmis-confluence-plugin-1.0</url>
 	</scm>
 </project>
