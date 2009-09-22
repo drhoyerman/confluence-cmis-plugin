@@ -16,9 +16,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-      <groupId>com.atlassian.confluence.plugin.base</groupId>
-      <artifactId>confluence-plugin-base</artifactId>
-      <version>22</version>
+      <groupId>com.sourcesense.maven</groupId>
+      <artifactId>atlassian-sourcesense-parent</artifactId>
+      <version>1.0.22</version>
     </parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -35,37 +35,6 @@
         <url>http://repository.sourcesense.com/nexus/content/groups/public</url>
       </repository>
     </repositories>
-    <pluginRepositories>
-      <pluginRepository>
-        <id>plugin-sose-public</id>
-        <url>http://repository.sourcesense.com/nexus/content/groups/public</url>
-      </pluginRepository>
-      <pluginRepository>
-        <id>plugin-sose-public-snapshot</id>
-        <url>http://repository.sourcesense.com/nexus/content/groups/public-snapshots</url>
-        <snapshots>
-          <enabled>true</enabled>
-        </snapshots>
-      </pluginRepository>
-    </pluginRepositories>
-
-    <distributionManagement>
-      <repository>
-        <id>${maven.deploy.repository.releases.id}</id>
-        <name>Maven Deploy Releases Repository</name>
-        <url>${maven.deploy.repository.releases.url}</url>
-      </repository>
-      <snapshotRepository>
-        <id>${maven.deploy.repository.snapshots.id}</id>
-        <name>Maven Deploy Snapshots Repository</name>
-        <url>${maven.deploy.repository.snapshots.url}</url>
-      </snapshotRepository>
-      <site>
-        <id>${maven.deploy.repository.sites.id}</id>
-        <name>Maven Deploy Sites Repository</name>
-        <url>${maven.deploy.repository.sites.url}</url>
-      </site>
-    </distributionManagement>
 
 	<properties>
 		<atlassian.plugin.key>com.sourcesense.confluence.cmis</atlassian.plugin.key>
