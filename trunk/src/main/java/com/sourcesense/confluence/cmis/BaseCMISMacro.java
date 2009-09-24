@@ -15,6 +15,7 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +37,11 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.proxy.CMISProxyServlet;
 
 public abstract class BaseCMISMacro extends BaseMacro {
-
+    // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
+    private static final String SERVLET_CMIS_PROXY = "http://127.0.0.1:8080/plugins/servlet/CMISProxy";
     private BandanaManager bandanaManager;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
@@ -69,6 +72,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
             UsernamePasswordCredentials credentials = getCredentials(serverUrl, repositoryUsername, repositoryPassword);
             ContentManager cm = new APPContentManager(serverUrl);
             cm.login(credentials.getUserName(), credentials.getPassword());
+            CMISProxyServlet.setCredentialsProvider(credentials.getUserName(), credentials.getPassword());
             Repository repository = cm.getDefaultRepository();
             return doExecute(params, body, renderContext, repository);
 
@@ -116,6 +120,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
             return entry;
         }
         return null;
+    }
+    
+    public String rewriteUrl(URI url){
+        return SERVLET_CMIS_PROXY+ url.getPath();
     }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;

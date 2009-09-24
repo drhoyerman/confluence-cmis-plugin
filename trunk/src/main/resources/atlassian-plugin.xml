@@ -39,7 +39,16 @@
     <macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.DocinfoMacro' key='cmis-docinfo'>
         <description>Displays properties of a CMIS document.</description>
     </macro>
-	  
+    
+    <servlet name="Proxy Link" key="proxy-link" class="com.sourcesense.confluence.proxy.CMISProxyServlet">
+ 		<description>A servlet version of the proxy CMIS.</description> 
+  		<url-pattern>/CMISProxy/*</url-pattern>
+  		<init-param>       
+			<param-name>proxyHost</param-name>        
+			<param-value>192.168.1.2:8080</param-value> 
+		</init-param> 
+ 	</servlet>
+ 	  
 	<xwork name="Configure CMIS plugin" key="configure-cmis">
 		<package name="cmis" extends="default" namespace="/admin/plugins/cmis">
 			<default-interceptor-ref name="defaultStack" />

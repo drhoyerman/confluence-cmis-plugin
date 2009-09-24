@@ -40,7 +40,7 @@ import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 public class IntegrationTestCmisPlugin extends TestCase {
     private static String USERNAME = "admin";
     private static String PASSWORD = "admin";
-    private static String CMIS_REPOSITORY_URL = "service/api/cmis";
+    private static String CMIS_REPOSITORY_URL = "http://192.168.1.2:8080/alfresco/service/api/cmis";
     BandanaManager bandanaManager = new BandanaManager() {
 
         Map<String, Object> map = new HashMap<String, Object>();
