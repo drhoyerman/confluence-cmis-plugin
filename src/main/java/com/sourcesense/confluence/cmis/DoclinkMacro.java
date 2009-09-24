@@ -55,7 +55,7 @@ public class DoclinkMacro extends BaseCMISMacro {
         out.append("[");
         out.append(entry.getName());
         out.append("|");
-        out.append(url);
+        out.append(rewriteUrl(url));
         out.append("]");
         return out.toString();
     }
