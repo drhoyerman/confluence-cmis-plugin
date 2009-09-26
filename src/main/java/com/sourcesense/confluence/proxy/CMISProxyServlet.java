@@ -98,7 +98,7 @@ public class CMISProxyServlet extends HttpServlet {
     private int intMaxFileUploadSize = 5 * 1024 * 1024;
     private boolean isSecure;
     private boolean followRedirects;
-    
+
     private static Credentials credientals;
 
     /**
@@ -137,15 +137,14 @@ public class CMISProxyServlet extends HttpServlet {
      * @param httpServletResponse The {@link HttpServletResponse} object by which
      *                             we can send a proxied response to the client
      */
-    public static void setCredentialsProvider(String username,String password){
+    public static void setCredentialsProvider(String username, String password) {
         credientals = new UsernamePasswordCredentials(username, password);
     }
-    public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+
+    public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
         // Create a GET request
         String destinationUrl = this.getProxyURL(httpServletRequest);
-        debug("GET Request URL: " + httpServletRequest.getRequestURL(),
-              "Destination URL: " + destinationUrl);
+        debug("GET Request URL: " + httpServletRequest.getRequestURL(), "Destination URL: " + destinationUrl);
         GetMethod getMethodProxyRequest = new GetMethod(destinationUrl);
         // Forward the request headers
         setProxyRequestHeaders(httpServletRequest, getMethodProxyRequest);
@@ -162,14 +161,11 @@ public class CMISProxyServlet extends HttpServlet {
      * @param httpServletResponse The {@link HttpServletResponse} object by which
      *                             we can send a proxied response to the client
      */
-    public void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+    public void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
         // Create a standard POST request
         String contentType = httpServletRequest.getContentType();
         String destinationUrl = this.getProxyURL(httpServletRequest);
-        debug("POST Request URL: " + httpServletRequest.getRequestURL(),
-              "    Content Type: " + contentType,
-              " Destination URL: " + destinationUrl);
+        debug("POST Request URL: " + httpServletRequest.getRequestURL(), "    Content Type: " + contentType, " Destination URL: " + destinationUrl);
         PostMethod postMethodProxyRequest = new PostMethod(destinationUrl);
         // Forward the request headers
         setProxyRequestHeaders(httpServletRequest, postMethodProxyRequest);
@@ -197,8 +193,7 @@ public class CMISProxyServlet extends HttpServlet {
      *                            the mutlipart POST data to be sent via the {@link PostMethod}
      */
     @SuppressWarnings("unchecked")
-    private void handleMultipartPost(PostMethod postMethodProxyRequest, HttpServletRequest httpServletRequest)
-            throws ServletException {
+    private void handleMultipartPost(PostMethod postMethodProxyRequest, HttpServletRequest httpServletRequest) throws ServletException {
         // Create a factory for disk-based file items
         DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
         // Set factory constraints
@@ -216,27 +211,22 @@ public class CMISProxyServlet extends HttpServlet {
             for (FileItem fileItemCurrent : listFileItems) {
                 // If the current item is a form field, then create a string part
                 if (fileItemCurrent.isFormField()) {
-                    StringPart stringPart = new StringPart(
-                            fileItemCurrent.getFieldName(), // The field name
-                            fileItemCurrent.getString() // The field value
-                            );
+                    StringPart stringPart = new StringPart(fileItemCurrent.getFieldName(), // The field name
+                                                    fileItemCurrent.getString() // The field value
+                    );
                     // Add the part to the list
                     listParts.add(stringPart);
                 } else {
                     // The item is a file upload, so we create a FilePart
-                    FilePart filePart = new FilePart(
-                            fileItemCurrent.getFieldName(), // The field name
-                            new ByteArrayPartSource(
-                            fileItemCurrent.getName(), // The uploaded file name
-                            fileItemCurrent.get() // The uploaded file contents
-                            ));
+                    FilePart filePart = new FilePart(fileItemCurrent.getFieldName(), // The field name
+                                                    new ByteArrayPartSource(fileItemCurrent.getName(), // The uploaded file name
+                                                                                    fileItemCurrent.get() // The uploaded file contents
+                                                    ));
                     // Add the part to the list
                     listParts.add(filePart);
                 }
             }
-            MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(
-                    listParts.toArray(new Part[]{}),
-                    postMethodProxyRequest.getParams());
+            MultipartRequestEntity multipartRequestEntity = new MultipartRequestEntity(listParts.toArray(new Part[] {}), postMethodProxyRequest.getParams());
             postMethodProxyRequest.setRequestEntity(multipartRequestEntity);
             // The current content-type header (received from the client) IS of
             // type "multipart/form-data", but the content-type header also
@@ -277,7 +267,7 @@ public class CMISProxyServlet extends HttpServlet {
             }
         }
         // Set the proxy request POST data
-        postMethodProxyRequest.setRequestBody(listNameValuePairs.toArray(new NameValuePair[]{}));
+        postMethodProxyRequest.setRequestBody(listNameValuePairs.toArray(new NameValuePair[] {}));
     }
 
     /**
@@ -293,7 +283,8 @@ public class CMISProxyServlet extends HttpServlet {
         BufferedReader reader = httpServletRequest.getReader();
         for (;;) {
             String line = reader.readLine();
-            if (line == null) break;
+            if (line == null)
+                break;
             content.append(line);
         }
 
@@ -310,12 +301,11 @@ public class CMISProxyServlet extends HttpServlet {
             String clientUrl = clientHost + ((clientPort != 80) ? ":" + clientPort : "");
             String serverUrl = stringProxyHost + ((intProxyPort != 80) ? ":" + intProxyPort : "") + httpServletRequest.getServletPath();
             //debug("Replacing client (" + clientUrl + ") with server (" + serverUrl + ")");
-            postContent = postContent.replace(clientUrl , serverUrl);
+            postContent = postContent.replace(clientUrl, serverUrl);
         }
 
         String encoding = httpServletRequest.getCharacterEncoding();
-        debug("POST Content Type: " + contentType + " Encoding: " + encoding,
-              "Content: " + postContent);
+        debug("POST Content Type: " + contentType + " Encoding: " + encoding, "Content: " + postContent);
         StringRequestEntity entity;
         try {
             entity = new StringRequestEntity(postContent, contentType, encoding);
@@ -335,14 +325,11 @@ public class CMISProxyServlet extends HttpServlet {
      * @throws IOException Can be thrown by the {@link HttpClient}.executeMethod
      * @throws ServletException Can be thrown to indicate that another error has occurred
      */
-    private void executeProxyRequest(
-            HttpMethod httpMethodProxyRequest,
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse)
-            throws IOException, ServletException {
+    private void executeProxyRequest(HttpMethod httpMethodProxyRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)
+                                    throws IOException, ServletException {
         // Create a default HttpClient
         HttpClient httpClient = new HttpClient();
-        if(credientals != null){
+        if (credientals != null) {
             httpClient.getParams().setAuthenticationPreemptive(true);
             httpClient.getState().setCredentials(AuthScope.ANY, credientals);
         }
@@ -354,11 +341,12 @@ public class CMISProxyServlet extends HttpServlet {
         // Check if the proxy response is a redirect
         // The following code is adapted from org.tigris.noodle.filters.CheckForRedirect
         // Hooray for open source software
-        if (intProxyResponseCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */ && intProxyResponseCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */) {
+        if (intProxyResponseCode >= HttpServletResponse.SC_MULTIPLE_CHOICES /* 300 */&& intProxyResponseCode < HttpServletResponse.SC_NOT_MODIFIED /* 304 */) {
             String stringStatusCode = Integer.toString(intProxyResponseCode);
             String stringLocation = httpMethodProxyRequest.getResponseHeader(STRING_LOCATION_HEADER).getValue();
             if (stringLocation == null) {
-                throw new ServletException("Received status code: " + stringStatusCode + " but no " + STRING_LOCATION_HEADER + " header was found in the response");
+                throw new ServletException("Received status code: " + stringStatusCode + " but no " + STRING_LOCATION_HEADER
+                                                + " header was found in the response");
             }
             // Modify the redirect to go to this proxy servlet rather that the proxied host
             String stringMyHostName = httpServletRequest.getServerName();
@@ -373,14 +361,14 @@ public class CMISProxyServlet extends HttpServlet {
                     httpServletResponse.addCookie(cookie);
                     //debug("redirecting: set jessionid (" + cookie.getValue() + ") cookie from URL");
                 } else if (httpMethodProxyRequest.getResponseHeader("Set-Cookie") != null) {
-                        Header header = httpMethodProxyRequest.getResponseHeader("Set-Cookie");
+                    Header header = httpMethodProxyRequest.getResponseHeader("Set-Cookie");
                     String[] cookieDetails = header.getValue().split(";");
-                                        String[] nameValue = cookieDetails[0].split("=");
+                    String[] nameValue = cookieDetails[0].split("=");
 
-                                        Cookie cookie = new Cookie(nameValue[0], nameValue[1]);
-                                        cookie.setPath("/");
-                                        //debug("redirecting: setting cookie: " + cookie.getName() + ":" + cookie.getValue() + " on " + cookie.getPath());
-                                        httpServletResponse.addCookie(cookie);
+                    Cookie cookie = new Cookie(nameValue[0], nameValue[1]);
+                    cookie.setPath("/");
+                    //debug("redirecting: setting cookie: " + cookie.getName() + ":" + cookie.getValue() + " on " + cookie.getPath());
+                    httpServletResponse.addCookie(cookie);
                 }
                 httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + this.getProxyPath(), stringMyHostName));
                 return;
@@ -403,9 +391,9 @@ public class CMISProxyServlet extends HttpServlet {
         // Pass response headers back to the client
         Header[] headerArrayResponse = httpMethodProxyRequest.getResponseHeaders();
         for (Header header : headerArrayResponse) {
-            if (header.getName().equals("Transfer-Encoding") && header.getValue().equals("chunked") ||
-                    header.getName().equals("Content-Encoding") && header.getValue().equals("gzip") || // don't copy gzip header
-                    header.getName().equals("WWW-Authenticate")) { // don't copy WWW-Authenticate header so browser doesn't prompt on failed basic auth
+            if (header.getName().equals("Transfer-Encoding") && header.getValue().equals("chunked") || header.getName().equals("Content-Encoding")
+                                            && header.getValue().equals("gzip") || // don't copy gzip header
+                                            header.getName().equals("WWW-Authenticate")) { // don't copy WWW-Authenticate header so browser doesn't prompt on failed basic auth
                 // proxy servlet does not support chunked encoding
             } else {
                 httpServletResponse.setHeader(header.getName(), header.getValue());
@@ -428,14 +416,12 @@ public class CMISProxyServlet extends HttpServlet {
         }
 
         // Send the content to the client
-        debug("Received status code: " + intProxyResponseCode,
-              "Response: " + response);
-        if( intProxyResponseCode == 200)
+        debug("Received status code: " + intProxyResponseCode, "Response: " + response);
+        if (intProxyResponseCode == 200)
             httpServletResponse.getWriter().write(response);
         else
             httpServletResponse.getWriter().write(intProxyResponseCode);
     }
-
 
     /**
      * The response body will be assumed to be gzipped if the GZIP header has been set.
@@ -554,7 +540,7 @@ public class CMISProxyServlet extends HttpServlet {
             stringProxyURL += httpServletRequest.getServletPath();
         }
         stringProxyURL += "/";
-        
+
         // Handle the path given to the servlet
         String pathInfo = httpServletRequest.getPathInfo();
         if (pathInfo != null && pathInfo.startsWith("/")) {
@@ -569,7 +555,7 @@ public class CMISProxyServlet extends HttpServlet {
         if (httpServletRequest.getQueryString() != null) {
             stringProxyURL += "?" + httpServletRequest.getQueryString();
         }
-        
+
         return stringProxyURL;
     }
 
@@ -596,7 +582,7 @@ public class CMISProxyServlet extends HttpServlet {
     protected void setSecure(boolean secure) {
         this.isSecure = secure;
     }
-    
+
     protected void setFollowRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
     }
@@ -625,7 +611,7 @@ public class CMISProxyServlet extends HttpServlet {
         this.intMaxFileUploadSize = intMaxFileUploadSizeNew;
     }
 
-    private void debug(String ... msg) {
+    private void debug(String... msg) {
         for (String m : msg) {
             System.out.println("[DEBUG] " + m);
         }
