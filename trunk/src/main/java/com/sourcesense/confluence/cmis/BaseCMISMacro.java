@@ -121,9 +121,9 @@ public abstract class BaseCMISMacro extends BaseMacro {
         }
         return null;
     }
-    
-    public String rewriteUrl(URI url){
-        return SERVLET_CMIS_PROXY+ url.getPath();
+
+    public String rewriteUrl(URI url) {
+        return SERVLET_CMIS_PROXY + url.getPath();
     }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
