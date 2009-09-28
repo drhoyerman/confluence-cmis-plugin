@@ -26,7 +26,7 @@ import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 
 public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
 
-    public static final String CREDENTIALS_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".credentials";
+    public static final String CREDENTIALS_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".credential";
     private BandanaManager bandanaManager;
     private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
     
@@ -34,6 +34,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     private String[] realms;
     private String[] usernames;
     private String[] passwords;
+    private String[] servernames;
     private int indexToDelete = -1;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
@@ -59,9 +60,10 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     public String add() {
         this.credentialsMap = convertToCredentialsMap();
         List<String> list = new ArrayList<String>();
+        list.add("http://");
         list.add("");
         list.add("");
-        this.credentialsMap.put("http://", list);
+        this.credentialsMap.put("insert server name", list);
         return SUCCESS;
     }
     
@@ -84,12 +86,13 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     
     private Map<String, List<String>> convertToCredentialsMap(int indexToDelete) {
         Map<String, List<String>> map = new TreeMap<String, List<String>>();
-        for (int i = 0 ; i < realms.length ; ++i) {
-            if (i != indexToDelete && !"".equals(realms[i].trim())) {
+        for (int i = 0 ; i < servernames.length ; ++i) {
+            if (i != indexToDelete && !"".equals(servernames[i].trim())) {
                 List<String> list = new ArrayList<String>();
+                list.add(realms[i]);
                 list.add(usernames[i]);
                 list.add(passwords[i]);
-                map.put(realms[i], list);
+                map.put(servernames[i], list);
             }
         }
         return map;
@@ -109,6 +112,10 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
 
     public void setPasswords(String[] passwords) {
         this.passwords = passwords;
+    }
+    
+    public void setServernames(String[] servernames){
+        this.servernames = servernames;
     }
     
     public void setIndexToDelete(int indexToDelete) {

@@ -11,22 +11,26 @@
                     <form name="configuration" action="save.action" method="POST">
                         <table width="60%">
                             <tr>
+                            	<th>ServerName</th>
                                 <th>Realm</th>
                                 <th>Username</th>
                                 <th>Password</th>
                             </tr>
                             #if ($credentials.size() > 0)
-								#foreach ($realm in $credentials.keySet())
+								#foreach ($servername in $credentials.keySet())
 									#set ($index = $velocityCount - 1)
 	                                <tr>
+	                                	<td>
+	                                		<input type="text" name="servernames" size="50" value="$servername">
+	                                	</td>
 	                                    <td>
-	                                        <input type="text" name="realms" size="50" value="$realm">
+	                                        <input type="text" name="realms" size="50" value="$credentials.get($servername).get(0)">
 	                                    </td>
 	                                    <td>
-	                                        <input type="text" name="usernames" size="20" value="$credentials.get($realm).get(0)">
+	                                        <input type="text" name="usernames" size="20" value="$credentials.get($servername).get(1)">
 	                                    </td>
 	                                    <td>
-	                                        <input type="password" name="passwords" size="20" value="$credentials.get($realm).get(1)">
+	                                        <input type="password" name="passwords" size="20" value="$credentials.get($servername).get(2)">
 	                                    </td>
                                         <td>
                                             <a href="#" onclick="forms.configuration.action='delete.action'; forms.configuration.indexToDelete.value = $index; forms.configuration.submit();"><img src="$req.contextPath/images/icons/trash_16.gif" border="0"></a>
@@ -35,6 +39,9 @@
 	                            #end
 	                        #else
 	                            <tr>
+	                                <td>
+	                                	<input type="text" name="servernames" size="50" value="insert server name">
+	                                </td>	                            
 	                                <td>
 	                                    <input type="text" name="realms" size="50" value="http://">
 	                                </td>
@@ -46,7 +53,7 @@
 	                                </td>
 	                            </tr>
 	                        #end
-                            <tr><td colspan="3" align="right"><input type="submit" value="$action.getText("cmis.config.button.add")" onclick="forms.configuration.action='add.action';"></td></tr>
+                            <tr><td colspan="4" align="right"><input type="submit" value="$action.getText("cmis.config.button.add")" onclick="forms.configuration.action='add.action';"></td></tr>
                         </table>
                         <input type="hidden" name="indexToDelete" value="-1">
                         <input type="submit" value="Save">

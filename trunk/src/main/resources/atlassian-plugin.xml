@@ -1,104 +1,80 @@
+<!--
+ * Copyright 2009 Sourcesense <http://www.sourcesense.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
 
-	<!--
-		* Copyright 2009 Sourcesense <http://www.sourcesense.com> * * Licensed
-		under the Apache License, Version 2.0 (the "License"); * you may not
-		use this file except in compliance with the License. * You may obtain
-		a copy of the License at * *
-		http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
-		applicable law or agreed to in writing, software * distributed under
-		the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES
-		OR CONDITIONS OF ANY KIND, either express or implied. * See the
-		License for the specific language governing permissions and *
-		limitations under the License.
-	-->
-
-<atlassian-plugin name="${pom.name}" key="${atlassian.plugin.key}"
-	pluginsVersion="2" enabled="true">
-	<plugin-info>
-		<description>Access content in an external CMIS repository
-		</description>
-		<version>1.0-SNAPSHOT</version>
-		<vendor name="Sourcesense" url="http://www.sourcesense.com" />
+<atlassian-plugin name="${pom.name}" key="${atlassian.plugin.key}" pluginsVersion="2" enabled="true">
+    <plugin-info>
+        <description>Access content in an external CMIS repository</description>
+        <version>1.0-SNAPSHOT</version>
+        <vendor name="Sourcesense" url="http://www.sourcesense.com"/>
 		<param name="configure.url">/admin/plugins/cmis/configure.action</param>
-	</plugin-info>
+    </plugin-info>
+        
+    <resource type="i18n" name="i18n" location="cmis"/>
 
-	<resource type="i18n" name="i18n" location="cmis" />
+    <macro name='cmis-search' class='com.sourcesense.confluence.cmis.SearchMacro' key='cmis-search'>
+        <description>Performs a search on a CMIS repository and presents the results.</description>
+    </macro>
 
-	<macro name='cmis-search' class='com.sourcesense.confluence.cmis.SearchMacro'
-		key='cmis-search'>
-		<description>Performs a search on a CMIS repository and presents the
-			results.</description>
-	</macro>
+    <macro name='cmis-doclink' class='com.sourcesense.confluence.cmis.DoclinkMacro' key='cmis-doclink'>
+        <description>Provides a link to a document stored in a CMIS repository.</description>
+    </macro>
 
-	<macro name='cmis-doclink' class='com.sourcesense.confluence.cmis.DoclinkMacro'
-		key='cmis-doclink'>
-		<description>Provides a link to a document stored in a CMIS
-			repository.</description>
-	</macro>
+    <macro name='cmis-embed' class='com.sourcesense.confluence.cmis.EmbedMacro' key='cmis-embed'>
+        <description>Embeds a document stored in a CMIS repository in the current page.</description>
+    </macro>
 
-	<macro name='cmis-embed' class='com.sourcesense.confluence.cmis.EmbedMacro'
-		key='cmis-embed'>
-		<description>Embeds a document stored in a CMIS repository in the
-			current page.</description>
-	</macro>
-
-	<macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.DocinfoMacro'
-		key='cmis-docinfo'>
-		<description>Displays properties of a CMIS document.</description>
-	</macro>
-
-	<servlet name="Proxy Link" key="proxy-link"
-		class="com.sourcesense.confluence.proxy.CMISProxyServlet">
-		<description>A servlet version of the proxy CMIS.</description>
-		<url-pattern>/CMISProxy/*</url-pattern>
-		<init-param>
-			<param-name>proxyHost</param-name>
-			<param-value>192.168.1.2:8080</param-value>
-		</init-param>
-	</servlet>
-
+    <macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.DocinfoMacro' key='cmis-docinfo'>
+        <description>Displays properties of a CMIS document.</description>
+    </macro>
+    
+    <servlet name="Proxy Link" key="proxy-link" class="com.sourcesense.confluence.proxy.CMISProxyServlet">
+ 		<description>A servlet version of the proxy CMIS.</description> 
+  		<url-pattern>/CMISProxy/*</url-pattern>
+  		<init-param>       
+			<param-name>proxyHost</param-name>        
+			<param-value>192.168.1.2:8080</param-value> 
+		</init-param> 
+ 	</servlet>
+ 	  
 	<xwork name="Configure CMIS plugin" key="configure-cmis">
 		<package name="cmis" extends="default" namespace="/admin/plugins/cmis">
 			<default-interceptor-ref name="defaultStack" />
-			<action name="configure"
-				class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
+			<action name="configure" class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
 				method="input">
-				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
+				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm</result>
 			</action>
-			<action name="save"
-				class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
+			<action name="save" class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
 				method="save">
-				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
+				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm</result>
 			</action>
-			<action name="add"
-				class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
+			<action name="add" class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
 				method="add">
-				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
+				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm</result>
 			</action>
-			<action name="delete"
-				class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
+			<action name="delete" class="com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction"
 				method="delete">
-				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
-				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm
-				</result>
+				<result name="input" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="error" type="velocity">/templates/cmis/configure-cmis.vm</result>
+				<result name="success" type="velocity">/templates/cmis/configure-cmis.vm</result>
 			</action>
 		</package>
 	</xwork>
