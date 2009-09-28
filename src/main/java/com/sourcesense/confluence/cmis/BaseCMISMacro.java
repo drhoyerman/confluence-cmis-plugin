@@ -69,12 +69,11 @@ public abstract class BaseCMISMacro extends BaseMacro {
             String repositoryUsername = null;
             String repositoryPassword = null;
             serverName = (String) params.get("n");
-            if( serverName == null){
+            if (serverName == null) {
                 serverUrl = (String) params.get("s");
                 repositoryUsername = (String) params.get("u");
                 repositoryPassword = (String) params.get("p");
-            }
-            else{
+            } else {
                 serverUrl = getServerUrl(serverName);
             }
             UsernamePasswordCredentials credentials = getCredentials(serverUrl, repositoryUsername, repositoryPassword);
@@ -88,20 +87,19 @@ public abstract class BaseCMISMacro extends BaseMacro {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
     }
+
     @SuppressWarnings("unchecked")
-    private String getServerUrl(String serverName) {
+    private String getServerUrl(String servername) {
         Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
                                         ConfigureCMISPluginAction.CREDENTIALS_KEY);
         if (credsMap == null) {
             return null;
         }
-        for (String servername : credsMap.keySet()) {
-            if (servername.equals(serverName)) {
-                List<String> up = credsMap.get(servername);
-                return up.get(0).concat("?servername="+serverName);
-            }
-        }
-        return null;
+        List<String> up = credsMap.get(servername);
+        if (up != null)
+            return up.get(0).concat("?servername=" + serverName);
+        else
+            return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -146,10 +144,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
     public String rewriteUrl(URI url) {
         if (serverName != null)
-            return SERVLET_CMIS_PROXY + url.getPath() +"?servername=" + serverName  ;
+            return SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
         else
             return url.toString();
-        
+
     }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
