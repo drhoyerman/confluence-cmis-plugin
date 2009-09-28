@@ -29,7 +29,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     public static final String CREDENTIALS_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".credential";
     private BandanaManager bandanaManager;
     private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
-    
+
     private Map<String, List<String>> credentialsMap = new TreeMap<String, List<String>>();
     private String[] realms;
     private String[] usernames;
@@ -66,9 +66,8 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
         this.credentialsMap.put("insert server name", list);
         return SUCCESS;
     }
-    
-    public String delete()
-    {
+
+    public String delete() {
         this.credentialsMap = convertToCredentialsMap();
         if (indexToDelete < 0 || indexToDelete >= this.credentialsMap.size()) {
             addActionError(getText("invalid.index.to.delete"));
@@ -79,14 +78,14 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
         addActionMessage("Successfully deleted configuration");
         return SUCCESS;
     }
-    
+
     private Map<String, List<String>> convertToCredentialsMap() {
         return convertToCredentialsMap(-1);
     }
-    
+
     private Map<String, List<String>> convertToCredentialsMap(int indexToDelete) {
         Map<String, List<String>> map = new TreeMap<String, List<String>>();
-        for (int i = 0 ; i < servernames.length ; ++i) {
+        for (int i = 0; i < servernames.length; ++i) {
             if (i != indexToDelete && !"".equals(servernames[i].trim())) {
                 List<String> list = new ArrayList<String>();
                 list.add(realms[i]);
@@ -101,7 +100,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     public Map<String, List<String>> getCredentials() {
         return this.credentialsMap;
     }
-    
+
     public void setRealms(String[] realms) {
         this.realms = realms;
     }
@@ -113,11 +112,11 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     public void setPasswords(String[] passwords) {
         this.passwords = passwords;
     }
-    
-    public void setServernames(String[] servernames){
+
+    public void setServernames(String[] servernames) {
         this.servernames = servernames;
     }
-    
+
     public void setIndexToDelete(int indexToDelete) {
         this.indexToDelete = indexToDelete;
     }

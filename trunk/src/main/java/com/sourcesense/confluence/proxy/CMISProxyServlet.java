@@ -103,7 +103,7 @@ public class CMISProxyServlet extends HttpServlet {
     private boolean isSecure;
     private boolean followRedirects;
 
-    private Credentials credientals;
+    private Credentials credentials;
 
     private BandanaManager bandanaManager;
 
@@ -336,10 +336,10 @@ public class CMISProxyServlet extends HttpServlet {
                                     throws IOException, ServletException {
         // Create a default HttpClient
         HttpClient httpClient = new HttpClient();
-        getCrediental(httpServletRequest.getParameter("servername"));
-        if (credientals != null) {
+        getCredential(httpServletRequest.getParameter("servername"));
+        if (credentials != null) {
             httpClient.getParams().setAuthenticationPreemptive(true);
-            httpClient.getState().setCredentials(AuthScope.ANY, credientals);
+            httpClient.getState().setCredentials(AuthScope.ANY, credentials);
         }
         httpMethodProxyRequest.setFollowRedirects(true);
         // Execute the request
@@ -432,14 +432,15 @@ public class CMISProxyServlet extends HttpServlet {
     }
 
     @SuppressWarnings("unchecked")
-    private void getCrediental(String servername) {
+    private void getCredential(String servername) {
         Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
                                         ConfigureCMISPluginAction.CREDENTIALS_KEY);
         if (credsMap == null || servername == null) {
-            this.credientals = null;
+            this.credentials = null;
         }
         List<String> up = credsMap.get(servername);
-        this.credientals = new UsernamePasswordCredentials(up.get(1), up.get(2));
+        if (up != null)
+            this.credentials = new UsernamePasswordCredentials(up.get(1), up.get(2));
     }
 
     /**
