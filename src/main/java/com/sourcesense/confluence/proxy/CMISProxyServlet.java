@@ -39,6 +39,10 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 
+import com.atlassian.bandana.BandanaManager;
+import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
+import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+
 /**
  * ProxyServlet from http://edwardstx.net/wiki/attach/HttpProxyServlet/ProxyServlet.java
  * (This seems to be a derivative of Noodle -- http://noodle.tigris.org/)
@@ -99,7 +103,13 @@ public class CMISProxyServlet extends HttpServlet {
     private boolean isSecure;
     private boolean followRedirects;
 
-    private static Credentials credientals;
+    private Credentials credientals;
+
+    private BandanaManager bandanaManager;
+
+    public void setBandanaManager(BandanaManager bandanaManager) {
+        this.bandanaManager = bandanaManager;
+    }
 
     /**
      * Initialize the <code>ProxyServlet</code>
@@ -137,9 +147,6 @@ public class CMISProxyServlet extends HttpServlet {
      * @param httpServletResponse The {@link HttpServletResponse} object by which
      *                             we can send a proxied response to the client
      */
-    public static void setCredentialsProvider(String username, String password) {
-        credientals = new UsernamePasswordCredentials(username, password);
-    }
 
     public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
         // Create a GET request
@@ -329,6 +336,7 @@ public class CMISProxyServlet extends HttpServlet {
                                     throws IOException, ServletException {
         // Create a default HttpClient
         HttpClient httpClient = new HttpClient();
+        getCrediental(httpServletRequest.getParameter("servername"));
         if (credientals != null) {
             httpClient.getParams().setAuthenticationPreemptive(true);
             httpClient.getState().setCredentials(AuthScope.ANY, credientals);
@@ -421,6 +429,17 @@ public class CMISProxyServlet extends HttpServlet {
             httpServletResponse.getWriter().write(response);
         else
             httpServletResponse.getWriter().write(intProxyResponseCode);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void getCrediental(String servername) {
+        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
+                                        ConfigureCMISPluginAction.CREDENTIALS_KEY);
+        if (credsMap == null || servername == null) {
+            this.credientals = null;
+        }
+        List<String> up = credsMap.get(servername);
+        this.credientals = new UsernamePasswordCredentials(up.get(1), up.get(2));
     }
 
     /**

@@ -37,12 +37,12 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
-import com.sourcesense.confluence.proxy.CMISProxyServlet;
 
 public abstract class BaseCMISMacro extends BaseMacro {
     // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
     private static final String SERVLET_CMIS_PROXY = "http://127.0.0.1:8080/plugins/servlet/CMISProxy";
     private BandanaManager bandanaManager;
+    private String serverName;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
@@ -65,14 +65,21 @@ public abstract class BaseCMISMacro extends BaseMacro {
                 e.printStackTrace();
             }
             */
-
-            String serverUrl = (String) params.get("s");
-            String repositoryUsername = (String) params.get("u");
-            String repositoryPassword = (String) params.get("p");
+            String serverUrl;
+            String repositoryUsername = null;
+            String repositoryPassword = null;
+            serverName = (String) params.get("n");
+            if( serverName == null){
+                serverUrl = (String) params.get("s");
+                repositoryUsername = (String) params.get("u");
+                repositoryPassword = (String) params.get("p");
+            }
+            else{
+                serverUrl = getServerUrl(serverName);
+            }
             UsernamePasswordCredentials credentials = getCredentials(serverUrl, repositoryUsername, repositoryPassword);
             ContentManager cm = new APPContentManager(serverUrl);
             cm.login(credentials.getUserName(), credentials.getPassword());
-            CMISProxyServlet.setCredentialsProvider(credentials.getUserName(), credentials.getPassword());
             Repository repository = cm.getDefaultRepository();
             return doExecute(params, body, renderContext, repository);
 
@@ -80,6 +87,21 @@ public abstract class BaseCMISMacro extends BaseMacro {
             // Restore original classloader
             Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
+    }
+    @SuppressWarnings("unchecked")
+    private String getServerUrl(String serverName) {
+        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
+                                        ConfigureCMISPluginAction.CREDENTIALS_KEY);
+        if (credsMap == null) {
+            return null;
+        }
+        for (String servername : credsMap.keySet()) {
+            if (servername.equals(serverName)) {
+                List<String> up = credsMap.get(servername);
+                return up.get(0).concat("?servername="+serverName);
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -92,10 +114,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
         if (credsMap == null) {
             return null;
         }
-        for (String realm : credsMap.keySet()) {
-            if (url.startsWith(realm)) {
-                List<String> up = credsMap.get(realm);
-                return new UsernamePasswordCredentials(up.get(0), up.get(1));
+        for (String servername : credsMap.keySet()) {
+            if (url.startsWith(credsMap.get(servername).get(0))) {
+                List<String> up = credsMap.get(servername);
+                return new UsernamePasswordCredentials(up.get(1), up.get(2));
             }
         }
         return null;
@@ -123,7 +145,11 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
 
     public String rewriteUrl(URI url) {
-        return SERVLET_CMIS_PROXY + url.getPath();
+        if (serverName != null)
+            return SERVLET_CMIS_PROXY + url.getPath() +"?servername=" + serverName  ;
+        else
+            return url.toString();
+        
     }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
