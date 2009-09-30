@@ -37,6 +37,8 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 public class SearchMacro extends BaseCMISMacro {
 
     private List<String> properties;
@@ -117,13 +119,9 @@ public class SearchMacro extends BaseCMISMacro {
 
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> properties2List(String properties) {
-        List<String> result = new LinkedList<String>();
-        String[] tokens = properties.split(";");
-        for (int i = 0; i < tokens.length; i++) {
-            result.add(tokens[i]);
-        }
-        return result;
+        return Arrays.asList(properties.split(";"));
     }
 
 }
