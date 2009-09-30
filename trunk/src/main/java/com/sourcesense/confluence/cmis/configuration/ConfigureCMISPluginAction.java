@@ -16,9 +16,12 @@
 package com.sourcesense.confluence.cmis.configuration;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.apache.chemistry.Property;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.core.ConfluenceActionSupport;
@@ -27,10 +30,12 @@ import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
 
     public static final String CREDENTIALS_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".credential";
+    public static final String SEARCH_PROPERTIES_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".searchProperties";
     private BandanaManager bandanaManager;
     private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
 
     private Map<String, List<String>> credentialsMap = new TreeMap<String, List<String>>();
+    private List<String> searchProperties = new LinkedList<String>();
     private String[] realms;
     private String[] usernames;
     private String[] passwords;
@@ -44,6 +49,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     @SuppressWarnings("unchecked")
     public String input() {
         this.credentialsMap = (Map<String, List<String>>) this.bandanaManager.getValue(context, CREDENTIALS_KEY);
+        this.searchProperties = (List<String>) this.bandanaManager.getValue(context, SEARCH_PROPERTIES_KEY);
         return INPUT;
     }
 
@@ -53,6 +59,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
         }
         this.credentialsMap = convertToCredentialsMap();
         this.bandanaManager.setValue(context, CREDENTIALS_KEY, this.credentialsMap);
+        this.bandanaManager.setValue(context, SEARCH_PROPERTIES_KEY, this.searchProperties);
         addActionMessage("Successfully saved configuration");
         return SUCCESS;
     }
@@ -101,6 +108,10 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
         return this.credentialsMap;
     }
 
+    public List<String> getProperties() {
+        return this.searchProperties;
+    }
+
     public void setRealms(String[] realms) {
         this.realms = realms;
     }
@@ -120,4 +131,37 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     public void setIndexToDelete(int indexToDelete) {
         this.indexToDelete = indexToDelete;
     }
+
+    public void setName(String name) {
+        this.searchProperties.add(Property.NAME);
+    }
+
+    public void setObjectId(String objectId) {
+        this.searchProperties.add(Property.ID);
+    }
+
+    public void setObjectTypeId(String objectTypeId) {
+        this.searchProperties.add(Property.TYPE_ID);
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.searchProperties.add(Property.CREATED_BY);
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.searchProperties.add(Property.CREATION_DATE);
+    }
+
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.searchProperties.add(Property.LAST_MODIFIED_BY);
+    }
+
+    public void setLastModificationDate(String lastModificationDate) {
+        this.searchProperties.add(Property.LAST_MODIFICATION_DATE);
+    }
+
+    public void setIsLatestVersion(String isLatestVersion) {
+        this.searchProperties.add(Property.IS_LATEST_VERSION);
+    }
+
 }

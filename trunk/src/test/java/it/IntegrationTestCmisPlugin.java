@@ -82,6 +82,7 @@ public class IntegrationTestCmisPlugin extends TestCase {
         params.put("s", CMIS_REPOSITORY_URL);
         params.put("u", USERNAME);
         params.put("p", USERNAME);
+        params.put("properties", "ObjectId;Name");
         String result = macro.execute(params, "SELECT * FROM document", null);
 
         System.out.println(result);
@@ -138,8 +139,11 @@ public class IntegrationTestCmisPlugin extends TestCase {
         creds.add("admin");
         creds.add("admin");
         credsMap.put(realm, creds);
-
+        List<String> properties = new LinkedList<String>();
+        properties.add("Name");
+        properties.add("Name");
         bandanaManager.setValue(null, ConfigureCMISPluginAction.CREDENTIALS_KEY, credsMap);
+        bandanaManager.setValue(null, ConfigureCMISPluginAction.SEARCH_PROPERTIES_KEY, properties);
     }
 
     private String getNumericId(String id) {

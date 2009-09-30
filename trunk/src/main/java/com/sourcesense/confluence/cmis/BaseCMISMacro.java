@@ -41,7 +41,7 @@ import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 public abstract class BaseCMISMacro extends BaseMacro {
     // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
     private static final String SERVLET_CMIS_PROXY = "http://127.0.0.1:8080/plugins/servlet/CMISProxy";
-    private BandanaManager bandanaManager;
+    protected BandanaManager bandanaManager;
     private String serverName;
 
     public void setBandanaManager(BandanaManager bandanaManager) {

@@ -19,20 +19,27 @@ import java.net.URI;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
+import org.apache.chemistry.PropertyType;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 
+import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 
 public class SearchMacro extends BaseCMISMacro {
+
+    private List<String> properties;
 
     public boolean isInline() {
         return false;
@@ -50,12 +57,16 @@ public class SearchMacro extends BaseCMISMacro {
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
         Collection<ObjectEntry> res = spi.query(body, false, false, false, 100, 0, new boolean[1]);
+        getProperties(params);
         return renderFeed(res, conn);
     }
 
     private String renderFeed(Collection<ObjectEntry> res, Connection conn) {
         StringBuilder out = new StringBuilder();
-        out.append("||Title||Updated||\n");
+        out.append("||Title||Updated||");
+        for (String property : this.properties)
+            out.append(property + "||");
+        out.append("\n");
         for (ObjectEntry oe : res) {
             CMISObject entry = conn.getObject(oe, null);
             out.append("|");
@@ -77,9 +88,42 @@ public class SearchMacro extends BaseCMISMacro {
             } else {
                 out.append(" ");
             }
-            out.append("|\n");
+            out.append("|");
+            for (String property : properties) {
+                Property prop = entry.getProperty(property);
+                String value = " ";
+                if (prop != null)
+                    if (PropertyType.BOOLEAN.equals(prop.getDefinition().getType())) {
+                        value = Boolean.TRUE.equals(prop.getValue()) ? "(/)" : "(x)";
+                    } else if (PropertyType.URI.equals(prop.getDefinition().getType())) {
+                        value = "[LINK|" + prop.getValue() + "]";
+                    } else if (prop.getValue() != null) {
+                        value = prop.getValue().toString();
+                    }
+                out.append(value + "|");
+            }
+            out.append("\n");
         }
         return out.toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void getProperties(Map<String, String> params) {
+        String properties = params.get("properties");
+        if (properties == null)
+            this.properties = (List<String>) this.bandanaManager.getValue(new ConfluenceBandanaContext(), ConfigureCMISPluginAction.SEARCH_PROPERTIES_KEY);
+        else
+            this.properties = properties2List(properties);
+
+    }
+
+    private List<String> properties2List(String properties) {
+        List<String> result = new LinkedList<String>();
+        String[] tokens = properties.split(";");
+        for (int i = 0; i < tokens.length; i++) {
+            result.add(tokens[i]);
+        }
+        return result;
     }
 
 }
