@@ -8,7 +8,7 @@
         <table class="grid" width="80%">
             <tr>
                 <td>
-                    <form name="configuration" action="save.action" method="POST">
+                    <form name="configuration" action="save.action" method="GET">
                         <table width="60%">
                             <tr>
                             	<th>ServerName</th>
@@ -54,6 +54,36 @@
 	                            </tr>
 	                        #end
                             <tr><td colspan="4" align="right"><input type="submit" value="$action.getText("cmis.config.button.add")" onclick="forms.configuration.action='add.action';"></td></tr>
+                        </table>
+                        
+                        <table>
+                        	<th>Search configuration</th>
+                        		<tr>
+                        			<td>
+                        				Name <input name="name" id="name" type="checkbox" #if ($properties.contains("Name")) checked #end />
+                        			</td>
+                        			<td>
+                        				ObjectId <input name="objectId" id="objectId" type="checkbox"#if ($properties.contains("ObjectId")) checked #end/>
+                        			</td>
+                        			<td>
+                        				ObjectTypeId <input name="objectTypeId" id="objectTypeId" type="checkbox"#if ($properties.contains("ObjectTypeId")) checked #end/>
+                        			</td>
+                        			<td>
+                        				CreatedBy <input name="createdBy" id="createdBy" type="checkbox"#if ($properties.contains("CreatedBy")) checked #end/>
+                        			</td>
+                        			<td>
+                        				CreationDate <input name="creationDate" id="creationDate" type="checkbox"#if ($properties.contains("CreationDate")) checked #end/>
+                        			</td>
+                        			<td>
+                        				LastModifiedBy <input name="lastModifiedBy" id="lastModifiedBy" type="checkbox"#if ($properties.contains("LastModifiedBy")) checked #end/>
+                        			</td>
+                        			<td>
+                        				LastModificationDate <input name="lastModificationDate" id="lastModificationDate" type="checkbox"#if ($properties.contains("LastModificationDate")) checked #end/>
+                        			</td>
+                        			<td>
+                        				IsLatestVersion <input name="isLatestVersion" id="isLatestVersion" type="checkbox"#if ($properties.contains("IsLatestVersion")) checked #end/>
+                        			</td>
+                        		</tr>
                         </table>
                         <input type="hidden" name="indexToDelete" value="-1">
                         <input type="submit" value="Save">
