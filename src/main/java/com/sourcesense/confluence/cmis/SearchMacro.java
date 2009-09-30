@@ -17,6 +17,7 @@ package com.sourcesense.confluence.cmis;
 
 import java.net.URI;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,8 +37,6 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class SearchMacro extends BaseCMISMacro {
 
@@ -115,13 +114,7 @@ public class SearchMacro extends BaseCMISMacro {
         if (properties == null)
             this.properties = (List<String>) this.bandanaManager.getValue(new ConfluenceBandanaContext(), ConfigureCMISPluginAction.SEARCH_PROPERTIES_KEY);
         else
-            this.properties = properties2List(properties);
-
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<String> properties2List(String properties) {
-        return Arrays.asList(properties.split(";"));
+            this.properties = Arrays.asList(properties.split(";"));
     }
 
 }
