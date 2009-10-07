@@ -40,13 +40,22 @@
         <description>Displays properties of a CMIS document.</description>
     </macro>
     
-    <servlet name="Proxy Link" key="proxy-link" class="com.sourcesense.confluence.proxy.CMISProxyServlet">
+    <macro name='cmis-navigation' class='com.sourcesense.confluence.cmis.NavigationMacro' key='cmis-navigation-macro'>
+        <description>Provides a simple navigation's tool.</description>
+    </macro>
+    
+    <servlet name="Proxy Link" key="proxy-link" class="com.sourcesense.confluence.servlets.CMISProxyServlet">
  		<description>A servlet version of the proxy CMIS.</description> 
   		<url-pattern>/CMISProxy/*</url-pattern>
   		<init-param>       
 			<param-name>proxyHost</param-name>        
 			<param-value>192.168.1.2:8080</param-value> 
 		</init-param> 
+ 	</servlet>
+
+    <servlet name="CMIS Navigation" key="cmis-navigation" class="com.sourcesense.confluence.servlets.CMISNavigationServlet">
+ 		<description>A servlet version of the proxy CMIS.</description> 
+  		<url-pattern>/CMISNavigation/*</url-pattern>
  	</servlet>
  	  
 	<xwork name="Configure CMIS plugin" key="configure-cmis">

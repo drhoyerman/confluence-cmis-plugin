@@ -34,6 +34,7 @@ import com.atlassian.bandana.BandanaManager;
 import com.sourcesense.confluence.cmis.DocinfoMacro;
 import com.sourcesense.confluence.cmis.DoclinkMacro;
 import com.sourcesense.confluence.cmis.EmbedMacro;
+import com.sourcesense.confluence.cmis.NavigationMacro;
 import com.sourcesense.confluence.cmis.SearchMacro;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 
@@ -74,6 +75,19 @@ public class IntegrationTestCmisPlugin extends TestCase {
         PASSWORD = password;
     }
 
+    public void testNavigation() throws Exception {
+        initConfiguration();
+        NavigationMacro macro = new NavigationMacro();
+        macro.setBandanaManager(bandanaManager);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("s", "http://127.0.0.1:8080/plugins/servlet/CMISNavigation/a");
+        params.put("n", "AlfrescoLocal");
+        params.put("id", "workspace://SpacesStore/18574fd2-f42a-4a98-b1c7-416663462d48");
+        String result = macro.execute(params, null, null);
+
+        System.out.println(result);
+    }
+
     public void testSearch() throws Exception {
         initConfiguration();
         SearchMacro macro = new SearchMacro();
@@ -82,7 +96,6 @@ public class IntegrationTestCmisPlugin extends TestCase {
         params.put("s", CMIS_REPOSITORY_URL);
         params.put("u", USERNAME);
         params.put("p", USERNAME);
-        params.put("properties", "ObjectId;Name");
         String result = macro.execute(params, "SELECT * FROM document", null);
 
         System.out.println(result);
@@ -133,15 +146,16 @@ public class IntegrationTestCmisPlugin extends TestCase {
     }
 
     private void initConfiguration() {
-        String realm = "http://192.168.1.2:8080/alfresco/";
+        String realm = "http://127.0.0.1:777/alfresco/service/api/cmis";
         Map<String, List<String>> credsMap = new HashMap<String, List<String>>();
         List<String> creds = new LinkedList<String>();
+        creds.add(realm);
         creds.add("admin");
         creds.add("admin");
-        credsMap.put(realm, creds);
+        credsMap.put("AlfrescoLocal", creds);
         List<String> properties = new LinkedList<String>();
         properties.add("Name");
-        properties.add("Name");
+        properties.add("IsLatestVersion");
         bandanaManager.setValue(null, ConfigureCMISPluginAction.CREDENTIALS_KEY, credsMap);
         bandanaManager.setValue(null, ConfigureCMISPluginAction.SEARCH_PROPERTIES_KEY, properties);
     }

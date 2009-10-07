@@ -26,6 +26,8 @@ import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
+import com.sourcesense.confluence.servlets.CMISNavigationServlet;
+
 /**
  * Tests the AtomPub client with the AtomPub server.
  */
@@ -129,6 +131,10 @@ public class ChemistryRepositoryIntegrationTest extends IntegrationTestCmisPlugi
             ServletHolder servletHolder = new ServletHolder(servlet);
             Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
             context.addServlet(servletHolder, "/*");
+            Servlet navigationServlet = new CMISNavigationServlet();
+            ServletHolder servletHolders = new ServletHolder(navigationServlet);
+            Context contexts = new Context(server, "/navigation", Context.SESSIONS);
+            contexts.addServlet(servletHolders, "/*");
             initTest("http://127.0.0.1:8285/cmis/repository", "admin", "admin");
             server.start();
         } catch (Exception e) {
