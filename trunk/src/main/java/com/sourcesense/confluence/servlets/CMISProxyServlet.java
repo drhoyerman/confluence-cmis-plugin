@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -54,6 +56,8 @@ public class CMISProxyServlet extends HttpServlet {
 
     private static final int FOUR_KB = 4196;
 
+    public static final String SERVLET_CMIS_PROXY = "/plugins/servlet/CMISProxy";
+
     /**
      * Serialization UID.
      */
@@ -100,7 +104,6 @@ public class CMISProxyServlet extends HttpServlet {
      * The maximum size for uploaded files in bytes. Default value is 5MB.
      */
     private int intMaxFileUploadSize = 5 * 1024 * 1024;
-    private boolean isSecure;
     private boolean followRedirects;
 
     private Credentials credentials;
@@ -109,34 +112,6 @@ public class CMISProxyServlet extends HttpServlet {
 
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
-    }
-
-    /**
-     * Initialize the <code>ProxyServlet</code>
-     * @param servletConfig The Servlet configuration passed in by the servlet container
-     */
-    public void init(ServletConfig servletConfig) {
-        // Get the proxy host
-        String stringProxyHostNew = servletConfig.getInitParameter("proxyHost");
-        if (stringProxyHostNew == null || stringProxyHostNew.length() == 0) {
-            throw new IllegalArgumentException("Proxy host not set, please set init-param 'proxyHost' in web.xml");
-        }
-        this.setProxyHost(stringProxyHostNew);
-        // Get the proxy port if specified
-        String stringProxyPortNew = servletConfig.getInitParameter("proxyPort");
-        if (stringProxyPortNew != null && stringProxyPortNew.length() > 0) {
-            this.setProxyPort(Integer.parseInt(stringProxyPortNew));
-        }
-        // Get the proxy path if specified
-        String stringProxyPathNew = servletConfig.getInitParameter("proxyPath");
-        if (stringProxyPathNew != null && stringProxyPathNew.length() > 0) {
-            this.setProxyPath(stringProxyPathNew);
-        }
-        // Get the maximum file upload size if specified
-        String stringMaxFileUploadSize = servletConfig.getInitParameter("maxFileUploadSize");
-        if (stringMaxFileUploadSize != null && stringMaxFileUploadSize.length() > 0) {
-            this.setMaxFileUploadSize(Integer.parseInt(stringMaxFileUploadSize));
-        }
     }
 
     /**
@@ -151,7 +126,6 @@ public class CMISProxyServlet extends HttpServlet {
     public void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
         // Create a GET request
         String destinationUrl = this.getProxyURL(httpServletRequest);
-        debug("GET Request URL: " + httpServletRequest.getRequestURL(), "Destination URL: " + destinationUrl);
         GetMethod getMethodProxyRequest = new GetMethod(destinationUrl);
         // Forward the request headers
         setProxyRequestHeaders(httpServletRequest, getMethodProxyRequest);
@@ -424,7 +398,6 @@ public class CMISProxyServlet extends HttpServlet {
         }
 
         // Send the content to the client
-        debug("Received status code: " + intProxyResponseCode, "Response: " + response);
         if (intProxyResponseCode == 200)
             httpServletResponse.getWriter().write(response);
         else
@@ -551,14 +524,13 @@ public class CMISProxyServlet extends HttpServlet {
 
     // Accessors
     private String getProxyURL(HttpServletRequest httpServletRequest) {
-        // Set the protocol to HTTP
         String stringProxyURL = this.getProxyHostAndPort(httpServletRequest);
 
         // simply use whatever servlet path that was part of the request as opposed to getting a preset/configurable proxy path
         if (!removePrefix) {
             stringProxyURL += httpServletRequest.getServletPath();
         }
-        //stringProxyURL += "/";
+        stringProxyURL += "/";
 
         // Handle the path given to the servlet
         String pathInfo = httpServletRequest.getPathInfo();
@@ -579,7 +551,7 @@ public class CMISProxyServlet extends HttpServlet {
     }
 
     private String getProxyHostAndPort(HttpServletRequest httpServletRequest) {
-            return this.getProxyHost(httpServletRequest);
+        return this.getProxyHost(httpServletRequest);
     }
 
     protected String getProxyHost(HttpServletRequest httpServletRequest) {
@@ -587,14 +559,27 @@ public class CMISProxyServlet extends HttpServlet {
         if (serverName != null) {
             List<String> up = getConfigurationList(serverName);
             if (up != null) {
-                return up.get(0);
+                if (httpServletRequest.getPathInfo() == null || httpServletRequest.getPathInfo().equals("/")) {
+                    return up.get(0);
+                } else {
+                    try {
+                        URI uri = new URI(up.get(0));
+                        if (uri.getPort() != -1) {
+                            return uri.getScheme() + "://" + uri.getHost() + ":" + uri.getPort();
+                        } else
+                            return uri.getScheme() + uri.getHost();
+
+                    } catch (URISyntaxException e) {
+
+                        e.printStackTrace();
+                    }
+                }
+
             }
-        } else {
-            return httpServletRequest.getParameter("s");
         }
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<String> getConfigurationList(String servername) {
         Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
@@ -604,16 +589,13 @@ public class CMISProxyServlet extends HttpServlet {
         }
         return credsMap.get(servername);
     }
+
     protected void setProxyHost(String stringProxyHostNew) {
         this.stringProxyHost = stringProxyHostNew;
     }
 
     protected int getProxyPort() {
         return this.intProxyPort;
-    }
-
-    protected void setSecure(boolean secure) {
-        this.isSecure = secure;
     }
 
     protected void setFollowRedirects(boolean followRedirects) {
