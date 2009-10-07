@@ -20,7 +20,6 @@ import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -111,10 +110,11 @@ public class SearchMacro extends BaseCMISMacro {
     @SuppressWarnings("unchecked")
     private void getProperties(Map<String, String> params) {
         String properties = params.get("properties");
-        if (properties == null)
+        if (properties == null) {
             this.properties = (List<String>) this.bandanaManager.getValue(new ConfluenceBandanaContext(), ConfigureCMISPluginAction.SEARCH_PROPERTIES_KEY);
-        else
+        } else {
             this.properties = Arrays.asList(properties.split(";"));
+        }
     }
 
 }

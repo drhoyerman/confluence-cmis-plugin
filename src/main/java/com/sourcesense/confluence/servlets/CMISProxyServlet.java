@@ -1,4 +1,4 @@
-package com.sourcesense.confluence.proxy;
+package com.sourcesense.confluence.servlets;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -378,7 +378,7 @@ public class CMISProxyServlet extends HttpServlet {
                     //debug("redirecting: setting cookie: " + cookie.getName() + ":" + cookie.getValue() + " on " + cookie.getPath());
                     httpServletResponse.addCookie(cookie);
                 }
-                httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort() + this.getProxyPath(), stringMyHostName));
+                httpServletResponse.sendRedirect(stringLocation.replace(getProxyHostAndPort(httpServletRequest) + this.getProxyPath(), stringMyHostName));
                 return;
             }
         } else if (intProxyResponseCode == HttpServletResponse.SC_NOT_MODIFIED) {
@@ -517,7 +517,7 @@ public class CMISProxyServlet extends HttpServlet {
                 // rewrite the Host header to ensure that we get content from
                 // the correct virtual server
                 if (stringHeaderName.equalsIgnoreCase(STRING_HOST_HEADER_NAME)) {
-                    stringHeaderValue = getProxyHostAndPort();
+                    stringHeaderValue = getProxyHostAndPort(httpServletRequest);
                 }
                 Header header = new Header(stringHeaderName, stringHeaderValue);
                 // Set the same header on the proxy request
@@ -552,14 +552,13 @@ public class CMISProxyServlet extends HttpServlet {
     // Accessors
     private String getProxyURL(HttpServletRequest httpServletRequest) {
         // Set the protocol to HTTP
-        String protocol = (isSecure) ? "https://" : "http://";
-        String stringProxyURL = protocol + this.getProxyHostAndPort();
+        String stringProxyURL = this.getProxyHostAndPort(httpServletRequest);
 
         // simply use whatever servlet path that was part of the request as opposed to getting a preset/configurable proxy path
         if (!removePrefix) {
             stringProxyURL += httpServletRequest.getServletPath();
         }
-        stringProxyURL += "/";
+        //stringProxyURL += "/";
 
         // Handle the path given to the servlet
         String pathInfo = httpServletRequest.getPathInfo();
@@ -573,24 +572,38 @@ public class CMISProxyServlet extends HttpServlet {
         }
         // Handle the query string
         if (httpServletRequest.getQueryString() != null) {
-            stringProxyURL += "?" + httpServletRequest.getQueryString();
+            //stringProxyURL += "?" + httpServletRequest.getQueryString();
         }
 
         return stringProxyURL;
     }
 
-    private String getProxyHostAndPort() {
-        if (this.getProxyPort() == 80) {
-            return this.getProxyHost();
+    private String getProxyHostAndPort(HttpServletRequest httpServletRequest) {
+            return this.getProxyHost(httpServletRequest);
+    }
+
+    protected String getProxyHost(HttpServletRequest httpServletRequest) {
+        String serverName = httpServletRequest.getParameter("servername");
+        if (serverName != null) {
+            List<String> up = getConfigurationList(serverName);
+            if (up != null) {
+                return up.get(0);
+            }
         } else {
-            return this.getProxyHost() + ":" + this.getProxyPort();
+            return httpServletRequest.getParameter("s");
         }
+        return null;
     }
-
-    protected String getProxyHost() {
-        return this.stringProxyHost;
+    
+    @SuppressWarnings("unchecked")
+    private List<String> getConfigurationList(String servername) {
+        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
+                                        ConfigureCMISPluginAction.CREDENTIALS_KEY);
+        if (credsMap == null || servername == null) {
+            return null;
+        }
+        return credsMap.get(servername);
     }
-
     protected void setProxyHost(String stringProxyHostNew) {
         this.stringProxyHost = stringProxyHostNew;
     }

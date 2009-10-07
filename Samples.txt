@@ -17,4 +17,4 @@ SELECT * FROM document
 s=http://192.168.1.2:8080/alfresco/service/api/cmis|u=admin|p=admin|id=docid}
 
 Con Proxy
-{cmis:doclink|s=servername:id=docId}
+{cmis-doclink:n=servername|id=docId}
