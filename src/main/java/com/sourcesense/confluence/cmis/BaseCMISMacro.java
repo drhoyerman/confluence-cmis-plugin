@@ -33,15 +33,18 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
+import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.spring.container.ContainerManager;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.servlets.CMISProxyServlet;
 
 public abstract class BaseCMISMacro extends BaseMacro {
     // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
-    private static final String SERVLET_CMIS_PROXY = "http://127.0.0.1:8080/plugins/servlet/CMISProxy";
     protected BandanaManager bandanaManager;
+    private SettingsManager settingsManager;
     private String serverName;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
@@ -64,7 +67,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            */
+             */
             String serverUrl;
             String repositoryUsername = null;
             String repositoryPassword = null;
@@ -97,7 +100,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
         }
         List<String> up = credsMap.get(servername);
         if (up != null)
-            return up.get(0).concat("?servername=" + serverName);
+            return up.get(0);
         else
             return null;
     }
@@ -143,11 +146,19 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
 
     public String rewriteUrl(URI url) {
-        if (serverName != null)
-            return SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
-        else
+
+        if (serverName != null) {
+            String baseUrl = getBaseUrl();
+            return baseUrl + CMISProxyServlet.SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
+        } else
             return url.toString();
 
+    }
+
+    private String getBaseUrl() {
+        settingsManager = (SettingsManager) ContainerManager.getComponent("settingsManager");
+        String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
+        return baseUrl;
     }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
