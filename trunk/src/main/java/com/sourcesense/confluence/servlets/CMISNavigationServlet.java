@@ -25,6 +25,8 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
+import com.atlassian.confluence.setup.settings.SettingsManager;
+import com.atlassian.spring.container.ContainerManager;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 
 public class CMISNavigationServlet extends HttpServlet {
@@ -35,6 +37,7 @@ public class CMISNavigationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private BandanaManager bandanaManager;
+    private SettingsManager settingsManager;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
@@ -68,12 +71,19 @@ public class CMISNavigationServlet extends HttpServlet {
                                                 + "');\"> <img src=\"http://icons.iconarchive.com/icons/mart/glaze/folder-yellow-open-icon.jpg\" \\>"
                                                 + object.getName() + "</p>");
             } else if (object.getType().getBaseType().equals(BaseType.DOCUMENT)) {
-                //TODO inserire la serlvet.
-                result.append("<a href=\"http:\\" + req.getLocalName() + ":" + req.getLocalPort() + object.getURI(Property.CONTENT_STREAM_URI)
-                                                + "\" target=\"_blank\">" + object.getName());
+                String href = "<a href=\""+ getBaseUrl();
+                href+= CMISProxyServlet.SERVLET_CMIS_PROXY;
+                href+= object.getURI(Property.CONTENT_STREAM_URI).getPath() + "?servername="+serverName+ "\" target=\"_blank\">";
+                result.append(href + object.getName());
             }
         }
         resp.getWriter().write(result.toString());
+    }
+    
+    private String getBaseUrl() {
+        settingsManager = (SettingsManager) ContainerManager.getComponent("settingsManager");
+        String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
+        return baseUrl;
     }
 
     private UsernamePasswordCredentials getCredentials(String servername) {
@@ -101,8 +111,6 @@ public class CMISNavigationServlet extends HttpServlet {
             if (up != null) {
                 return up.get(0);
             }
-        } else {
-            return req.getParameter("s");
         }
         return null;
     }

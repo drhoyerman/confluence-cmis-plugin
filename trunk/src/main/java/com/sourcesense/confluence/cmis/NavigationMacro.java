@@ -23,7 +23,7 @@ public class NavigationMacro extends BaseCMISMacro {
     @Override
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) {
         HttpClient client = new HttpClient();
-        String servletUrl = params.get("s");
+        String servletUrl = params.get("servlet");
         String id = params.get("id");
         String servername = params.get("n");
         if (id == null) {
@@ -34,9 +34,9 @@ public class NavigationMacro extends BaseCMISMacro {
             client.executeMethod(method);
             VelocityContext context = new VelocityContext(MacroUtils.defaultVelocityContext());
             context.put(SERVLET_OUTPUT, new String(method.getResponseBody()));
-            context.put("s", params.get("s"));
-            context.put("id", params.get("id"));
-            context.put("n", params.get("n"));
+            context.put("s", servletUrl);
+            context.put("id", id);
+            context.put("n", servername);
             return VelocityUtils.getRenderedTemplate(TEMPLATE_NAME, context);
         } catch (HttpException e) {
             System.err.println("Fatal protocol violation: " + e.getMessage());
