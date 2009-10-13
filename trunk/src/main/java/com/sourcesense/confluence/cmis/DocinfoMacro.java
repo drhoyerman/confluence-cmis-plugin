@@ -17,6 +17,7 @@ package com.sourcesense.confluence.cmis;
 
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Connection;
 import org.apache.chemistry.Property;
@@ -44,7 +45,7 @@ public class DocinfoMacro extends BaseCMISMacro {
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         String id = (String) params.get("id");
         Connection conn = repository.getConnection(null);
-        CMISObject obj = conn.getObject(getEntryViaID(repository, id), null);
+        CMISObject obj = conn.getObject(getEntryViaID(repository, id, BaseType.DOCUMENT), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }

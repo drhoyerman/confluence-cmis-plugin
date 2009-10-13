@@ -133,8 +133,8 @@ public abstract class BaseCMISMacro extends BaseMacro {
      * @param id The object's ID.
      * @return The object with the given ID, if it exists, otherwise null.
      */
-    protected ObjectEntry getEntryViaID(Repository repository, String id) {
-        Type t = repository.getType(BaseType.DOCUMENT.toString());
+    protected ObjectEntry getEntryViaID(Repository repository, String id, BaseType type) {
+        Type t = repository.getType(type.toString());
         String cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName() + " WHERE ObjectId = '" + id + "'"; //cmis:document is the actual (0.62Spec) common query name
         Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();

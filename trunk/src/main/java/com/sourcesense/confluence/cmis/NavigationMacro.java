@@ -17,8 +17,13 @@ import com.atlassian.renderer.v2.RenderMode;
 
 public class NavigationMacro extends BaseCMISMacro {
 
-    private static final String TEMPLATE_NAME = "/templates/cmis/cmis-navigation.vm";
+    private static final String TEMPLATE_NAME = "http://127.0.0.1:8285/templates/cmis/cmis-navigation.vm";
     private static final String SERVLET_OUTPUT = "servletOutput";
+    private VelocityContext context = null;
+
+    public void setContext(VelocityContext context) {
+        this.context = context;
+    }
 
     @Override
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) {
@@ -32,7 +37,9 @@ public class NavigationMacro extends BaseCMISMacro {
         HttpMethod method = new GetMethod(servletUrl + "?id=" + id + "&servername=" + servername);
         try {
             client.executeMethod(method);
-            VelocityContext context = new VelocityContext(MacroUtils.defaultVelocityContext());
+            if (context == null) {
+                context = new VelocityContext(MacroUtils.defaultVelocityContext());
+            }
             context.put(SERVLET_OUTPUT, new String(method.getResponseBody()));
             context.put("s", servletUrl);
             context.put("id", id);
