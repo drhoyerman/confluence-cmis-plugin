@@ -44,6 +44,10 @@
         <description>Provides a simple navigation's tool.</description>
     </macro>
     
+    <macro name='cmis-attachments' class='com.sourcesense.confluence.cmis.AttachmentsMacro' key='cmis-attachments-macro'>
+        <description>Provides a simple attachments viewer.</description>
+    </macro>
+    
     <servlet name="Proxy Link" key="proxy-link" class="com.sourcesense.confluence.servlets.CMISProxyServlet">
  		<description>A servlet version of the proxy CMIS.</description> 
   		<url-pattern>/CMISProxy/*</url-pattern>

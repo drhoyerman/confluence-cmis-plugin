@@ -18,3 +18,7 @@ s=http://192.168.1.2:8080/alfresco/service/api/cmis|u=admin|p=admin|id=docid}
 
 Con Proxy
 {cmis-doclink:n=servername|id=docId}
+
+{cmis-search:n=AlfrescoLocal|properties=ObjectId;Name|}
+SELECT * FROM document
+{cmis-search}
