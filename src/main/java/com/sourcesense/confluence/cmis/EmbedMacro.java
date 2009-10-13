@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.Document;
 import org.apache.chemistry.Repository;
@@ -46,7 +47,7 @@ public class EmbedMacro extends BaseCMISMacro {
         String id = (String) params.get("id");
         String nf = (String) params.get("nf");
         boolean noformat = nf != null && nf.startsWith("y");
-        CMISObject obj = repository.getConnection(null).getObject(getEntryViaID(repository, id), null);
+        CMISObject obj = repository.getConnection(null).getObject(getEntryViaID(repository, id, BaseType.DOCUMENT), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }
