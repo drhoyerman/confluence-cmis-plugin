@@ -14,7 +14,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import javax.servlet.ServletConfig;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;

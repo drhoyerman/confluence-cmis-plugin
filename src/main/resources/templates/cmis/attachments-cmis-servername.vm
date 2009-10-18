@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<title>$action.getText("cmis.attachments.title")</title>
+	</head>
+	<body>
+  	 	#parse ( "/template/includes/actionmessages.vm" )
+		#parse ( "/template/includes/actionerrors.vm" )
+                    <form name="input" action="input.action" method="GET">
+                    	<input type="text" name="servername" size="50" value="Insert Server Name">
+                    	<input type="submit" value="$action.getText("cmis.attachments.button.go")" onclick="forms.input.action='folder.action';">
+                    </form>
+    </body>
+</html>                  
