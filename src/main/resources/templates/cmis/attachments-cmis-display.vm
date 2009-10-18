@@ -13,10 +13,12 @@
                          <th>Nome</th>
                        </tr>
                        #if ($output.size() > 0)
-							#foreach ($name in $output)		
+							#foreach ($name in $output)
+									<tr>		
 	                                	<td>
 	                                		$name
 	                                	<td>
+	                                </tr>
 	                            #end
 	                        #else
 	                            <td> no attachments foud </td>

@@ -40,13 +40,17 @@ public class AttachmentsAction extends ConfluenceActionSupport {
         return INPUT;
     }
 
-    @SuppressWarnings("unchecked")
+   
     public String folder() {
+        getRepository();
+        this.folders = getAllRepositoryFolder();
+        return INPUT;
+    }
+    @SuppressWarnings("unchecked")
+    private void getRepository() {
         List<String> repositoryList = ((Map<String, List<String>>) this.bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY))
                                         .get(servername);
         this.repository = Utils.getRepository(repositoryList.get(0), repositoryList.get(1), repositoryList.get(2));
-        this.folders = getAllRepositoryFolder();
-        return INPUT;
     }
 
     private Map<String, String> getAllRepositoryFolder() {
