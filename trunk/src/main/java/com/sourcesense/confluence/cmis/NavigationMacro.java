@@ -17,7 +17,7 @@ import com.atlassian.renderer.v2.RenderMode;
 
 public class NavigationMacro extends BaseCMISMacro {
 
-    private static final String TEMPLATE_NAME = "http://127.0.0.1:8285/templates/cmis/cmis-navigation.vm";
+    private static final String TEMPLATE_NAME = "/templates/cmis/cmis-navigation.vm";
     private static final String SERVLET_OUTPUT = "servletOutput";
     private VelocityContext context = null;
 

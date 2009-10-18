@@ -57,7 +57,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
-import com.sourcesense.confluence.cmis.AttachmentsMacro;
+import com.sourcesense.confluence.cmis.AttachmentsAction;
 import com.sourcesense.confluence.cmis.DocinfoMacro;
 import com.sourcesense.confluence.cmis.DoclinkMacro;
 import com.sourcesense.confluence.cmis.EmbedMacro;
@@ -246,19 +246,6 @@ public class IntegrationTestCmisPlugin extends TestCase {
         params.put("p", "admin");
         String result = macro.execute(params, null, null);
         assertTrue(result.contains("folder 1"));
-        System.out.println(result);
-    }
-    
-    public void testAttachments() throws Exception {
-        AttachmentsMacro macro = new AttachmentsMacro();
-        macro.setBandanaManager(bandanaManager);
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("s", CMIS_REPOSITORY_URL);
-        params.put("u", USERNAME);
-        params.put("p", USERNAME);
-        params.put("id", getObjectId(params.get("s"), params.get("u"), params.get("p"), BaseType.FOLDER, null));
-        String result = macro.execute(params, null, null);
-
         System.out.println(result);
     }
     

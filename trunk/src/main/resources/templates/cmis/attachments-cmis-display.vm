@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>$action.getText("cmis.attachments.title")</title>
+	</head>
+	<body>
+  	 	#parse ( "/template/includes/actionmessages.vm" )
+		#parse ( "/template/includes/actionerrors.vm" )
+        <table class="grid" width="80%">
+            <tr>
+                <td>
+                    <table width="60%">
+                       <tr>
+                         <th>Nome</th>
+                       </tr>
+                       #if ($output.size() > 0)
+							#foreach ($name in $output)		
+	                                	<td>
+	                                		$name
+	                                	<td>
+	                            #end
+	                        #else
+	                            <td> no attachments foud </td>
+	                        #end
+                        </table>
+		#parse ( "/admin/admin-breadcrumbs.vm" )
+	</body>
+</html>

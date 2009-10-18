@@ -33,18 +33,16 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
-import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.atlassian.spring.container.ContainerManager;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.cmis.utils.Utils;
 import com.sourcesense.confluence.servlets.CMISProxyServlet;
 
 public abstract class BaseCMISMacro extends BaseMacro {
     // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
     protected BandanaManager bandanaManager;
-    private SettingsManager settingsManager;
     private String serverName;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
@@ -146,19 +144,11 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
 
     public String rewriteUrl(URI url) {
-
         if (serverName != null) {
-            String baseUrl = getBaseUrl();
+            String baseUrl = Utils.getBaseUrl();
             return baseUrl + CMISProxyServlet.SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
         } else
             return url.toString();
-
-    }
-
-    private String getBaseUrl() {
-        settingsManager = (SettingsManager) ContainerManager.getComponent("settingsManager");
-        String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
-        return baseUrl;
     }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
