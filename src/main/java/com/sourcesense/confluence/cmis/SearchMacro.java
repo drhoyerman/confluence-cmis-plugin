@@ -36,6 +36,7 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.cmis.utils.Utils;
 
 public class SearchMacro extends BaseCMISMacro {
 
@@ -75,7 +76,7 @@ public class SearchMacro extends BaseCMISMacro {
                 out.append("[");
                 out.append(entry.getName());
                 out.append("|");
-                out.append(rewriteUrl(url));
+                out.append(Utils.rewriteUrl(url, serverName));
                 out.append("]");
             } else {
                 out.append(entry.getName());

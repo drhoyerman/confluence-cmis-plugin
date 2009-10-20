@@ -18,8 +18,8 @@ import org.apache.chemistry.Type;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.core.ConfluenceActionSupport;
-import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
-import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
+import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import com.sourcesense.confluence.cmis.utils.Utils;
 
 public class AttachmentsAction extends ConfluenceActionSupport {
@@ -27,10 +27,8 @@ public class AttachmentsAction extends ConfluenceActionSupport {
     private String servername;
     private String folderId;
     private BandanaManager bandanaManager;
-    private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
     private List<String> cmisDocumentsInFolder;
     private Map<String, String> folders;
-    private Repository repository;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
@@ -40,24 +38,34 @@ public class AttachmentsAction extends ConfluenceActionSupport {
         return INPUT;
     }
 
-   
     public String folder() {
-        getRepository();
-        this.folders = getAllRepositoryFolder();
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            ClassLoader cl = this.getClass().getClassLoader();
+            Thread.currentThread().setContextClassLoader(cl);
+            try {
+                this.folders = getAllRepositoryFolder();
+            } catch (NoRepositoryException e) {
+                e.printStackTrace();
+                return ERROR;
+            }
+        } finally {
+            // Restore original classloader
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
         return INPUT;
     }
-    @SuppressWarnings("unchecked")
-    private void getRepository() {
-        List<String> repositoryList = ((Map<String, List<String>>) this.bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY))
-                                        .get(servername);
-        this.repository = Utils.getRepository(repositoryList.get(0), repositoryList.get(1), repositoryList.get(2));
+
+    private Repository getRepository() throws NoRepositoryException {
+        return RepositoryStorage.getInstance(bandanaManager).getRepository(servername);
     }
 
-    private Map<String, String> getAllRepositoryFolder() {
+    private Map<String, String> getAllRepositoryFolder() throws NoRepositoryException {
         Map<String, String> folders = new HashMap<String, String>();
-        Type t = this.repository.getType(BaseType.FOLDER.toString());
+        Repository repository = getRepository();
+        Type t = repository.getType(BaseType.FOLDER.toString());
         String cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName();
-        Connection conn = this.repository.getConnection(null);
+        Connection conn = repository.getConnection(null);
         SPI spi = conn.getSPI();
         Collection<ObjectEntry> results = spi.query(cmisQuery, false, false, false, 1000, 0, new boolean[1]);
         for (ObjectEntry entry : results) {
@@ -68,25 +76,31 @@ public class AttachmentsAction extends ConfluenceActionSupport {
     }
 
     public String display() {
-        this.cmisDocumentsInFolder = searchDocuments();
+        try {
+            this.cmisDocumentsInFolder = searchDocuments();
+        } catch (NoRepositoryException e) {
+            e.printStackTrace();
+            return ERROR;
+        }
         return SUCCESS;
     }
 
-    private List<String> searchDocuments() {
+    private List<String> searchDocuments() throws NoRepositoryException {
         String id = this.folderId;
         //String id = "workspace://SpacesStore/18574fd2-f42a-4a98-b1c7-416663462d48";
         ObjectEntry folder = null;
+        Repository repository = getRepository();
         List<ObjectEntry> objects = null;
-        if (this.repository != null) {
-            folder = Utils.getEntryViaID(this.repository, id, BaseType.FOLDER);
-            objects = this.repository.getConnection(null).getSPI().getChildren(folder, BaseType.DOCUMENT, null, false, false, 100, 0, null, new boolean[1]);
+        if (repository != null) {
+            folder = Utils.getEntryViaID(repository, id, BaseType.FOLDER);
+            objects = repository.getConnection(null).getSPI().getChildren(folder, BaseType.DOCUMENT, null, false, false, 100, 0, null, new boolean[1]);
         } else {
             List<String> a = new LinkedList<String>();
             a.add("Repo è null");
             return a;
         }
 
-        return renderEntry(objects, this.repository.getConnection(null));
+        return renderEntry(objects, repository.getConnection(null));
     }
 
     private List<String> renderEntry(List<ObjectEntry> entries, Connection conn) {

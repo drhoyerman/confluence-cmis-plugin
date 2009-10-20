@@ -26,6 +26,7 @@ import org.apache.chemistry.Repository;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.Utils;
 
 public class DoclinkMacro extends BaseCMISMacro {
 
@@ -43,7 +44,7 @@ public class DoclinkMacro extends BaseCMISMacro {
 
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         String id = (String) params.get("id");
-        CMISObject obj = repository.getConnection(null).getObject(getEntryViaID(repository, id, BaseType.DOCUMENT), null);
+        CMISObject obj = repository.getConnection(null).getObject(Utils.getEntryViaID(repository, id, BaseType.DOCUMENT), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }
@@ -56,7 +57,7 @@ public class DoclinkMacro extends BaseCMISMacro {
         out.append("[");
         out.append(entry.getName());
         out.append("|");
-        out.append(rewriteUrl(url));
+        out.append(Utils.rewriteUrl(url, serverName));
         out.append("]");
         return out.toString();
     }

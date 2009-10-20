@@ -28,6 +28,7 @@ import org.apache.chemistry.Repository;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.Utils;
 
 public class EmbedMacro extends BaseCMISMacro {
 
@@ -47,7 +48,7 @@ public class EmbedMacro extends BaseCMISMacro {
         String id = (String) params.get("id");
         String nf = (String) params.get("nf");
         boolean noformat = nf != null && nf.startsWith("y");
-        CMISObject obj = repository.getConnection(null).getObject(getEntryViaID(repository, id, BaseType.DOCUMENT), null);
+        CMISObject obj = repository.getConnection(null).getObject(Utils.getEntryViaID(repository, id, BaseType.DOCUMENT), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }
