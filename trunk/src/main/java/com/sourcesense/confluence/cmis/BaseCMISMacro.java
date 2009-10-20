@@ -15,35 +15,22 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import java.net.URI;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.chemistry.BaseType;
-import org.apache.chemistry.Connection;
-import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.SPI;
-import org.apache.chemistry.Type;
 import org.apache.chemistry.atompub.client.APPConnection;
-import org.apache.chemistry.atompub.client.ContentManager;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.bandana.BandanaManager;
-import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
-import com.sourcesense.confluence.cmis.utils.Utils;
-import com.sourcesense.confluence.servlets.CMISProxyServlet;
+import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
+import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 
 public abstract class BaseCMISMacro extends BaseMacro {
     // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
     protected BandanaManager bandanaManager;
-    private String serverName;
+    protected String serverName;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
@@ -66,60 +53,31 @@ public abstract class BaseCMISMacro extends BaseMacro {
                 e.printStackTrace();
             }
              */
+            RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
+            Repository repository = null;
             String serverUrl;
-            String repositoryUsername = null;
-            String repositoryPassword = null;
+            String username = null;
+            String password = null;
             serverName = (String) params.get("n");
             if (serverName == null) {
                 serverUrl = (String) params.get("s");
-                repositoryUsername = (String) params.get("u");
-                repositoryPassword = (String) params.get("p");
+                username = (String) params.get("u");
+                password = (String) params.get("p");
+                repository = repositoryStorage.getRepository(serverUrl, username, password);
             } else {
-                serverUrl = getServerUrl(serverName);
+                try {
+                    repository = repositoryStorage.getRepository(serverName);
+                } catch (NoRepositoryException e) {
+                    e.printStackTrace();
+                    return e.getMessage();
+                }
             }
-            UsernamePasswordCredentials credentials = getCredentials(serverUrl, repositoryUsername, repositoryPassword);
-            ContentManager cm = new APPContentManager(serverUrl);
-            cm.login(credentials.getUserName(), credentials.getPassword());
-            Repository repository = cm.getDefaultRepository();
             return doExecute(params, body, renderContext, repository);
 
         } finally {
             // Restore original classloader
             Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private String getServerUrl(String servername) {
-        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
-                                        ConfigureCMISPluginAction.CREDENTIALS_KEY);
-        if (credsMap == null) {
-            return null;
-        }
-        List<String> up = credsMap.get(servername);
-        if (up != null)
-            return up.get(0);
-        else
-            return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected UsernamePasswordCredentials getCredentials(String url, String username, String password) {
-        if (username != null && password != null) {
-            return new UsernamePasswordCredentials(username, password);
-        }
-        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
-                                        ConfigureCMISPluginAction.CREDENTIALS_KEY);
-        if (credsMap == null) {
-            return null;
-        }
-        for (String servername : credsMap.keySet()) {
-            if (url.startsWith(credsMap.get(servername).get(0))) {
-                List<String> up = credsMap.get(servername);
-                return new UsernamePasswordCredentials(up.get(1), up.get(2));
-            }
-        }
-        return null;
     }
 
     /**
@@ -131,25 +89,6 @@ public abstract class BaseCMISMacro extends BaseMacro {
      * @param id The object's ID.
      * @return The object with the given ID, if it exists, otherwise null.
      */
-    protected ObjectEntry getEntryViaID(Repository repository, String id, BaseType type) {
-        Type t = repository.getType(type.toString());
-        String cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName() + " WHERE ObjectId = '" + id + "'"; //cmis:document is the actual (0.62Spec) common query name
-        Connection conn = repository.getConnection(null);
-        SPI spi = conn.getSPI();
-        Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, 1, 0, new boolean[1]);
-        for (ObjectEntry entry : res) {
-            return entry;
-        }
-        return null;
-    }
-
-    public String rewriteUrl(URI url) {
-        if (serverName != null) {
-            String baseUrl = Utils.getBaseUrl();
-            return baseUrl + CMISProxyServlet.SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
-        } else
-            return url.toString();
-    }
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
 }

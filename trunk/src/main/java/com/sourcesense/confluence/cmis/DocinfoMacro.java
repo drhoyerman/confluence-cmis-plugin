@@ -27,6 +27,7 @@ import org.apache.chemistry.Repository;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.Utils;
 
 public class DocinfoMacro extends BaseCMISMacro {
 
@@ -45,7 +46,7 @@ public class DocinfoMacro extends BaseCMISMacro {
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
         String id = (String) params.get("id");
         Connection conn = repository.getConnection(null);
-        CMISObject obj = conn.getObject(getEntryViaID(repository, id, BaseType.DOCUMENT), null);
+        CMISObject obj = conn.getObject(Utils.getEntryViaID(repository, id, BaseType.DOCUMENT), null);
         if (obj == null) {
             throw new MacroException("No such object: " + id);
         }

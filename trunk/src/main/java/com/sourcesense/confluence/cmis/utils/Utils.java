@@ -9,9 +9,6 @@ import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Repository;
 import org.apache.chemistry.SPI;
 import org.apache.chemistry.Type;
-import org.apache.chemistry.atompub.client.ContentManager;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.spring.container.ContainerManager;
@@ -31,13 +28,6 @@ public class Utils {
         return null;
     }
 
-    public static Repository getRepository(String url, String username, String password) {
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
-        ContentManager cm = new APPContentManager(url);
-        cm.login(credentials.getUserName(), credentials.getPassword());
-        return cm.getDefaultRepository();
-    }
-
     public static String getBaseUrl() {
         SettingsManager settingsManager = (SettingsManager) ContainerManager.getComponent("settingsManager");
         String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
@@ -45,6 +35,9 @@ public class Utils {
     }
 
     public static String rewriteUrl(URI url, String serverName) {
-        return Utils.getBaseUrl() + CMISProxyServlet.SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
+        if (serverName != null) {
+            return Utils.getBaseUrl() + CMISProxyServlet.SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
+        } else
+            return url.toString();
     }
 }

@@ -57,7 +57,6 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
-import com.sourcesense.confluence.cmis.AttachmentsAction;
 import com.sourcesense.confluence.cmis.DocinfoMacro;
 import com.sourcesense.confluence.cmis.DoclinkMacro;
 import com.sourcesense.confluence.cmis.EmbedMacro;
@@ -221,7 +220,7 @@ public class IntegrationTestCmisPlugin extends TestCase {
             handler.setResourceBase("./src/test/resources");
             server.addHandler(handler);
             defaultConfiguration();
-            
+
             server.start();
         } catch (Exception e) {
             stopServer();
@@ -248,7 +247,7 @@ public class IntegrationTestCmisPlugin extends TestCase {
         assertTrue(result.contains("folder 1"));
         System.out.println(result);
     }
-    
+
     public void testSearch() throws Exception {
         SearchMacro macro = new SearchMacro();
         macro.setBandanaManager(bandanaManager);
@@ -283,7 +282,7 @@ public class IntegrationTestCmisPlugin extends TestCase {
         params.put("s", CMIS_REPOSITORY_URL);
         params.put("u", USERNAME);
         params.put("p", PASSWORD);
-        params.put("id", getObjectId(params.get("s"), params.get("u"), params.get("p"),BaseType.DOCUMENT,"WHERE Name = 'doc 2'"));
+        params.put("id", getObjectId(params.get("s"), params.get("u"), params.get("p"), BaseType.DOCUMENT, "WHERE Name = 'doc 2'"));
         String result = macro.execute(params, null, null);
         assertTrue(result.contains("doc 2"));
         assertTrue(result.contains("doc2.txt"));
@@ -298,7 +297,7 @@ public class IntegrationTestCmisPlugin extends TestCase {
         params.put("s", CMIS_REPOSITORY_URL);
         params.put("u", USERNAME);
         params.put("p", PASSWORD);
-        params.put("id", getObjectId(params.get("s"), params.get("u"), params.get("p"),BaseType.DOCUMENT,"WHERE Name='doc 2'"));
+        params.put("id", getObjectId(params.get("s"), params.get("u"), params.get("p"), BaseType.DOCUMENT, "WHERE Name='doc 2'"));
         String result = macro.execute(params, null, null);
 
         assertTrue(result.contains("prova"));
@@ -325,20 +324,19 @@ public class IntegrationTestCmisPlugin extends TestCase {
         return id.substring(startIndex, endIndex);
     }
 
-    private String getObjectId(String serverUrl, String username, String password,BaseType type,String whereClausole) {
+    private String getObjectId(String serverUrl, String username, String password, BaseType type, String whereClausole) {
         ContentManager cm = new APPContentManager(serverUrl);
         cm.login(username, password);
         Repository repository = cm.getDefaultRepository();
         Type t = repository.getType(type.toString());
         SPI spi = repository.getConnection(null).getSPI();
         String cmisQuery = null;
-        if(whereClausole != null){
-            cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName()+" " + whereClausole;
-        }
-        else {
+        if (whereClausole != null) {
+            cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName() + " " + whereClausole;
+        } else {
             cmisQuery = "SELECT * FROM " + t.getBaseTypeQueryName();
         }
-        
+
         Collection<ObjectEntry> res = spi.query(cmisQuery, false, false, false, 1, 0, new boolean[1]);
         for (ObjectEntry entry : res) {
             return entry.getId();

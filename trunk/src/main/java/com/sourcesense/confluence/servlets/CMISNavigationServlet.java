@@ -2,7 +2,6 @@ package com.sourcesense.confluence.servlets;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,13 +13,10 @@ import org.apache.chemistry.CMISObject;
 import org.apache.chemistry.ObjectEntry;
 import org.apache.chemistry.Property;
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.ContentManager;
-import org.apache.chemistry.atompub.client.connector.APPContentManager;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 
 import com.atlassian.bandana.BandanaManager;
-import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
-import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
+import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import com.sourcesense.confluence.cmis.utils.Utils;
 
 public class CMISNavigationServlet extends HttpServlet {
@@ -39,10 +35,15 @@ public class CMISNavigationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String serverName = req.getParameter("servername");
-        ContentManager cm = new APPContentManager(getServerUrl(req));
-        UsernamePasswordCredentials credentials = getCredentials(serverName);
-        cm.login(credentials.getUserName(), credentials.getPassword());
-        Repository rep = cm.getDefaultRepository();
+        RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
+        Repository rep = null;
+        try {
+            rep = repositoryStorage.getRepository(serverName);
+        } catch (NoRepositoryException e) {
+            e.printStackTrace();
+            resp.sendError(404);
+            return;
+        }
         ObjectEntry sourceEntry = Utils.getEntryViaID(rep, req.getParameter("id"), BaseType.FOLDER);
         boolean[] hasMoreItem = new boolean[1];
         List<ObjectEntry> objects = rep.getConnection(null).getSPI().getChildren(sourceEntry, null, null, false, false, 100, 0, null, hasMoreItem);
@@ -71,35 +72,6 @@ public class CMISNavigationServlet extends HttpServlet {
             }
         }
         resp.getWriter().write(result.toString());
-    }
-
-    private UsernamePasswordCredentials getCredentials(String servername) {
-        List<String> up = getConfigurationList(servername);
-        if (up != null) {
-            return new UsernamePasswordCredentials(up.get(1), up.get(2));
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<String> getConfigurationList(String servername) {
-        Map<String, List<String>> credsMap = (Map<String, List<String>>) this.bandanaManager.getValue(new ConfluenceBandanaContext(),
-                                        ConfigureCMISPluginAction.CREDENTIALS_KEY);
-        if (credsMap == null || servername == null) {
-            return null;
-        }
-        return credsMap.get(servername);
-    }
-
-    private String getServerUrl(HttpServletRequest req) {
-        String serverName = req.getParameter("servername");
-        if (serverName != null) {
-            List<String> up = getConfigurationList(serverName);
-            if (up != null) {
-                return up.get(0);
-            }
-        }
-        return null;
     }
 
     @Override
