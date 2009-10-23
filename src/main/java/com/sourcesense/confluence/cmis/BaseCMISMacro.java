@@ -18,7 +18,7 @@ package com.sourcesense.confluence.cmis;
 import java.util.Map;
 
 import org.apache.chemistry.Repository;
-import org.apache.chemistry.atompub.client.APPConnection;
+import org.apache.log4j.Logger;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
@@ -44,7 +44,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
         try {
             ClassLoader cl = this.getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
-
+            Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis.BaseCMISMacro");
             /*
             try {
                 StaxReader reader = StaxReader.newReader(System.in);
@@ -68,7 +68,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
                 try {
                     repository = repositoryStorage.getRepository(serverName);
                 } catch (NoRepositoryException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                     return e.getMessage();
                 }
             }
@@ -79,16 +79,6 @@ public abstract class BaseCMISMacro extends BaseMacro {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
     }
-
-    /**
-     * Gets a CMISObject using its ID.
-     * We temprarily use this method until Chemistry's 
-     * {@link APPConnection#getObject(org.apache.chemistry.ObjectId, org.apache.chemistry.ReturnVersion)} works properly.
-     * 
-     * @param repository The {@link Repository to query}
-     * @param id The object's ID.
-     * @return The object with the given ID, if it exists, otherwise null.
-     */
 
     protected abstract String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException;
 }

@@ -40,7 +40,6 @@ public class CMISNavigationServlet extends HttpServlet {
         try {
             rep = repositoryStorage.getRepository(serverName);
         } catch (NoRepositoryException e) {
-            e.printStackTrace();
             resp.sendError(404);
             return;
         }

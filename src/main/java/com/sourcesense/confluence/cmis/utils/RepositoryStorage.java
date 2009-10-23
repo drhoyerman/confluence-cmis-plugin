@@ -2,6 +2,7 @@ package com.sourcesense.confluence.cmis.utils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.chemistry.Repository;
@@ -25,7 +26,7 @@ public class RepositoryStorage {
         if (repositoryStorage == null) {
             repositoryStorage = new RepositoryStorage();
         }
-        repositoryStorage.setBandanaManager(bandanaManager); // XXX va fatto ogni volta?
+        repositoryStorage.setBandanaManager(bandanaManager); // XXX is necessary every time?
         return repositoryStorage;
     }
 
@@ -43,6 +44,10 @@ public class RepositoryStorage {
     }
 
     @SuppressWarnings("unchecked")
+    private Map<String, List<String>> getRepositoriesMap() {
+        return ((Map<String, List<String>>) this.bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY));
+    }
+
     /**
      * @param repoName The name configured by confluence admin
      * @return The CMIS repository if exists or null
@@ -50,9 +55,8 @@ public class RepositoryStorage {
      */
     public Repository getRepository(String repoName) throws NoRepositoryException {
         if (!repositories.containsKey(repoName)) {
-            List<String> repositoryList = ((Map<String, List<String>>) this.bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY))
-                                            .get(repoName);
-            if (!repositoryList.isEmpty()) {
+            List<String> repositoryList = getRepositoriesMap().get(repoName);
+            if (repositoryList != null) {
                 UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(repositoryList.get(1), repositoryList.get(2));
                 ContentManager cm = new APPContentManager(repositoryList.get(0));
                 cm.login(credentials.getUserName(), credentials.getPassword());
@@ -71,7 +75,12 @@ public class RepositoryStorage {
         return cm.getDefaultRepository();
     }
 
+    public Set<String> getRepositoryNames() {
+        return getRepositoriesMap().keySet();
+    }
+
     private void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
     }
+
 }
