@@ -6,7 +6,14 @@
   	 	#parse ( "/template/includes/actionmessages.vm" )
 		#parse ( "/template/includes/actionerrors.vm" )
                     <form name="input" action="input.action" method="GET">
-                    	<input type="text" name="servername" size="50" value="Insert Server Name">
+                    	<select name="servername">
+	                    	#if ($repositorynames.size() > 0)
+	                    			#foreach ($name in $repositorynames)
+										<option value="$name">$name</option>
+									#end
+							
+							#end
+						</select>
                     	<input type="submit" value="$action.getText("cmis.attachments.button.go")" onclick="forms.input.action='folder.action';">
                     </form>
     </body>

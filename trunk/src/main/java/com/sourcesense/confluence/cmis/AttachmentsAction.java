@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.chemistry.BaseType;
 import org.apache.chemistry.CMISObject;
@@ -29,12 +30,14 @@ public class AttachmentsAction extends ConfluenceActionSupport {
     private BandanaManager bandanaManager;
     private List<String> cmisDocumentsInFolder;
     private Map<String, String> folders;
+    private Set<String> repositoryNames;
 
     public void setBandanaManager(BandanaManager bandanaManager) {
         this.bandanaManager = bandanaManager;
     }
 
     public String servername() {
+        this.repositoryNames = RepositoryStorage.getInstance(bandanaManager).getRepositoryNames();
         return INPUT;
     }
 
@@ -46,7 +49,7 @@ public class AttachmentsAction extends ConfluenceActionSupport {
             try {
                 this.folders = getAllRepositoryFolder();
             } catch (NoRepositoryException e) {
-                e.printStackTrace();
+                LOG.error(e.getMessage());
                 return ERROR;
             }
         } finally {
@@ -79,7 +82,7 @@ public class AttachmentsAction extends ConfluenceActionSupport {
         try {
             this.cmisDocumentsInFolder = searchDocuments();
         } catch (NoRepositoryException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
             return ERROR;
         }
         return SUCCESS;
@@ -91,14 +94,8 @@ public class AttachmentsAction extends ConfluenceActionSupport {
         ObjectEntry folder = null;
         Repository repository = getRepository();
         List<ObjectEntry> objects = null;
-        if (repository != null) {
-            folder = Utils.getEntryViaID(repository, id, BaseType.FOLDER);
-            objects = repository.getConnection(null).getSPI().getChildren(folder, BaseType.DOCUMENT, null, false, false, 100, 0, null, new boolean[1]);
-        } else {
-            List<String> a = new LinkedList<String>();
-            a.add("Repo è null");
-            return a;
-        }
+        folder = Utils.getEntryViaID(repository, id, BaseType.FOLDER);
+        objects = repository.getConnection(null).getSPI().getChildren(folder, BaseType.DOCUMENT, null, false, false, 100, 0, null, new boolean[1]);
 
         return renderEntry(objects, repository.getConnection(null));
     }
@@ -135,7 +132,11 @@ public class AttachmentsAction extends ConfluenceActionSupport {
     }
 
     public Map<String, String> getFolders() {
-        return folders;
+        return this.folders;
+    }
+
+    public Set<String> getRepositorynames() {
+        return this.repositoryNames;
     }
 
 }
