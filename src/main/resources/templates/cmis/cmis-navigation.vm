@@ -1,4 +1,10 @@
 #requireResource("com.sourcesense.confluence.cmis:images")
+<style type="text/css">
+.folder
+{
+background-color:rgb(255,255,123);
+}
+</style>
 
 <script type="text/javascript">
 function ajaxFunction(url)
