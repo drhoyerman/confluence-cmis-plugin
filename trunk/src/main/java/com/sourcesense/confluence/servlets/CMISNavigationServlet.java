@@ -59,15 +59,15 @@ public class CMISNavigationServlet extends HttpServlet {
         for (ObjectEntry entry : objects) {
             CMISObject object = rep.getConnection(null).getObject(entry, null);
             if (object.getType().getBaseType().equals(BaseType.FOLDER)) {
-                result.append("<p onclick=\"ajaxFunction('http://" + req.getServerName() + ":" + req.getServerPort() + req.getServletPath() + "/a?id="
+                result.append("<p class=\"folder\" onclick=\"ajaxFunction('http://" + req.getServerName() + ":" + req.getServerPort() + req.getServletPath() + "/a?id="
                                                 + object.getId() + "&servername=" + serverName
-                                                + "');\"> <img src=\"http://icons.iconarchive.com/icons/mart/glaze/folder-yellow-open-icon.jpg\" \\>"
-                                                + object.getName() + "</p>");
+                                                + "');\"> "
+                                                + object.getName() + " </p>");
             } else if (object.getType().getBaseType().equals(BaseType.DOCUMENT)) {
-                String href = "<a href=\"" + Utils.getBaseUrl();
+                String href = "<p class=\"document\"> <a href=\"" + Utils.getBaseUrl();
                 href += CMISProxyServlet.SERVLET_CMIS_PROXY;
-                href += object.getURI(Property.CONTENT_STREAM_URI).getPath() + "?servername=" + serverName + "\" target=\"_blank\">";
-                result.append(href + object.getName());
+                href += object.getURI(Property.CONTENT_STREAM_URI).getPath() + "?servername=" + serverName + "\" target=\"_blank\"> </p>";
+                result.append(href + object.getName()); 
             }
         }
         resp.getWriter().write(result.toString());
