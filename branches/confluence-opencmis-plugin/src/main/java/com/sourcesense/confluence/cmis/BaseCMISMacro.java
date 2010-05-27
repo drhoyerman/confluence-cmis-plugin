@@ -107,6 +107,6 @@ public abstract class BaseCMISMacro extends BaseMacro
         return repositoryStorage.getRepository(serverUrl, username, password);
     }
 
-    protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Session session);
+    protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Session session) throws MacroException;
 
 }
