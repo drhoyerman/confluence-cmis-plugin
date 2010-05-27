@@ -22,7 +22,6 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.data.PropertyId;
 
 import java.util.List;
 import java.util.Map;
@@ -39,42 +38,6 @@ public class DocinfoMacro extends BaseCMISMacro {
         return null;
     }
 
-/*
-    protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
-        String id = (String) params.get("id");
-        Connection conn = repository.getConnection(null);
-        CMISObject obj = conn.getObject(Utils.getEntryViaID(repository, id, BaseType.DOCUMENT), null);
-        if (obj == null) {
-            throw new MacroException("No such object: " + id);
-        }
-        return renderInfo(obj, repository);
-    }
-
-    private String renderInfo(CMISObject cmisObject, Repository repository) {
-        StringBuilder out = new StringBuilder();
-        out.append("||Property||Value||\n");
-        for (String name : cmisObject.getProperties().keySet()) { //it return all properties name if the properties don't exists return null
-            Property property = cmisObject.getProperties().get(name);
-            String value = " ";
-            if (property != null) {
-                if (PropertyType.BOOLEAN.equals(property.getDefinition().getType())) {
-                    value = Boolean.TRUE.equals(property.getValue()) ? "(/)" : "(x)";
-                } else if (PropertyType.URI.equals(property.getDefinition().getType())) {
-                    value = "[LINK|" + property.getValue() + "]";
-                } else if (property.getValue() != null) {
-                    value = property.getValue().toString();
-                }
-            }
-            out.append("|");
-            out.append(name);
-            out.append("|");
-            out.append(value);
-            out.append("|\n");
-        }
-        return out.toString();
-    }
-*/
-
     @Override
     protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
     {
@@ -83,10 +46,10 @@ public class DocinfoMacro extends BaseCMISMacro {
 
         Document document = (Document)session.getObject(objectId);
 
-        return renderDocument (document);  //To change body of implemented methods use File | Settings | File Templates.
+        return renderDocumentInfo(document);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    protected String renderDocument(Document document)
+    protected String renderDocumentInfo(Document document)
     {
         List<Property<?>> properties = document.getProperties();
         Property<String> title = document.getProperty(PropertyIds.NAME);
