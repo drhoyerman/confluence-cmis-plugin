@@ -34,6 +34,13 @@
       <id>sose-public</id>
       <url>http://repository.sourcesense.com/nexus/content/groups/public</url>
     </repository>
+    <repository>
+      <id>sose-public-snapshots</id>
+      <url>http://repository.sourcesense.com/nexus/content/groups/public-snapshots</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
 
