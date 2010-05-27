@@ -17,6 +17,7 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
+import com.atlassian.renderer.v2.macro.MacroException;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.Property;
@@ -39,14 +40,19 @@ public class DocinfoMacro extends BaseCMISMacro {
     }
 
     @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+    protected String executeImpl(Map params, String body, RenderContext renderContext, Session session) throws MacroException
     {
         String documentId = (String)params.get(PARAM_DOCUMENT_ID);
         ObjectId objectId = session.createObjectId(documentId);
 
         Document document = (Document)session.getObject(objectId);
 
-        return renderDocumentInfo(document);  //To change body of implemented methods use File | Settings | File Templates.
+        if (document == null)
+        {
+            throw new MacroException("Cannot find any document with the following ID: " + documentId);
+        }
+
+        return renderDocumentInfo(document);
     }
 
     protected String renderDocumentInfo(Document document)
@@ -54,7 +60,7 @@ public class DocinfoMacro extends BaseCMISMacro {
         List<Property<?>> properties = document.getProperties();
         Property<String> title = document.getProperty(PropertyIds.NAME);
 
-        StringBuffer sb = new StringBuffer (String.format ("*Details of %s*\n", title.getValueAsString()));
+        StringBuilder sb = new StringBuilder (String.format ("*Details of %s*\n", title.getValueAsString()));
 
         sb.append ("||Property||Value||\n");
         for (Property<?> prop : properties)
