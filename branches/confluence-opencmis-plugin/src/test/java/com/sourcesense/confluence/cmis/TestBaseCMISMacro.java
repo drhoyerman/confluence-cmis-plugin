@@ -2,6 +2,7 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
+import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
@@ -29,7 +30,7 @@ public class TestBaseCMISMacro extends TestCase
 
         parameters.put("s", "http://localhost:8081/alfresco/service/cmis");
 //        parameters.put("id", "alfresco");
-        parameters.put("id", "07899f0c-adaf-4ba0-b799-f107f1214cea");
+        parameters.put("n", "alfresco");
         parameters.put("u", "admin");
         parameters.put("p", "admin");
 
@@ -45,7 +46,15 @@ public class TestBaseCMISMacro extends TestCase
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
+
+            @Override
+            protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+            {
+                return "OK";
+            }
         };
+
+        baseMacro.setBandanaManager(new MockBandanaManager());
 
         String result = null;
 
@@ -60,7 +69,7 @@ public class TestBaseCMISMacro extends TestCase
         }
 
         assertNotNull(result);
-        assertFalse(!"".equals(result));
+        assertFalse("".equals(result));
 
         logger.debug(result);
     }
