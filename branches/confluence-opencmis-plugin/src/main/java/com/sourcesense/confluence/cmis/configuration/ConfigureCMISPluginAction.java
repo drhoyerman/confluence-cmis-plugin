@@ -28,7 +28,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
 
     public static final Integer PARAM_REALM = 0;
     public static final Integer PARAM_USERNAME = 1;
-    public static final Integer PARAM_PASWORD = 2;
+    public static final Integer PARAM_PASSWORD = 2;
 
     private BandanaManager bandanaManager;
     private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
