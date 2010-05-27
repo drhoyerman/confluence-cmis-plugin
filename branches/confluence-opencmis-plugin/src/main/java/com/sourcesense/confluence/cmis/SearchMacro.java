@@ -15,9 +15,12 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
+import org.apache.chemistry.opencmis.client.api.Session;
 
 import java.util.List;
+import java.util.Map;
 
 public class SearchMacro extends BaseCMISMacro {
 
@@ -101,4 +104,9 @@ public class SearchMacro extends BaseCMISMacro {
     }
 */
 
+    @Override
+    protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+    {
+        return "";  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
