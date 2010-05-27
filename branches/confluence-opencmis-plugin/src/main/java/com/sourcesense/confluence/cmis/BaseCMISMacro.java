@@ -16,6 +16,7 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.bandana.BandanaManager;
+import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
@@ -27,99 +28,108 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class BaseCMISMacro extends BaseMacro {
-    // This constant must be in according with servlet url-pattern in atlassian-plugin.xml
+// TODO: put back in place the subclass delegation of behavior
+public abstract class BaseCMISMacro extends BaseMacro
+{
+    private static final Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis");
+
     protected BandanaManager bandanaManager;
+    protected SettingsManager settingsManager;
     protected String serverName;
 
-    public void setBandanaManager(BandanaManager bandanaManager) {
+    public void setBandanaManager(BandanaManager bandanaManager)
+    {
         this.bandanaManager = bandanaManager;
     }
 
+    public void setSettingsManager(SettingsManager settingsManager)
+    {
+        this.settingsManager = settingsManager;
+    }
+
     @SuppressWarnings("unchecked")
-    public String execute(Map params, String body, RenderContext renderContext) throws MacroException {
+    public String execute(Map params, String body, RenderContext renderContext) throws MacroException
+    {
+        // Work around to let OpenCMIS using the bundled version of Jaxb
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 
-      // Work around to let OpenCMIS using the bundled version of Jaxb
-      ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            ClassLoader cl = this.getClass().getClassLoader();
+            Thread.currentThread().setContextClassLoader(cl);
 
+            StringBuilder sb = new StringBuilder("test OpenCMIS integration");
 
-      try {
-
-        ClassLoader cl = this.getClass().getClassLoader();
-        Thread.currentThread().setContextClassLoader(cl);
-
-      StringBuilder sb = new StringBuilder ("test OpenCMIS integration");
-
-      String repositoryUsername = (String) params.get("u");
-      System.out.println ("u ->" + repositoryUsername);
-
-      String repositoryPassword = (String) params.get("p");
-      System.out.println ("p ->" + repositoryPassword );
-
-      String url = (String) params.get("s");
-      System.out.println ("s ->" + url );
-
-      String id = (String) params.get("id");
-      //@FIXME : this parameter does not fetch the value set in the configuration; it retrieves a different value... needs to be set manually.
-      //The repositoryId can be fetched on http://localhost:8085/alfresco/service/cmis
-      //String id = "b31ecce4-2549-4fe9-b347-f116a140ac33";
-      System.out.println ("id ->" + id );
+            String repositoryUsername = (String) params.get("u");
+            String repositoryPassword = (String) params.get("p");
+            String url = (String) params.get("s");
+            String id = (String) params.get("id");
+            System.out.println("u ->" + repositoryUsername);
+            System.out.println("p ->" + repositoryPassword);
+            System.out.println("s ->" + url);
+            System.out.println("id ->" + id);
 
 
-      Map<String, String> parameters = new HashMap<String, String>();
-      parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-      parameters.put(SessionParameter.ATOMPUB_URL, url);
-      parameters.put(SessionParameter.REPOSITORY_ID, id);
-      parameters.put(SessionParameter.USER, repositoryUsername);
-      parameters.put(SessionParameter.PASSWORD, repositoryPassword);
+            Map<String, String> parameters = new HashMap<String, String>();
+            parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+            parameters.put(SessionParameter.ATOMPUB_URL, url);
+            parameters.put(SessionParameter.REPOSITORY_ID, id);
+            parameters.put(SessionParameter.USER, repositoryUsername);
+            parameters.put(SessionParameter.PASSWORD, repositoryPassword);
 
-      System.out.println ("Initialized login data");
+            System.out.println("Initialized login data");
 
-      Session session = SessionFactoryImpl.newInstance().createSession(parameters);
+            Session session = SessionFactoryImpl.newInstance().createSession(parameters);
 
-      System.out.println ("Initialized session");
+            System.out.println("Initialized session");
 
 // get repository info
-      RepositoryInfo repInfo = session.getRepositoryInfo();
-      System.out.println ("Repository name: " + repInfo.getName() + "\n");
-      sb.append("Repository name: " + repInfo.getName() + "\n");
+            RepositoryInfo repInfo = session.getRepositoryInfo();
+            sb.append("Repository name: " + repInfo.getName() + "\n");
+            System.out.println("Repository name: " + repInfo.getName() + "\n");
+            System.out.println("Repository id: " + repInfo.getId() + "\n");
 
 // get root folder and its path
-      Folder rootFolder = session.getRootFolder();
-      String path = rootFolder.getPath();
-      System.out.println ("Root folder path: " + path + "\n");
-      sb.append("Root folder path: " + path + "\n");
+            Folder rootFolder = session.getRootFolder();
+            String path = rootFolder.getPath();
+            sb.append("Root folder path: " + path + "\n");
+            System.out.println("Root folder path: " + path + "\n");
 
 // list root folder children
-      ItemIterable<CmisObject> children = rootFolder.getChildren();
-      for (CmisObject object : children)
-      {
-          sb.append("---------------------------------");
-          sb.append("- Id:               " + object.getId() + "\n");
-          sb.append("- Name:             " + object.getName() + "\n");
-          sb.append("- Base Type:        " + object.getBaseTypeId() + "\n");
-          sb.append("- Property 'bla':   " + object.getPropertyValue("bla") + "\n");
+            ItemIterable<CmisObject> children = rootFolder.getChildren();
+            for (CmisObject object : children)
+            {
+                sb.append("---------------------------------");
+                sb.append("- Id:               " + object.getId() + "\n");
+                sb.append("- Name:             " + object.getName() + "\n");
+                sb.append("- Base Type:        " + object.getBaseTypeId() + "\n");
+                sb.append("- Property 'bla':   " + object.getPropertyValue("bla") + "\n");
 
-          ObjectType type = object.getType();
-          sb.append("- Type Id:          " + type.getId() + "\n");
-          sb.append("- Type Name:        " + type.getDisplayName() + "\n");
-          sb.append("- Type Query Name:  " + type.getQueryName() + "\n");
+                ObjectType type = object.getType();
+                sb.append("- Type Id:          " + type.getId() + "\n");
+                sb.append("- Type Name:        " + type.getDisplayName() + "\n");
+                sb.append("- Type Query Name:  " + type.getQueryName() + "\n");
 
-          AllowableActions actions = object.getAllowableActions();
-          sb.append("- canGetProperties: " + actions.getAllowableActions().contains(Action.CAN_GET_PROPERTIES) + "\n");
-          sb.append("- canDeleteObject:  " + actions.getAllowableActions().contains(Action.CAN_DELETE_OBJECT) + "\n");
-      }
-        return sb.toString();
-      } catch(Exception e) {
-        e.printStackTrace();
-      } finally {
-        Thread.currentThread().setContextClassLoader(originalClassLoader);        
-      }
-      return "";
+                AllowableActions actions = object.getAllowableActions();
+                sb.append("- canGetProperties: " + actions.getAllowableActions().contains(Action.CAN_GET_PROPERTIES) + "\n");
+                sb.append("- canDeleteObject:  " + actions.getAllowableActions().contains(Action.CAN_DELETE_OBJECT) + "\n");
+            }
+            return sb.toString();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+        return "";
 
 
 /*
@@ -144,7 +154,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
                 try {
                     repository = repositoryStorage.getRepository(serverName);
                 } catch (NoRepositoryException e) {
-                    logger.error(e.getMessage());
+                    System.out.println(e.getMessage());
                     return e.getMessage();
                 }
             }
@@ -158,66 +168,64 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
     }
 
-  protected void opencmisStuff() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-    parameters.put(SessionParameter.ATOMPUB_URL, "http://localhost:8080/opencmis/atom");
-    parameters.put(SessionParameter.REPOSITORY_ID, "A1");
-    parameters.put(SessionParameter.USER, "test");
-    parameters.put(SessionParameter.PASSWORD, "test");
+    @Deprecated
+    private void opencmisStuff()
+    {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+        parameters.put(SessionParameter.ATOMPUB_URL, "http://localhost:8080/opencmis/atom");
+        parameters.put(SessionParameter.REPOSITORY_ID, "A1");
+        parameters.put(SessionParameter.USER, "test");
+        parameters.put(SessionParameter.PASSWORD, "test");
 
 // create the session
-    Session session = SessionFactoryImpl.newInstance().createSession(parameters);
+        Session session = SessionFactoryImpl.newInstance().createSession(parameters);
 
 // get repository info
-    RepositoryInfo repInfo = session.getRepositoryInfo();
-    System.out.println("Repository name: " + repInfo.getName());
+        RepositoryInfo repInfo = session.getRepositoryInfo();
+        System.out.println("Repository name: " + repInfo.getName());
 
 // get root folder and its path
-    Folder rootFolder = session.getRootFolder();
-    String path = rootFolder.getPath();
-    System.out.println("Root folder path: " + path);
+        Folder rootFolder = session.getRootFolder();
+        String path = rootFolder.getPath();
+        System.out.println("Root folder path: " + path);
 
 // list root folder children
-    ItemIterable<CmisObject> children = rootFolder.getChildren();
-    for (CmisObject object : children) {
-      System.out.println("---------------------------------");
-      System.out.println("  Id:               " + object.getId());
-      System.out.println("  Name:             " + object.getName());
-      System.out.println("  Base Type:        " + object.getBaseTypeId());
-      System.out.println("  Property 'bla':   " + object.getPropertyValue("bla"));
+        ItemIterable<CmisObject> children = rootFolder.getChildren();
+        for (CmisObject object : children)
+        {
+            System.out.println("---------------------------------");
+            System.out.println("  Id:               " + object.getId());
+            System.out.println("  Name:             " + object.getName());
+            System.out.println("  Base Type:        " + object.getBaseTypeId());
+            System.out.println("  Property 'bla':   " + object.getPropertyValue("bla"));
 
-      ObjectType type = object.getType();
-      System.out.println("  Type Id:          " + type.getId());
-      System.out.println("  Type Name:        " + type.getDisplayName());
-          System.out.println("  Type Query Name:  " + type.getQueryName());
+            ObjectType type = object.getType();
+            System.out.println("  Type Id:          " + type.getId());
+            System.out.println("  Type Name:        " + type.getDisplayName());
+            System.out.println("  Type Query Name:  " + type.getQueryName());
 
-          AllowableActions actions = object.getAllowableActions();
-          System.out.println("  canGetProperties: " + actions.getAllowableActions().contains(Action.CAN_GET_PROPERTIES));
-          System.out.println("  canDeleteObject:  " + actions.getAllowableActions().contains(Action.CAN_DELETE_OBJECT));
-      }
+            AllowableActions actions = object.getAllowableActions();
+            System.out.println("  canGetProperties: " + actions.getAllowableActions().contains(Action.CAN_GET_PROPERTIES));
+            System.out.println("  canDeleteObject:  " + actions.getAllowableActions().contains(Action.CAN_DELETE_OBJECT));
+        }
 
 // get an object
-      ObjectId objectId = session.createObjectId("100");
-      CmisObject object = session.getObject(objectId);
+        ObjectId objectId = session.createObjectId("100");
+        CmisObject object = session.getObject(objectId);
 
-      if (object instanceof Folder)
-      {
-          Folder folder = (Folder) object;
-          System.out.println("Is root folder: " + folder.isRootFolder());
-      }
+        if (object instanceof Folder)
+        {
+            Folder folder = (Folder) object;
+            System.out.println("Is root folder: " + folder.isRootFolder());
+        }
 
-      if (object instanceof Document)
-      {
-          Document document = (Document) object;
-          ContentStream content = document.getContentStream();
-          System.out.println("Document MIME type: " + content.getMimeType());
-      }
-  }
-
-  
-/*
-    protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Session session) throws MacroException {
+        if (object instanceof Document)
+        {
+            Document document = (Document) object;
+            ContentStream content = document.getContentStream();
+            System.out.println("Document MIME type: " + content.getMimeType());
+        }
     }
-*/
+
 }
