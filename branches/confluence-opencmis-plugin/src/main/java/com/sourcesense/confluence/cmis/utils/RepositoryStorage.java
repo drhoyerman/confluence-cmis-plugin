@@ -11,6 +11,9 @@ import org.apache.chemistry.opencmis.commons.enums.BindingType;
 
 import java.util.*;
 
+/**
+ * Implements a simple cache logic to handle repositories
+ */
 public class RepositoryStorage
 {
 
@@ -25,12 +28,10 @@ public class RepositoryStorage
         {
             repositoryStorage = new RepositoryStorage();
             repositoryStorage.setBandanaManager(bandanaManager);
-            // TODO: what if the BandanaManager differs?
         }
 
         return repositoryStorage;
     }
-
 
     public static RepositoryStorage resetAndGetInstance(Map<String, Repository> cache, BandanaManager bandanaManager)
     {
@@ -56,6 +57,12 @@ public class RepositoryStorage
     }
 
 
+    /**
+     * Gets a repository fetching its details from the plugin configuration using repoName as the key
+     * @param repoName Rpository ID as it was set in the plugin configuration
+     * @return
+     * @throws NoRepositoryException
+     */
     public Repository getRepository(String repoName) throws NoRepositoryException
     {
         if (!repositories.containsKey(repoName))
@@ -63,17 +70,12 @@ public class RepositoryStorage
             List<String> repositoryConfig = getRepositoriesMap().get(repoName);
             if (repositoryConfig != null)
             {
-                Map<String, String> parameters = new HashMap<String, String>();
-
-                parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-                parameters.put(SessionParameter.ATOMPUB_URL, repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM));
-                parameters.put(SessionParameter.USER, repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME));
-                parameters.put(SessionParameter.PASSWORD, repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASWORD));
-
-                List<Repository> repos = SessionFactoryImpl.newInstance().getRepositories(parameters);
+                Repository repo = getRepository (repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
+                                                 repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
+                                                 repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD));
 
                 // TODO: how to choose one?
-                this.repositories.put(repoName, repos.get(0));
+                this.repositories.put(repoName, repo);
             }
             else
             {
@@ -83,14 +85,35 @@ public class RepositoryStorage
 
         return this.repositories.get(repoName);
     }
-    /*
-        public Repository getRepository(String serverUrl, String username, String password) {
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
-            ContentManager cm = new APPContentManager(serverUrl);
-            cm.login(credentials.getUserName(), credentials.getPassword());
-            return cm.getDefaultRepository();
+
+    /**
+     * Gets the repository identified by the provided coordinates
+     * @param serverUrl URL where the AtomPub CMIS repository service listens
+     * @param username Username used to log into the repository
+     * @param password Password used to log into the repository 
+     * @return
+     * @throws NoRepositoryException
+     */
+    public Repository getRepository(String serverUrl, String username, String password) throws NoRepositoryException
+    {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
+        parameters.put(SessionParameter.ATOMPUB_URL, serverUrl);
+        parameters.put(SessionParameter.USER, username);
+        parameters.put(SessionParameter.PASSWORD, password);
+
+        List<Repository> repos = SessionFactoryImpl.newInstance().getRepositories(parameters);
+
+        if (repos == null || repos.size () <= 0)
+        {
+            throw new NoRepositoryException();
         }
-    */
+
+        // TODO: choose the repo in a better way
+        return repos.get(0);
+    }
+
 
     public Set<String> getRepositoryNames()
     {

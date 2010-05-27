@@ -20,18 +20,12 @@ import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import org.apache.chemistry.opencmis.client.api.*;
-import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
-import org.apache.chemistry.opencmis.commons.SessionParameter;
-import org.apache.chemistry.opencmis.commons.data.AllowableActions;
-import org.apache.chemistry.opencmis.commons.data.ContentStream;
-import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
-import org.apache.chemistry.opencmis.commons.enums.Action;
-import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.Map;
 
 // TODO: put back in place the subclass delegation of behavior
@@ -46,7 +40,6 @@ public abstract class BaseCMISMacro extends BaseMacro
 
     protected BandanaManager bandanaManager;
     protected SettingsManager settingsManager;
-    protected String serverName;
 
     public void setBandanaManager(BandanaManager bandanaManager)
     {
@@ -68,12 +61,10 @@ public abstract class BaseCMISMacro extends BaseMacro
         {
             ClassLoader cl = this.getClass().getClassLoader();
             Thread.currentThread().setContextClassLoader(cl);
-            String repoId = (String) params.get(PARAM_REPOSITORY_ID);
 
             RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
 
-            // TODO: fetch the repo with different behaviors depending on the set of input params
-            Repository repository = repositoryStorage.getRepository(repoId);
+            Repository repository = getRepositoryFromParams(params, repositoryStorage);
             Session session = repository.createSession();
 
             return executeImpl (params, body, renderContext, session);
@@ -81,7 +72,7 @@ public abstract class BaseCMISMacro extends BaseMacro
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error ("Cannot open a session with the CMIS repository", e);
         }
         finally
         {
@@ -89,42 +80,31 @@ public abstract class BaseCMISMacro extends BaseMacro
         }
 
         return "";
+    }
 
+    /**
+     * Retrieves a Repository descriptor depending by the macro parameters:
+     * - if the repository id is provided ("n") than the repository details are taken from the plugin configuration
+     * - otherwise, the server URL ("s"), username ("u") and password ("p") macro parameters are used
+     * @param params Parameter map holding the macro parameters
+     * @param repositoryStorage Cached repository retriever
+     * @return
+     * @throws NoRepositoryException
+     */
+    protected Repository getRepositoryFromParams (Map params, RepositoryStorage repositoryStorage) throws NoRepositoryException
+    {
+        String repoId = (String) params.get(PARAM_REPOSITORY_ID);
 
-/*
-        // Work around Abdera trying to be smart with class loading
-        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            ClassLoader cl = this.getClass().getClassLoader();
-            Thread.currentThread().setContextClassLoader(cl);
-            Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis.BaseCMISMacro");
-            RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
-            Repository repository = null;
-            String serverUrl;
-            String username = null;
-            String password = null;
-            serverName = (String) params.get("n");
-            if (serverName == null) {
-                serverUrl = (String) params.get("s");
-                username = (String) params.get("u");
-                password = (String) params.get("p");
-                repository = repositoryStorage.getRepository(serverUrl, username, password);
-            } else {
-                try {
-                    repository = repositoryStorage.getRepository(serverName);
-                } catch (NoRepositoryException e) {
-                    System.out.println(e.getMessage());
-                    return e.getMessage();
-                }
-            }
-            return doExecute(params, body, renderContext, repository);
-        } finally {
-            // Restore original classloader
-            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        if (repoId != null && !"".equals (repoId))
+        {
+            return repositoryStorage.getRepository(repoId);
         }
-*/
 
+        String serverUrl = (String) params.get("s");
+        String username = (String) params.get("u");
+        String password = (String) params.get("p");
 
+        return repositoryStorage.getRepository(serverUrl, username, password);
     }
 
     protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Session session);
