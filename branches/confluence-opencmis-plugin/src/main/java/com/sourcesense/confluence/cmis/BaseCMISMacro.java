@@ -63,11 +63,9 @@ public abstract class BaseCMISMacro extends BaseMacro
             Thread.currentThread().setContextClassLoader(cl);
 
             RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
-
             Repository repository = getRepositoryFromParams(params, repositoryStorage);
-            Session session = repository.createSession();
 
-            return executeImpl (params, body, renderContext, session);
+            return executeImpl (params, body, renderContext, repository);
 
         }
         catch (Exception e)
@@ -107,6 +105,6 @@ public abstract class BaseCMISMacro extends BaseMacro
         return repositoryStorage.getRepository(serverUrl, username, password);
     }
 
-    protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Session session) throws MacroException;
+    protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;
 
 }
