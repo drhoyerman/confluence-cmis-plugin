@@ -17,67 +17,88 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
-import org.apache.chemistry.opencmis.client.api.Session;
+import com.atlassian.renderer.v2.macro.MacroException;
+import org.apache.chemistry.opencmis.client.api.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
-public class EmbedMacro extends BaseCMISMacro {
+public class EmbedMacro extends BaseCMISMacro
+{
+    public static final String PARAM_DOCUMENT_ID = "id";
+    public static final String PARAM_NOFORMAT = "nf";
 
-    public boolean isInline() {
+    public boolean isInline()
+    {
         return false;
     }
 
-    public boolean hasBody() {
+    public boolean hasBody()
+    {
         return false;
     }
 
-    public RenderMode getBodyRenderMode() {
+    public RenderMode getBodyRenderMode()
+    {
         return null;
     }
 
-/*
-    protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Repository repository) throws MacroException {
-        String id = (String) params.get("id");
-        String nf = (String) params.get("nf");
-        boolean noformat = nf != null && nf.startsWith("y");
-        CMISObject obj = repository.getConnection(null).getObject(Utils.getEntryViaID(repository, id, BaseType.DOCUMENT), null);
-        if (obj == null) {
-            throw new MacroException("No such object: " + id);
-        }
-        return renderDocument(obj, repository, noformat);
-    }
-
-    private String renderDocument(CMISObject obj, Repository repository, boolean noformat) throws MacroException {
-
-        if (obj instanceof Document) {
-            Document doc = (Document) obj;
-            StringBuilder out = new StringBuilder();
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(doc.getContentStream().getStream()));
-                String line = null;
-                if (noformat) {
-                    out.append("{noformat}");
-                }
-                while ((line = reader.readLine()) != null) {
-                    out.append(line);
-                    out.append("\n");
-                }
-                if (noformat) {
-                    out.append("{noformat}");
-                }
-            } catch (IOException e) {
-                throw new MacroException(e.getMessage(), e);
-            }
-            return out.toString();
-        } else {
-            throw new MacroException("Entry is not a document!");
-        }
-    }
-*/
-
     @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+    protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException
     {
-        return "";  //To change body of implemented methods use File | Settings | File Templates.
+        String documentId = (String) params.get(PARAM_DOCUMENT_ID);
+        String noformat = (String) params.get(PARAM_NOFORMAT);
+
+        boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
+
+        Session session = repository.createSession();
+
+        ObjectId objectId = session.createObjectId(documentId);
+        CmisObject cmisObject = (Document)session.getObject(objectId);
+
+        String result = "";
+
+        if (cmisObject != null && cmisObject instanceof Document)
+        {
+            result = renderDocument((Document)cmisObject, isNoFormat);
+        }
+        else
+        {
+            throw new MacroException ("Object with id " + documentId + " is not a Document or is null");
+        }
+
+        return result;
+    }
+
+    // TODO: is this really going to work with mime types other than text/plain?
+    private String renderDocument(Document document, boolean noformat) throws MacroException
+    {
+        StringBuilder out = new StringBuilder();
+        try
+        {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(document.getContentStream().getStream()));
+            String line = null;
+            if (noformat)
+            {
+                out.append("{noformat}");
+            }
+            while ((line = reader.readLine()) != null)
+            {
+                out.append(line);
+                out.append("\n");
+            }
+            if (noformat)
+            {
+                out.append("{noformat}");
+            }
+        }
+        catch (IOException e)
+        {
+            throw new MacroException(e.getMessage(), e);
+        }
+        return out.toString();
+
     }
 }
