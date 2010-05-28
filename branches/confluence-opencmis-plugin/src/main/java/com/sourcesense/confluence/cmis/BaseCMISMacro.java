@@ -31,7 +31,7 @@ import java.util.Map;
 // TODO: put back in place the subclass delegation of behavior
 public abstract class BaseCMISMacro extends BaseMacro
 {
-    private static final Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis");
+    protected static final Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis");
 
     public static final String PARAM_REPOSITORY_ID = "n";
     public static final String PARAM_SERVER_URL = "s";
