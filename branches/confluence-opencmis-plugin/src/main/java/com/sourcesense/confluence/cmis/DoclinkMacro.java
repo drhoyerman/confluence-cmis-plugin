@@ -76,11 +76,6 @@ public class DoclinkMacro extends BaseCMISMacro
     {
         Session session = repository.createSession();
 
-        if (!"Alfresco".equals (repository.getVendorName()))
-        {
-            throw new MacroException ("Currently cmis-doclink only supports Alfresco repositories");
-        }
-
         String documentId = (String)params.get(PARAM_DOCUMENT_ID);
         ObjectId objectId = session.createObjectId(documentId);
 
