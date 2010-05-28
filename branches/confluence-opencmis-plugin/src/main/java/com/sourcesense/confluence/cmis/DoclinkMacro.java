@@ -15,15 +15,20 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
-import com.atlassian.renderer.v2.macro.MacroException;
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.bindings.spi.atompub.AbstractAtomPubService;
+import org.apache.chemistry.opencmis.client.bindings.spi.atompub.ObjectServiceImpl;
+import org.apache.chemistry.opencmis.commons.impl.Constants;
 
-import java.util.Map;
+import com.atlassian.renderer.RenderContext;
+import com.atlassian.renderer.v2.RenderMode;
+import com.atlassian.renderer.v2.macro.MacroException;
 
 public class DoclinkMacro extends BaseCMISMacro
 {
@@ -85,22 +90,36 @@ public class DoclinkMacro extends BaseCMISMacro
         {
             throw new MacroException("Cannot find any document with the following ID: " + documentId);
         }
+        String link = getLink(session.getRepositoryInfo().getId(),documentId, Constants.REL_EDITMEDIA, session);
 
-        return renderDocumentLink(document, repository);
+        return renderDocumentLink(document, link);
     }
 
-    protected String renderDocumentLink (Document document, Repository repository)
+    protected String renderDocumentLink (Document document, String link )
     {
         StringBuilder out = new StringBuilder();
-
-        String documentId = document.getId().replace("://", "/");
 
         out.append("[");
         out.append(document.getName());
         out.append("|");
-        out.append(repository.getThinClientUri()).append("/").append(documentId);
+        out.append(link);
         out.append("]");
 
         return out.toString();
     }
+
+    private String getLink(String repositoryId,String objectId,String rel,Session session) {
+      ObjectServiceImpl objectServices = (ObjectServiceImpl) session.getBinding().getObjectService();
+      Class<?> [] parameterTypes = {String.class,String.class,String.class,String.class} ;
+      String res = null;
+      try {
+        Method loadLink = AbstractAtomPubService.class.getDeclaredMethod("loadLink", parameterTypes );
+        loadLink.setAccessible(true);
+        res = (String) loadLink.invoke(objectServices, repositoryId,objectId,rel,null);
+      } catch (Exception e) {
+        logger.error(e.getMessage() +"Link retrieval failed");
+      }
+    return res;
+    }
+
 }
