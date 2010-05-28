@@ -8,13 +8,18 @@ import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import junit.framework.TestCase;
-import org.apache.chemistry.opencmis.client.api.Repository;
-import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
+import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -48,7 +53,7 @@ public class TestBaseCMISMacro extends TestCase
             }
 
             @Override
-            protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+            protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repo)
             {
                 return "OK";
             }
@@ -81,8 +86,8 @@ public class TestBaseCMISMacro extends TestCase
 
         Set<String> repos = repoStorage.getRepositoryNames();
 
-        assertNotNull (repos);
-        assertTrue (!repos.isEmpty());
+        assertNotNull(repos);
+        assertTrue(!repos.isEmpty());
 
         for (String repo : repos)
         {
@@ -90,19 +95,44 @@ public class TestBaseCMISMacro extends TestCase
             {
                 Repository repoDesc = repoStorage.getRepository(repo);
 
-                logger.debug ("name: " + repoDesc.getName());
-                logger.debug ("id: " + repoDesc.getId ());
-                logger.debug ("productName : " + repoDesc.getProductName());
-                logger.debug ("cmisVersionSupported: " + repoDesc.getCmisVersionSupported());
-                logger.debug ("description: " + repoDesc.getDescription());
+                logger.debug("name: " + repoDesc.getName());
+                logger.debug("id: " + repoDesc.getId());
+                logger.debug("productName : " + repoDesc.getProductName());
+                logger.debug("cmisVersionSupported: " + repoDesc.getCmisVersionSupported());
+                logger.debug("description: " + repoDesc.getDescription());
             }
             catch (NoRepositoryException e)
             {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                fail (e.getMessage());
+                fail(e.getMessage());
             }
         }
 
+    }
+
+    public void testCMISLinkGeneration()
+    {
+        RepositoryStorage repoStorage = RepositoryStorage.getInstance(new MockBandanaManager());
+
+        try
+        {
+            Repository repo = repoStorage.getRepository("alfresco");
+            Session session = repo.createSession();
+            ItemIterable<CmisObject> children = session.getRootFolder().getChildren();
+            for (CmisObject obj : children)
+            {
+                if ("TODO.txt".equals (obj.getName()))
+                {
+                    Document doc = (Document)obj;
+                    System.out.println (doc);
+                }
+            }
+        }
+        catch (NoRepositoryException e)
+        {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            fail (e.getMessage());
+        }
     }
 
     class MockBandanaManager implements BandanaManager

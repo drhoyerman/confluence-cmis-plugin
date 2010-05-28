@@ -17,11 +17,17 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
+import com.atlassian.renderer.v2.macro.MacroException;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.ObjectId;
+import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 
 import java.util.Map;
 
-public class DoclinkMacro extends BaseCMISMacro {
+public class DoclinkMacro extends BaseCMISMacro
+{
+    public static final String PARAM_DOCUMENT_ID = "id";
 
     public boolean isInline() {
         return true;
@@ -61,8 +67,40 @@ public class DoclinkMacro extends BaseCMISMacro {
 */
 
     @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+    protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException
     {
-        return "";  //To change body of implemented methods use File | Settings | File Templates.
+        Session session = repository.createSession();
+
+        if (!"Alfresco".equals (repository.getVendorName()))
+        {
+            throw new MacroException ("Currently cmis-doclink only supports Alfresco repositories");
+        }
+
+        String documentId = (String)params.get(PARAM_DOCUMENT_ID);
+        ObjectId objectId = session.createObjectId(documentId);
+
+        Document document = (Document)session.getObject(objectId);
+
+        if (document == null)
+        {
+            throw new MacroException("Cannot find any document with the following ID: " + documentId);
+        }
+
+        return renderDocumentLink(document, repository);
+    }
+
+    protected String renderDocumentLink (Document document, Repository repository)
+    {
+        StringBuilder out = new StringBuilder();
+
+        String documentId = document.getId().replace("://", "/");
+
+        out.append("[");
+        out.append(document.getName());
+        out.append("|");
+        out.append(repository.getThinClientUri()).append("/").append(documentId);
+        out.append("]");
+
+        return out.toString();
     }
 }

@@ -2,7 +2,7 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
-import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.velocity.VelocityContext;
 
 import java.util.Map;
@@ -67,7 +67,7 @@ public class NavigationMacro extends BaseCMISMacro {
   }
 
     @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Session session)
+    protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository)
     {
         return "";  //To change body of implemented methods use File | Settings | File Templates.
     }
