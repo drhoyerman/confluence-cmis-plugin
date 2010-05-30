@@ -18,6 +18,7 @@ package com.sourcesense.confluence.cmis;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.Repository;
@@ -85,7 +86,7 @@ public class DoclinkMacro extends BaseCMISMacro
         {
             throw new MacroException("Cannot find any document with the following ID: " + documentId);
         }
-        String link = getLink(session.getRepositoryInfo().getId(),documentId, Constants.REL_EDITMEDIA, session);
+        String link = Utils.getLink(session.getRepositoryInfo().getId(),documentId, Constants.REL_EDITMEDIA, session);
 
         return renderDocumentLink(document, link);
     }
@@ -102,19 +103,4 @@ public class DoclinkMacro extends BaseCMISMacro
 
         return out.toString();
     }
-
-    private String getLink(String repositoryId,String objectId,String rel,Session session) {
-      ObjectServiceImpl objectServices = (ObjectServiceImpl) session.getBinding().getObjectService();
-      Class<?> [] parameterTypes = {String.class,String.class,String.class,String.class} ;
-      String res = null;
-      try {
-        Method loadLink = AbstractAtomPubService.class.getDeclaredMethod("loadLink", parameterTypes );
-        loadLink.setAccessible(true);
-        res = (String) loadLink.invoke(objectServices, repositoryId,objectId,rel,null);
-      } catch (Exception e) {
-        logger.error(e.getMessage() +"Link retrieval failed");
-      }
-    return res;
-    }
-
 }
