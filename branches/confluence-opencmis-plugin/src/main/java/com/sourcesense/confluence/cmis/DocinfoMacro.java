@@ -18,21 +18,29 @@ package com.sourcesense.confluence.cmis;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.apache.chemistry.opencmis.commons.enums.PropertyType;
+import org.apache.chemistry.opencmis.commons.impl.Constants;
 
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class DocinfoMacro extends BaseCMISMacro {
+public class DocinfoMacro extends BaseCMISMacro
+{
 
     public static final String PARAM_DOCUMENT_ID = "id";
 
-    public boolean hasBody() {
+    public boolean hasBody()
+    {
         return false;
     }
 
-    public RenderMode getBodyRenderMode() {
+    public RenderMode getBodyRenderMode()
+    {
         return null;
     }
 
@@ -40,33 +48,41 @@ public class DocinfoMacro extends BaseCMISMacro {
     protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException
     {
         Session session = repository.createSession();
-        String documentId = (String)params.get(PARAM_DOCUMENT_ID);
+        String documentId = (String) params.get(PARAM_DOCUMENT_ID);
 
         ObjectId objectId = session.createObjectId(documentId);
-        CmisObject cmisObject = (Document)session.getObject(objectId);
+        CmisObject cmisObject = (Document) session.getObject(objectId);
 
         if (cmisObject == null)
         {
             throw new MacroException("Cannot find any document with the following ID: " + documentId);
         }
 
-        return renderDocumentInfo(cmisObject);
+        String title = cmisObject.getProperty(PropertyIds.NAME).getValueAsString();
+        String link = Utils.getLink(session.getRepositoryInfo().getId(),documentId, Constants.REL_EDITMEDIA, session);
+
+        StringBuilder sb = new StringBuilder(String.format("*Details of %s*\n", String.format("[%s|%s]", title, link)));
+
+        return renderDocumentInfo(sb, cmisObject);
     }
 
-    protected String renderDocumentInfo(CmisObject cmisObject)
+    protected String renderDocumentInfo(StringBuilder sb, CmisObject cmisObject)
     {
         List<Property<?>> properties = cmisObject.getProperties();
-        Property<String> title = cmisObject.getProperty(PropertyIds.NAME);
 
-        StringBuilder sb = new StringBuilder (String.format ("*Details of %s*\n", title.getValueAsString()));
-
-        sb.append ("||Property||Value||\n");
+        sb.append("||Property||Value||\n");
         for (Property<?> prop : properties)
         {
-            // TODO: handle different propertyTypes
-            sb.append (String.format ("|%s|%s|\n", prop.getDisplayName(), prop.getValueAsString()));
+            String stringValue = prop.getValueAsString();
+            if (PropertyType.DATETIME.equals(prop.getType()))
+            {
+                Calendar cal = (Calendar) prop.getFirstValue();
+                DateFormat df = DateFormat.getDateTimeInstance();
+                stringValue = df.format(cal.getTime());
+            }
+            sb.append(String.format("|%s|%s|\n", prop.getDisplayName(), stringValue));
         }
 
-        return sb.toString ();
+        return sb.toString();
     }
 }
