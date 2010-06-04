@@ -1,5 +1,21 @@
 package com.sourcesense.confluence.cmis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+import junit.framework.TestCase;
+
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.log4j.Logger;
+
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
@@ -7,20 +23,6 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import junit.framework.TestCase;
-import org.apache.chemistry.opencmis.client.api.*;
-import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
-import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.SessionParameter;
-import org.apache.chemistry.opencmis.commons.data.ContentStream;
-import org.apache.chemistry.opencmis.commons.enums.BindingType;
-import org.apache.chemistry.opencmis.commons.enums.VersioningState;
-import org.apache.log4j.Logger;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.util.*;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
@@ -32,12 +34,8 @@ public class TestBaseCMISMacro extends TestCase
     public void testRepositoryConnection() throws Exception
     {
         Map<String, String> parameters = new HashMap<String, String>();
-
-        parameters.put("s", "http://localhost:8081/alfresco/service/cmis");
 //        parameters.put("id", "alfresco");
         parameters.put("n", "alfresco");
-        parameters.put("u", "admin");
-        parameters.put("p", "admin");
 
         BaseCMISMacro baseMacro = new BaseCMISMacro()
         {
@@ -155,6 +153,7 @@ public class TestBaseCMISMacro extends TestCase
             Map<String, List<String>> repoConfigs = new WeakHashMap<String, List<String>>();
             List<String> repoConfig = new ArrayList<String>();
 
+            //repoConfig.add("http://cmis.alfresco.com:80/service/cmis");
             repoConfig.add("http://localhost:8081/alfresco/service/cmis");
             repoConfig.add("admin");
             repoConfig.add("admin");
