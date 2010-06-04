@@ -1,34 +1,51 @@
 package com.sourcesense.confluence.cmis;
 
-import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.commons.data.ObjectInFolderList;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 
 public class FolderExplorerMacro extends BaseCMISMacro {
-  
-  private static final String PARAM_FOLDER_ID = "id";
-  private static final String PARAM_RESULTS_NUMBER = "rn";
+
+  public static final String PARAM_FOLDER_ID = "id";
+
+  public static final String PARAM_RESULTS_NUMBER = "maxResults";
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext,
           Repository repository) throws MacroException {
     Session session = repository.createSession();
     String folderId = (String) params.get(PARAM_FOLDER_ID);
-    int number = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
-    
-    ObjectInFolderList list =session.getBinding().getNavigationService().getChildren(repository.getId(), folderId, null, null, false, null, null, null, BigInteger.valueOf(number), BigInteger.ZERO, null);
-    CmisObject o =session.getObject(session.createObjectId(list.getObjects().get(0).getObject().getId()));
-    
+    int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
+    Folder folder = (Folder) session.getObject(session.createObjectId(folderId));
+    ItemIterable<CmisObject> children = folder.getChildren();
+    List<CmisObject> filteredResults = new LinkedList<CmisObject>();
+    for (CmisObject cmisObject : children) {
+      if (filteredResults.size() < resultsNumber) {
+        if (cmisObject.getBaseType().getId().equals(BaseTypeId.CMIS_DOCUMENT.value())) {
+          filteredResults.add(cmisObject);
+        }
+      } else {
+        break;
+      }
 
-    
+    }
+
+    return renderResults(filteredResults);
+  }
+
+  private String renderResults(List<CmisObject> objects) {
+    // TODO Auto-generated method stub
     return null;
   }
 
