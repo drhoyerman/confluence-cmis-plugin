@@ -29,60 +29,52 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-public class DocinfoMacro extends BaseCMISMacro
-{
+public class DocinfoMacro extends BaseCMISMacro {
 
-    public static final String PARAM_DOCUMENT_ID = "id";
+  public static final String PARAM_DOCUMENT_ID = "id";
 
-    public boolean hasBody()
-    {
-        return false;
+  public boolean hasBody() {
+    return false;
+  }
+
+  public RenderMode getBodyRenderMode() {
+    return null;
+  }
+
+  @Override
+  protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
+    Session session = repository.createSession();
+    String documentId = (String) params.get(PARAM_DOCUMENT_ID);
+
+    ObjectId objectId = session.createObjectId(documentId);
+    CmisObject cmisObject = (Document) session.getObject(objectId);
+
+    if (cmisObject == null) {
+      throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
 
-    public RenderMode getBodyRenderMode()
-    {
-        return null;
+    String title = cmisObject.getProperty(PropertyIds.NAME).getValueAsString();
+    String link = Utils.getLink(session.getRepositoryInfo().getId(), documentId, Constants.REL_EDITMEDIA, session);
+
+    StringBuilder sb = new StringBuilder(String.format("*Details of %s*\n", String.format("[%s|%s]", title, link)));
+
+    return renderDocumentInfo(sb, cmisObject);
+  }
+
+  protected String renderDocumentInfo(StringBuilder sb, CmisObject cmisObject) {
+    List<Property<?>> properties = cmisObject.getProperties();
+
+    sb.append("||Property||Value||\n");
+    for (Property<?> prop : properties) {
+      String stringValue = prop.getValueAsString();
+      if (PropertyType.DATETIME.equals(prop.getType())) {
+        Calendar cal = (Calendar) prop.getFirstValue();
+        DateFormat df = DateFormat.getDateTimeInstance();
+        stringValue = df.format(cal.getTime());
+      }
+      sb.append(String.format("|%s|%s|\n", prop.getDisplayName(), stringValue));
     }
 
-    @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException
-    {
-        Session session = repository.createSession();
-        String documentId = (String) params.get(PARAM_DOCUMENT_ID);
-
-        ObjectId objectId = session.createObjectId(documentId);
-        CmisObject cmisObject = (Document) session.getObject(objectId);
-
-        if (cmisObject == null)
-        {
-            throw new MacroException("Cannot find any document with the following ID: " + documentId);
-        }
-
-        String title = cmisObject.getProperty(PropertyIds.NAME).getValueAsString();
-        String link = Utils.getLink(session.getRepositoryInfo().getId(),documentId, Constants.REL_EDITMEDIA, session);
-
-        StringBuilder sb = new StringBuilder(String.format("*Details of %s*\n", String.format("[%s|%s]", title, link)));
-
-        return renderDocumentInfo(sb, cmisObject);
-    }
-
-    protected String renderDocumentInfo(StringBuilder sb, CmisObject cmisObject)
-    {
-        List<Property<?>> properties = cmisObject.getProperties();
-
-        sb.append("||Property||Value||\n");
-        for (Property<?> prop : properties)
-        {
-            String stringValue = prop.getValueAsString();
-            if (PropertyType.DATETIME.equals(prop.getType()))
-            {
-                Calendar cal = (Calendar) prop.getFirstValue();
-                DateFormat df = DateFormat.getDateTimeInstance();
-                stringValue = df.format(cal.getTime());
-            }
-            sb.append(String.format("|%s|%s|\n", prop.getDisplayName(), stringValue));
-        }
-
-        return sb.toString();
-    }
+    return sb.toString();
+  }
 }

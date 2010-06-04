@@ -20,7 +20,7 @@
     <artifactId>atlassian-sourcesense-parent</artifactId>
     <version>1.0.22</version>
   </parent>
-  
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sourcesense.confluence</groupId>
   <artifactId>cmis-confluence-plugin</artifactId>
@@ -72,13 +72,13 @@
       <artifactId>chemistry-opencmis-client-impl</artifactId>
       <version>0.1-incubating-SNAPSHOT</version>
       <exclusions>
-	<exclusion>
-		<groupId>stax</groupId>
-		<artifactId>stax-api</artifactId>
-	</exclusion>
         <exclusion>
-                <groupId>javax.xml.stream</groupId>
-                <artifactId>stax-api</artifactId>
+          <groupId>stax</groupId>
+          <artifactId>stax-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.stream</groupId>
+          <artifactId>stax-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

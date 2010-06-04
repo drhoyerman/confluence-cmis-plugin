@@ -25,75 +25,75 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IntegrationTestCmisPlugin extends TestCase {
-    private static String USERNAME = "admin";
-    private static String PASSWORD = "admin";
-    private static String CMIS_REPOSITORY_URL = "http://127.0.0.1:8285/cmis/repository";
-    public static final String HOST = "127.0.0.1";
-    public static final int PORT = 8285;
-    public static final String SERVLET_PATH = "/cmis";
-    public static final String CMIS_SERVICE = "/repository";
-    public Server server;
+  private static String USERNAME = "admin";
+  private static String PASSWORD = "admin";
+  private static String CMIS_REPOSITORY_URL = "http://127.0.0.1:8285/cmis/repository";
+  public static final String HOST = "127.0.0.1";
+  public static final int PORT = 8285;
+  public static final String SERVLET_PATH = "/cmis";
+  public static final String CMIS_SERVICE = "/repository";
+  public Server server;
 
-    BandanaManager bandanaManager = new BandanaManager() {
+  BandanaManager bandanaManager = new BandanaManager() {
 
-        Map<String, Object> map = new HashMap<String, Object>();
+    Map<String, Object> map = new HashMap<String, Object>();
 
-        public void setValue(BandanaContext context, String key, Object value) {
-            map.put(key, value);
-        }
+    public void setValue(BandanaContext context, String key, Object value) {
+      map.put(key, value);
+    }
 
-        public void init() {
-        }
+    public void init() {
+    }
 
-        public void importValues(BandanaContext context, String xmlValues) {
-        }
+    public void importValues(BandanaContext context, String xmlValues) {
+    }
 
-        public Object getValue(BandanaContext context, String key, boolean lookUp) {
-            return map.get(key);
-        }
+    public Object getValue(BandanaContext context, String key, boolean lookUp) {
+      return map.get(key);
+    }
 
-        public Object getValue(BandanaContext context, String key) {
-            return map.get(key);
-        }
+    public Object getValue(BandanaContext context, String key) {
+      return map.get(key);
+    }
 
-        public String exportValues(BandanaContext context) {
-            return null;
-        }
-    };
+    public String exportValues(BandanaContext context) {
+      return null;
+    }
+  };
 
-    VelocityContext context = new VelocityContext() {
-        Map<String, Object> map = new HashMap<String, Object>();
+  VelocityContext context = new VelocityContext() {
+    Map<String, Object> map = new HashMap<String, Object>();
 
-        @Override
-        public Object clone() {
-            return new HashMap<String, Object>(map);
-        }
+    @Override
+    public Object clone() {
+      return new HashMap<String, Object>(map);
+    }
 
-        @Override
-        public boolean internalContainsKey(Object key) {
-            return map.containsKey(key);
-        }
+    @Override
+    public boolean internalContainsKey(Object key) {
+      return map.containsKey(key);
+    }
 
-        @Override
-        public Object internalGet(String key) {
-            return map.get(key);
-        }
+    @Override
+    public Object internalGet(String key) {
+      return map.get(key);
+    }
 
-        @Override
-        public Object[] internalGetKeys() {
-            return map.keySet().toArray();
-        }
+    @Override
+    public Object[] internalGetKeys() {
+      return map.keySet().toArray();
+    }
 
-        @Override
-        public Object internalPut(String key, Object value) {
-            return map.put(key, value);
-        }
+    @Override
+    public Object internalPut(String key, Object value) {
+      return map.put(key, value);
+    }
 
-        @Override
-        public Object internalRemove(Object key) {
-            return map.remove(key);
-        }
-    };
+    @Override
+    public Object internalRemove(Object key) {
+      return map.remove(key);
+    }
+  };
 
 /*
     public static Repository makeRepo(String rootId) throws IOException {

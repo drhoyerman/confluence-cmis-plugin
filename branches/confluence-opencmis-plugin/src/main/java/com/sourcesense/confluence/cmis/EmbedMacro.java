@@ -25,80 +25,66 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-public class EmbedMacro extends BaseCMISMacro
-{
-    public static final String PARAM_DOCUMENT_ID = "id";
-    public static final String PARAM_NOFORMAT = "nf";
+public class EmbedMacro extends BaseCMISMacro {
+  public static final String PARAM_DOCUMENT_ID = "id";
+  public static final String PARAM_NOFORMAT = "nf";
 
-    public boolean isInline()
-    {
-        return false;
+  public boolean isInline() {
+    return false;
+  }
+
+  public boolean hasBody() {
+    return false;
+  }
+
+  public RenderMode getBodyRenderMode() {
+    return null;
+  }
+
+  @Override
+  protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
+    String documentId = (String) params.get(PARAM_DOCUMENT_ID);
+    String noformat = (String) params.get(PARAM_NOFORMAT);
+
+    boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
+
+    Session session = repository.createSession();
+
+    ObjectId objectId = session.createObjectId(documentId);
+    CmisObject cmisObject = (Document) session.getObject(objectId);
+
+    String result = "";
+
+    if (cmisObject != null && cmisObject instanceof Document) {
+      result = renderDocument((Document) cmisObject, isNoFormat);
+    } else {
+      throw new MacroException("Object with id " + documentId + " is not a Document or is null");
     }
 
-    public boolean hasBody()
-    {
-        return false;
+    return result;
+  }
+
+  // TODO: is this really going to work with mime types other than text/plain?
+  private String renderDocument(Document document, boolean noformat) throws MacroException {
+    StringBuilder out = new StringBuilder();
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(document.getContentStream().getStream()));
+      String line = null;
+      if (noformat) {
+        out.append("{noformat}");
+      }
+      while ((line = reader.readLine()) != null) {
+        out.append(line);
+        out.append("\n");
+      }
+      if (noformat) {
+        out.append("{noformat}");
+      }
     }
-
-    public RenderMode getBodyRenderMode()
-    {
-        return null;
+    catch (IOException e) {
+      throw new MacroException(e.getMessage(), e);
     }
+    return out.toString();
 
-    @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException
-    {
-        String documentId = (String) params.get(PARAM_DOCUMENT_ID);
-        String noformat = (String) params.get(PARAM_NOFORMAT);
-
-        boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
-
-        Session session = repository.createSession();
-
-        ObjectId objectId = session.createObjectId(documentId);
-        CmisObject cmisObject = (Document)session.getObject(objectId);
-
-        String result = "";
-
-        if (cmisObject != null && cmisObject instanceof Document)
-        {
-            result = renderDocument((Document)cmisObject, isNoFormat);
-        }
-        else
-        {
-            throw new MacroException ("Object with id " + documentId + " is not a Document or is null");
-        }
-
-        return result;
-    }
-
-    // TODO: is this really going to work with mime types other than text/plain?
-    private String renderDocument(Document document, boolean noformat) throws MacroException
-    {
-        StringBuilder out = new StringBuilder();
-        try
-        {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(document.getContentStream().getStream()));
-            String line = null;
-            if (noformat)
-            {
-                out.append("{noformat}");
-            }
-            while ((line = reader.readLine()) != null)
-            {
-                out.append(line);
-                out.append("\n");
-            }
-            if (noformat)
-            {
-                out.append("{noformat}");
-            }
-        }
-        catch (IOException e)
-        {
-            throw new MacroException(e.getMessage(), e);
-        }
-        return out.toString();
-
-    }
+  }
 }

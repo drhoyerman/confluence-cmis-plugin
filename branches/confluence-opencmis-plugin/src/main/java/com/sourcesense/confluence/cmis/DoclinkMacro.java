@@ -15,37 +15,32 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-
+import com.atlassian.renderer.RenderContext;
+import com.atlassian.renderer.v2.RenderMode;
+import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.client.bindings.spi.atompub.AbstractAtomPubService;
-import org.apache.chemistry.opencmis.client.bindings.spi.atompub.ObjectServiceImpl;
 import org.apache.chemistry.opencmis.commons.impl.Constants;
 
-import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
-import com.atlassian.renderer.v2.macro.MacroException;
+import java.util.Map;
 
-public class DoclinkMacro extends BaseCMISMacro
-{
-    public static final String PARAM_DOCUMENT_ID = "id";
+public class DoclinkMacro extends BaseCMISMacro {
+  public static final String PARAM_DOCUMENT_ID = "id";
 
-    public boolean isInline() {
-        return true;
-    }
+  public boolean isInline() {
+    return true;
+  }
 
-    public boolean hasBody() {
-        return false;
-    }
+  public boolean hasBody() {
+    return false;
+  }
 
-    public RenderMode getBodyRenderMode() {
-        return null;
-    }
+  public RenderMode getBodyRenderMode() {
+    return null;
+  }
 
 /*
     protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Session session) throws MacroException {
@@ -72,35 +67,32 @@ public class DoclinkMacro extends BaseCMISMacro
     }
 */
 
-    @Override
-    protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException
-    {
-        Session session = repository.createSession();
+  @Override
+  protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
+    Session session = repository.createSession();
 
-        String documentId = (String)params.get(PARAM_DOCUMENT_ID);
-        ObjectId objectId = session.createObjectId(documentId);
+    String documentId = (String) params.get(PARAM_DOCUMENT_ID);
+    ObjectId objectId = session.createObjectId(documentId);
 
-        Document document = (Document)session.getObject(objectId);
+    Document document = (Document) session.getObject(objectId);
 
-        if (document == null)
-        {
-            throw new MacroException("Cannot find any document with the following ID: " + documentId);
-        }
-        String link = Utils.getLink(session.getRepositoryInfo().getId(),documentId, Constants.REL_EDITMEDIA, session);
-
-        return renderDocumentLink(document, link);
+    if (document == null) {
+      throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
+    String link = Utils.getLink(session.getRepositoryInfo().getId(), documentId, Constants.REL_EDITMEDIA, session);
 
-    protected String renderDocumentLink (Document document, String link )
-    {
-        StringBuilder out = new StringBuilder();
+    return renderDocumentLink(document, link);
+  }
 
-        out.append("[");
-        out.append(document.getName());
-        out.append("|");
-        out.append(link);
-        out.append("]");
+  protected String renderDocumentLink(Document document, String link) {
+    StringBuilder out = new StringBuilder();
 
-        return out.toString();
-    }
+    out.append("[");
+    out.append(document.getName());
+    out.append("|");
+    out.append(link);
+    out.append("]");
+
+    return out.toString();
+  }
 }
