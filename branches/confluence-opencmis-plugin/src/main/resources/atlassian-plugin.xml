@@ -45,11 +45,6 @@
     <url-pattern>/CMISProxy/*</url-pattern>
   </servlet>
 
-  <web-item key="attachlink" name="CMIS Attachment" section="system.content.action/primary" weight="20">
-    <label key="CMIS Attachment"/>
-    <link>/user/plugins/cmis/input.action</link>
-  </web-item>
-
   <xwork name="Configure CMIS plugin" key="configure-cmis">
     <package name="cmis" extends="default" namespace="/admin/plugins/cmis">
       <default-interceptor-ref name="defaultStack"/>
