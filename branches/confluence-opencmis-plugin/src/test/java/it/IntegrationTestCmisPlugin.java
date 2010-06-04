@@ -196,20 +196,6 @@ public class IntegrationTestCmisPlugin extends TestCase {
         stopServer();
     }
 
-    public void testNavigation() throws Exception {
-        NavigationMacro macro = new NavigationMacro();
-        macro.setBandanaManager(bandanaManager);
-        macro.setContext(context);
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("servlet", "http://127.0.0.1:8285/navigation/a");
-        params.put("n", "ChemistryLocal");
-        params.put("u", "admin");
-        params.put("p", "admin");
-        String result = macro.execute(params, null, null);
-        assertTrue(result.contains("folder 1"));
-        System.out.println(result);
-    }
-
     public void testSearch() throws Exception {
         SearchMacro macro = new SearchMacro();
         macro.setBandanaManager(bandanaManager);
