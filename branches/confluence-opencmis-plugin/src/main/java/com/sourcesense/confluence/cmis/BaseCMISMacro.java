@@ -15,6 +15,11 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import java.util.Map;
+
+import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.log4j.Logger;
+
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
@@ -22,11 +27,6 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import org.apache.chemistry.opencmis.client.api.Repository;
-import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.log4j.Logger;
-
-import java.util.Map;
 
 // TODO: put back in place the subclass delegation of behavior
 public abstract class BaseCMISMacro extends BaseMacro
@@ -34,9 +34,6 @@ public abstract class BaseCMISMacro extends BaseMacro
     protected static final Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis");
 
     public static final String PARAM_REPOSITORY_ID = "n";
-    public static final String PARAM_SERVER_URL = "s";
-    public static final String PARAM_USERNAME = "u";
-    public static final String PARAM_PASSWORD = "p";
 
     protected BandanaManager bandanaManager;
     protected SettingsManager settingsManager;
@@ -82,8 +79,7 @@ public abstract class BaseCMISMacro extends BaseMacro
 
     /**
      * Retrieves a Repository descriptor depending by the macro parameters:
-     * - if the repository id is provided ("n") than the repository details are taken from the plugin configuration
-     * - otherwise, the server URL ("s"), username ("u") and password ("p") macro parameters are used
+     * - The user must provide the repository id ("n") than the repository details are taken from the plugin configuration
      * @param params Parameter map holding the macro parameters
      * @param repositoryStorage Cached repository retriever
      * @return
@@ -97,12 +93,7 @@ public abstract class BaseCMISMacro extends BaseMacro
         {
             return repositoryStorage.getRepository(repoId);
         }
-
-        String serverUrl = (String) params.get("s");
-        String username = (String) params.get("u");
-        String password = (String) params.get("p");
-
-        return repositoryStorage.getRepository(serverUrl, username, password);
+        else throw new NoRepositoryException();
     }
 
     protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;
