@@ -14,6 +14,7 @@ import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
 import com.atlassian.bandana.BandanaContext;
@@ -21,7 +22,6 @@ import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 
 /**
@@ -99,7 +99,7 @@ public class TestBaseCMISMacro extends TestCase
                 logger.debug("cmisVersionSupported: " + repoDesc.getCmisVersionSupported());
                 logger.debug("description: " + repoDesc.getDescription());
             }
-            catch (NoRepositoryException e)
+            catch (CmisRuntimeException e)
             {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 fail(e.getMessage());
@@ -126,7 +126,7 @@ public class TestBaseCMISMacro extends TestCase
                 }
             }
         }
-        catch (NoRepositoryException e)
+        catch (CmisRuntimeException e)
         {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             fail (e.getMessage());

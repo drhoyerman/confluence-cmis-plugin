@@ -45,11 +45,6 @@
   		<url-pattern>/CMISProxy/*</url-pattern>
  	</servlet>
 
-    <servlet name="CMIS Navigation" key="cmis-navigation" class="com.sourcesense.confluence.servlets.CMISNavigationServlet">
- 		<description>A servlet version of the proxy CMIS.</description> 
-  		<url-pattern>/CMISNavigation/*</url-pattern>
- 	</servlet>
- 	
 	<web-item key="attachlink" name="CMIS Attachment" section="system.content.action/primary" weight="20">  
 		<label key="CMIS Attachment" /> 
 		<link>/user/plugins/cmis/input.action</link>  

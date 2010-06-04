@@ -170,12 +170,6 @@ public class IntegrationTestCmisPlugin extends TestCase {
             Context context = new Context(server, SERVLET_PATH, Context.SESSIONS);
             context.addServlet(cmisServletHolder, "*/
 /*");
-            //Set Navigation servlet
-            CMISNavigationServlet navigationServlet = new CMISNavigationServlet();
-            ServletHolder navigationServletHolder = new ServletHolder(navigationServlet);
-            navigationServlet.setBandanaManager(bandanaManager);
-            Context contexts = new Context(server, "/navigation", Context.SESSIONS);
-            contexts.addServlet(navigationServletHolder, "*/
 /*");
             //set Resources velocity template
             ResourceHandler handler = new ResourceHandler();

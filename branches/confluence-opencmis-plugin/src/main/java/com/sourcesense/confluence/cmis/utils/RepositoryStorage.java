@@ -3,11 +3,11 @@ package com.sourcesense.confluence.cmis.utils;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
-import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 
 import java.util.*;
 
@@ -63,7 +63,7 @@ public class RepositoryStorage
      * @return
      * @throws NoRepositoryException
      */
-    public Repository getRepository(String repoName) throws NoRepositoryException
+    public Repository getRepository(String repoName) throws CmisRuntimeException
     {
         if (!repositories.containsKey(repoName))
         {
@@ -79,7 +79,7 @@ public class RepositoryStorage
             }
             else
             {
-                throw new NoRepositoryException();
+                throw new CmisRuntimeException("No repository found");
             }
         }
 
@@ -94,7 +94,7 @@ public class RepositoryStorage
      * @return
      * @throws NoRepositoryException
      */
-    public Repository getRepository(String serverUrl, String username, String password) throws NoRepositoryException
+    public Repository getRepository(String serverUrl, String username, String password) throws CmisRuntimeException
     {
         Map<String, String> parameters = new HashMap<String, String>();
 
@@ -107,7 +107,7 @@ public class RepositoryStorage
 
         if (repos == null || repos.size () <= 0)
         {
-            throw new NoRepositoryException();
+            throw new CmisRuntimeException("No repository found");
         }
 
         // TODO: choose the repo in a better way

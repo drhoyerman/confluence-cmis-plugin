@@ -18,6 +18,7 @@ package com.sourcesense.confluence.cmis;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
 import com.atlassian.bandana.BandanaManager;
@@ -25,7 +26,6 @@ import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.sourcesense.confluence.cmis.exception.NoRepositoryException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 
 // TODO: put back in place the subclass delegation of behavior
@@ -85,7 +85,7 @@ public abstract class BaseCMISMacro extends BaseMacro
      * @return
      * @throws NoRepositoryException
      */
-    protected Repository getRepositoryFromParams (Map params, RepositoryStorage repositoryStorage) throws NoRepositoryException
+    protected Repository getRepositoryFromParams (Map params, RepositoryStorage repositoryStorage) throws CmisRuntimeException
     {
         String repoId = (String) params.get(PARAM_REPOSITORY_ID);
 
@@ -93,7 +93,7 @@ public abstract class BaseCMISMacro extends BaseMacro
         {
             return repositoryStorage.getRepository(repoId);
         }
-        else throw new NoRepositoryException();
+        else throw new CmisRuntimeException("No CMIS repository found");
     }
 
     protected abstract String executeImpl (Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;
