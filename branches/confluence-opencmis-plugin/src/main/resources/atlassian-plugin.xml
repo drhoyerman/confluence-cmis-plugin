@@ -55,25 +55,6 @@
 		<link>/user/plugins/cmis/input.action</link>  
 	</web-item>
  	
- 	<xwork name="Cmis Attachment" key="cmis-attachment-key">
- 		<package name="attach" extends="default" namespace="/user/plugins/cmis" >
- 			<default-interceptor-ref name="defaultStack" />
- 			<action name="input" class="com.sourcesense.confluence.cmis.AttachmentsAction"
-				method="servername">
-				<result name="input" type="velocity">/templates/cmis/attachments-cmis-servername.vm</result>
-			</action>
- 			<action name="folder" class="com.sourcesense.confluence.cmis.AttachmentsAction"
-				method="folder">
-				<result name="input" type="velocity">/templates/cmis/attachments-cmis-folder.vm</result>
-			</action>
- 			<action name="display" class="com.sourcesense.confluence.cmis.AttachmentsAction"
-				method="display">
-				<result name="input" type="velocity">/templates/cmis/attachments-cmis-display.vm</result>
-				<result name="error" type="velocity">/templates/cmis/attachments-cmis-display.vm</result>
-				<result name="success" type="velocity">/templates/cmis/attachments-cmis-display.vm</result>
-			</action>
- 		</package>
- 	</xwork>  
 	<xwork name="Configure CMIS plugin" key="configure-cmis">
 		<package name="cmis" extends="default" namespace="/admin/plugins/cmis">
 			<default-interceptor-ref name="defaultStack" />
