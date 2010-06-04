@@ -14,8 +14,8 @@ import com.atlassian.renderer.v2.macro.MacroException;
 
 public class FolderExplorerMacro extends BaseCMISMacro {
   
-  public static final String PARAM_FOLDER_ID = "id";
-  public static final String PARAM_RESULTS_NUMBER = "rn";
+  private static final String PARAM_FOLDER_ID = "id";
+  private static final String PARAM_RESULTS_NUMBER = "rn";
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext,

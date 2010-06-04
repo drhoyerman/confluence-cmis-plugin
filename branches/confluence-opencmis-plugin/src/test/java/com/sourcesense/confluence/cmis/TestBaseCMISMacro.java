@@ -149,6 +149,8 @@ public class TestBaseCMISMacro extends TestCase {
       repoConfig.add(cmisRealm);
       repoConfig.add(cmisUser);
       repoConfig.add(cmisPwd);
+      //No need to specify a RepositoryID
+      repoConfig.add(null);
 
       repoConfigs.put("test", repoConfig);
 

@@ -8,6 +8,7 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
@@ -15,6 +16,8 @@ import java.util.*;
  * Implements a simple cache logic to handle repositories
  */
 public class RepositoryStorage {
+
+  protected static final Logger logger = Logger.getLogger(RepositoryStorage.class);
 
   private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
   private Map<String, Repository> repositories;
@@ -55,20 +58,19 @@ public class RepositoryStorage {
    *
    * @param repoName Rpository ID as it was set in the plugin configuration
    * @return
-   * @throws NoRepositoryException
+   * @throws CmisRuntimeException
    */
   public Repository getRepository(String repoName) throws CmisRuntimeException {
     if (!repositories.containsKey(repoName)) {
       List<String> repositoryConfig = getRepositoriesMap().get(repoName);
       if (repositoryConfig != null) {
-        Repository repo = getRepository(repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
-            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
-            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD));
-
-        // TODO: how to choose one?
+        Repository repo = getCMISRepository(repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
+        repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
+        repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD),
+        repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REPOID));
         this.repositories.put(repoName, repo);
       } else {
-        throw new CmisRuntimeException("No repository found");
+        throw new CmisRuntimeException(String.format("No repository found with name '%s'; check the Plugin configuration.",repoName));
       }
     }
 
@@ -82,9 +84,9 @@ public class RepositoryStorage {
    * @param username  Username used to log into the repository
    * @param password  Password used to log into the repository
    * @return
-   * @throws NoRepositoryException
+   * @throws CmisRuntimeException
    */
-  public Repository getRepository(String serverUrl, String username, String password) throws CmisRuntimeException {
+  private Repository getCMISRepository(String serverUrl, String username, String password, String repositoryId) throws CmisRuntimeException {
     Map<String, String> parameters = new HashMap<String, String>();
 
     parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
@@ -92,14 +94,25 @@ public class RepositoryStorage {
     parameters.put(SessionParameter.USER, username);
     parameters.put(SessionParameter.PASSWORD, password);
 
+    if (repositoryId != null && !repositoryId.isEmpty()) {
+      parameters.put(SessionParameter.REPOSITORY_ID, repositoryId);
+    }
+
     List<Repository> repos = SessionFactoryImpl.newInstance().getRepositories(parameters);
 
     if (repos == null || repos.size() <= 0) {
-      throw new CmisRuntimeException("No repository found");
+      parameters.remove(SessionParameter.PASSWORD);
+      parameters.put(SessionParameter.PASSWORD, "*********");
+      throw new CmisRuntimeException("Could not retrieve any CMIS repository with the following parameters: "+parameters);
     }
 
-    // TODO: choose the repo in a better way
-    return repos.get(0);
+    Repository repo = repos.get(0);
+    if (repos.size() > 1) {
+      logger.warn("There is more than one repository supported in this realm; you should define a Repository Id in your configuration; currently, the first is used; Repository ID : "+repo.getId());
+    }
+
+    return repo;
+    
   }
 
 
@@ -111,4 +124,11 @@ public class RepositoryStorage {
     this.bandanaManager = bandanaManager;
   }
 
+  public Repository getRepository() {
+    if (getRepositoryNames().isEmpty())
+      throw new CmisRuntimeException("No CMIS repositories configured! Check the Plugin configuration.");
+    String firstRepository = getRepositoryNames().iterator().next();
+    logger.info("No Repository specified; using the first in the list : " + firstRepository);
+    return getRepository(firstRepository);
+  }
 }

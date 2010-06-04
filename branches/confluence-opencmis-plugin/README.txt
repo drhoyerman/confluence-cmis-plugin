@@ -18,9 +18,16 @@ The plugin has been tested on Confluence 3.2.1_01 and Alfresco Community/Enterpr
 
 From the project's root folder, run:
 
-mvn clean package
+> mvn clean package
 
-The plugin will be located in target/cmis-confluence-plugin-<version>.jar
+After testing the application against a public CMIS server,
+the plugin will be located in target/cmis-confluence-plugin-<version>.jar
+
+If you
+- Don't want to run the test
+> mvn clean package -DskipTests
+- Want to run test against your CMIS server
+> mvn clean package -Drealm=http://localhost:8080/alfresco/service/api/cmis -Duser=admin -Dpwd=admin
 
 3. Installing the plugin on Confluence
 

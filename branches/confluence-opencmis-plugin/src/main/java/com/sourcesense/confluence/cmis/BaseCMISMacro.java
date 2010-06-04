@@ -30,7 +30,7 @@ import java.util.Map;
 // TODO: put back in place the subclass delegation of behavior
 
 public abstract class BaseCMISMacro extends BaseMacro {
-  protected static final Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis");
+  protected static final Logger logger = Logger.getLogger(BaseCMISMacro.class);
 
   public static final String PARAM_REPOSITORY_ID = "n";
 
@@ -58,16 +58,14 @@ public abstract class BaseCMISMacro extends BaseMacro {
       Repository repository = getRepositoryFromParams(params, repositoryStorage);
 
       return executeImpl(params, body, renderContext, repository);
-
     }
     catch (Exception e) {
       logger.error("Cannot open a session with the CMIS repository", e);
+      throw new MacroException(e);
     }
     finally {
       Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
-
-    return "";
   }
 
   /**
@@ -77,14 +75,14 @@ public abstract class BaseCMISMacro extends BaseMacro {
    * @param params            Parameter map holding the macro parameters
    * @param repositoryStorage Cached repository retriever
    * @return
-   * @throws NoRepositoryException
+   * @throws CmisRuntimeException
    */
   protected Repository getRepositoryFromParams(Map params, RepositoryStorage repositoryStorage) throws CmisRuntimeException {
     String repoId = (String) params.get(PARAM_REPOSITORY_ID);
 
     if (repoId != null && !"".equals(repoId)) {
       return repositoryStorage.getRepository(repoId);
-    } else throw new CmisRuntimeException("No CMIS repository found");
+    } else return repositoryStorage.getRepository();
   }
 
   protected abstract String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;

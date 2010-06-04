@@ -15,24 +15,7 @@ import java.net.URI;
 
 public class Utils {
 
-  private static Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis.utils");
-
-  public static CmisObject getEntryViaID(Session session, String id, BaseTypeId baseType) {
-    return session.getObject(session.createObjectId(id));
-  }
-
-  public static String getBaseUrl() {
-    SettingsManager settingsManager = (SettingsManager) ContainerManager.getComponent("settingsManager");
-    String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
-    return baseUrl;
-  }
-
-  public static String rewriteUrl(URI url, String serverName) {
-    if (serverName != null) {
-      return Utils.getBaseUrl() + CMISProxyServlet.SERVLET_CMIS_PROXY + url.getPath() + "?servername=" + serverName;
-    } else
-      return url.toString();
-  }
+  private static Logger logger = Logger.getLogger(Utils.class);
 
   public static String getLink(String repositoryId, String objectId, String rel, Session session) {
     ObjectServiceImpl objectServices = (ObjectServiceImpl) session.getBinding().getObjectService();

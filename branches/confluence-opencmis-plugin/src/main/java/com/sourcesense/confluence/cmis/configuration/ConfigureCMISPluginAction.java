@@ -18,6 +18,7 @@ package com.sourcesense.confluence.cmis.configuration;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.core.ConfluenceActionSupport;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 
 import java.util.*;
 
@@ -29,6 +30,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   public static final Integer PARAM_REALM = 0;
   public static final Integer PARAM_USERNAME = 1;
   public static final Integer PARAM_PASSWORD = 2;
+  public static final Integer PARAM_REPOID = 3;
 
   private BandanaManager bandanaManager;
   private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
@@ -38,6 +40,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   private String[] realms;
   private String[] usernames;
   private String[] passwords;
+  private String[] repoids;
   private String[] servernames;
   private int indexToDelete = -1;
 
@@ -67,7 +70,8 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     this.credentialsMap = convertToCredentialsMap();
     List<String> list = new ArrayList<String>();
     list.add("http://");
-    list.add("");
+    list.add("admin");
+    list.add("admin");
     list.add("");
     this.credentialsMap.put("insert server name", list);
     return SUCCESS;
@@ -97,6 +101,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
         list.add(realms[i]);
         list.add(usernames[i]);
         list.add(passwords[i]);
+        list.add(repoids[i]);
         map.put(servernames[i], list);
       }
     }
@@ -105,10 +110,6 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
 
   public Map<String, List<String>> getCredentials() {
     return this.credentialsMap;
-  }
-
-  public List<String> getProperties() {
-    return this.searchProperties;
   }
 
   public void setRealms(String[] realms) {
@@ -127,42 +128,69 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     this.servernames = servernames;
   }
 
+  public void setRepoids(String[] repoids) {
+    this.repoids = repoids;
+  }
+
   public void setIndexToDelete(int indexToDelete) {
     this.indexToDelete = indexToDelete;
   }
 
-/*
-    public void setName(String name) {
-        this.searchProperties.add(Property.NAME);
-    }
+  public boolean hasName() {
+    return this.searchProperties.contains(PropertyIds.NAME);
+  }
+  public void setName(String name) {
+    this.searchProperties.add(PropertyIds.NAME);
+  }
 
-    public void setObjectId(String objectId) {
-        this.searchProperties.add(Property.ID);
-    }
+  public boolean hasObjectId() {
+    return this.searchProperties.contains(PropertyIds.OBJECT_ID);
+  }
+  public void setObjectId(String objectId) {
+    this.searchProperties.add(PropertyIds.OBJECT_ID);
+  }
 
-    public void setObjectTypeId(String objectTypeId) {
-        this.searchProperties.add(Property.TYPE_ID);
-    }
+  public boolean hasObjectTypeId() {
+    return this.searchProperties.contains(PropertyIds.OBJECT_TYPE_ID);
+  }
+  public void setObjectTypeId(String objectTypeId) {
+    this.searchProperties.add(PropertyIds.OBJECT_TYPE_ID);
+  }
 
-    public void setCreatedBy(String createdBy) {
-        this.searchProperties.add(Property.CREATED_BY);
-    }
+  public boolean hasCreatedBy() {
+    return this.searchProperties.contains(PropertyIds.CREATED_BY);
+  }
+  public void setCreatedBy(String createdBy) {
+    this.searchProperties.add(PropertyIds.CREATED_BY);
+  }
 
-    public void setCreationDate(String creationDate) {
-        this.searchProperties.add(Property.CREATION_DATE);
-    }
+  public boolean hasCreationDate() {
+    return this.searchProperties.contains(PropertyIds.CREATION_DATE);
+  }
+  public void setCreationDate(String creationDate) {
+    this.searchProperties.add(PropertyIds.CREATION_DATE);
+  }
 
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.searchProperties.add(Property.LAST_MODIFIED_BY);
-    }
 
-    public void setLastModificationDate(String lastModificationDate) {
-        this.searchProperties.add(Property.LAST_MODIFICATION_DATE);
-    }
+  public boolean hasLastModifiedBy() {
+    return this.searchProperties.contains(PropertyIds.LAST_MODIFIED_BY);
+  }
+  public void setLastModifiedBy(String lastModifiedBy) {
+    this.searchProperties.add(PropertyIds.LAST_MODIFIED_BY);
+  }
 
-    public void setIsLatestVersion(String isLatestVersion) {
-        this.searchProperties.add(Property.IS_LATEST_VERSION);
-    }
-*/
+  public boolean hasLastModificationDate() {
+    return this.searchProperties.contains(PropertyIds.LAST_MODIFICATION_DATE);
+  }
+  public void setLastModificationDate(String lastModificationDate) {
+    this.searchProperties.add(PropertyIds.LAST_MODIFICATION_DATE);
+  }
+
+  public boolean hasIsLatestVersion() {
+    return this.searchProperties.contains(PropertyIds.IS_LATEST_VERSION);
+  }
+  public void setIsLatestVersion(String isLatestVersion) {
+    this.searchProperties.add(PropertyIds.IS_LATEST_VERSION);
+  }
 
 }
