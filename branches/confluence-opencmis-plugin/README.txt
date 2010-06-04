@@ -1,62 +1,62 @@
 The CMIS Plugin for Atlassian Confluence defines a set of macros that allow Confluence to retrieve
 and display information from a CMIS server.
+This plugin relies on a snapshot version of Apache Chemistry OpenCMIS - http://incubator.apache.org/chemistry
 
 For more information on CMIS see http://www.cmisdev.org
 
-1. Building the plugin
+1. Requirements
 
-Maven 2.0.9+ is required. Maven 2.1.0 is recommended.
++ Maven 2.0.9+ (Maven 2.2.1 is recommended)
++ Atlassian Confluence 3.x
++ Alfresco 3.3 (or any other Content Management System supporting CMIS 1.0 spec)
+NOTE! Be sure that you define different port numbers; both platforms bind on port 8080 (and 8000 for shutdown) by default.
+You can either edit Alfresco/tomcat/conf/server.xml or confluence-3.2.1_01-std/conf/server.xml
 
-This plugin relies on an unreleased version of Apache Abdera, therefore you need to build it yourself.
+The plugin has been tested on Confluence 3.2.1_01 and Alfresco Community/Enterprise 3.3
 
-Checkout http://svn.apache.org/repos/asf/abdera/java/trunk and run "mvn install". If the build was
-successful, you should have now a full set of Abdera librries in your local Maven repository.
+2. Building the plugin
 
-Build the plugin by running "mvn package" in this directory. At the end of the build, you will find
-the plugin's JAR in the "target" directory. Install it using Confluence's plugin manager as usual.
+From the project's root folder, run:
 
-As of June 4, 2009, the plugin has only been tested with Confluence 3.0-beta2-r3.
+mvn clean package
 
-** NOTE ON RESOURCE FILTERING **
+The plugin will be located in target/cmis-confluence-plugin-<version>.jar
 
-The default pom has 'resource filtering' enabled, which means files in the src/main/resources directory will have
-variables in the form ${var} replaced during the build process. For example, the default atlassian-plugin.xml includes
-${project.artifactId}, which is replaced with the artifactId taken from the POM when building the plugin.
+3. Installing the plugin on Confluence
 
-More information on resource filtering is available in the Maven documentation:
+- Access to the Confluence Admin Plugin interface - http://localhost:8085/admin/viewplugins.action
+- Upload the previously built plugin
+- Configure the CMIS Plugin and set:
+  - ServerName : alfresco
+  - http://localhost:8080/alfresco/service/api/cmis
+  - Username : admin
+  - Password : admin
 
-http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html
+4. Test it!
 
+- Log into Alfresco - http://localhost:8080/alfresco (admin/admin)
+- Upload some content
+- Fetch the ID of the content you've just uploaded; by looking at the link of the content
+(i.e. http://localhost:8080/alfresco/d/d/workspace/SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6/README.txt)
+you have to fetch the ID  from the url : workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6
+The ID of the item can be safely retrieved from the Alfresco Admin Node Browser
+- Add a Page on Confluence (http://localhost:8085/pages/createpage.action?spaceKey=ds) and dump the following code:
 
-2. Using the plugin
+h1. Embedding an CMIS Document
+{cmis-embed:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
-The plugin defines the following macros:
+h1. Embedding CMIS Document informations
+{cmis-docinfo:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
-{cmis-link:s=<url>|u=<username>|p=<password>}
+h1. Linking to an CMIS Document
+{cmis-doclink:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
-Displays a link to the document or folder whose CMIS URL is <url>.
-
-{cmis-link:s=<url>|id=<id>|u=<username>|p=<password>}
-
-Displays a link to the document or folder whose object ID is <id>. In this case, the value of "s"
-must be equal to the URL of the CMIS Service Document.
-
-{cmis-embed:s=<url>|u=<username>|p=<password>|nf=<yes|no>}
-
-Embeds the document whose CMIS URL is <url> in the current page. If the value of the "nf" parameter
-starts with "y", encloses the document in a {noformat} macro.
-
-{cmis-embed:s=<url>|id=<id>|u=<username>|p=<password>|nf=<yes|no>}
-
-Embeds the document whose object ID is <id> in the current page. In this case, the value of "s"
-must be equal to the URL of the CMIS Service Document.
-
-If the value of the "nf" parameter starts with "y", encloses the document in a {noformat} macro.
-
-{cmis-search:s=<url>|u=<username>|p=<password>}
-SELECT ...
+h1. Performs the CMIS-SQL query specified as the body of the macro and displays the results as a table
+{cmis-search:n=alfresco|properties=ObjectId;Name|}
+SELECT * FROM cmis:document
 {cmis-search}
 
-Performs the CMIS-SQL query specified as the body of the macro and displays the results as a table.
-The value of the "s" parameter must be the URL of the CMIS Service Document.
- 
+5. Additional features
+
+No Format - encloses the document in a {noformat} macro
+{cmis-embed:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|nf=yes}

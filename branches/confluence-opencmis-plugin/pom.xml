@@ -31,6 +31,11 @@
 
   <repositories>
     <repository>
+      <id>for-xfire</id>
+      <name>Repo needed for xfire-parent-1.2.6</name>
+      <url>http://ftp.us.xemacs.org/pub/mirrors/maven2</url>
+    </repository>
+    <repository>
       <id>sose-public</id>
       <url>http://repository.sourcesense.com/nexus/content/groups/public</url>
     </repository>
