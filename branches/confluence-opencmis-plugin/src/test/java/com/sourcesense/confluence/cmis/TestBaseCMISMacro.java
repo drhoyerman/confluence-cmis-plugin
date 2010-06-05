@@ -40,8 +40,8 @@ public class TestBaseCMISMacro extends TestCase {
     parameters.put("servername", "test");
 
     /**
-         * You can use -Drealm -Duser and -Dpwd in order to override the default values
-       **/
+     * You can use -Drealm -Duser and -Dpwd in order to override the default values
+     **/
     String cmisRealmProp = System.getProperty("realm");
     if (cmisRealmProp != null) cmisRealm = cmisRealmProp;
     String cmisUserProp = System.getProperty("user");

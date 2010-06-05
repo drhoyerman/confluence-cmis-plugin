@@ -15,20 +15,15 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.Folder;
-import org.apache.chemistry.opencmis.client.api.ItemIterable;
-import org.apache.chemistry.opencmis.client.api.Repository;
-import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
-
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class FolderExplorerMacro extends BaseCMISMacro {
 
@@ -38,7 +33,7 @@ public class FolderExplorerMacro extends BaseCMISMacro {
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext,
-          Repository repository) throws MacroException {
+                               Repository repository) throws MacroException {
     Session session = repository.createSession();
     String folderId = (String) params.get(PARAM_FOLDER_ID);
     int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
