@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app" xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200901" xmlns:alf="http://www.alfresco.org" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+   <author>
+      <name>admin</name>
+   </author>
+   <generator version="3.2.0 (@build-number@)">Alfresco (Community)</generator>
+   <icon>http://192.168.1.8:8080/alfresco/images/logo/AlfrescoLogo16.ico</icon>
+   <id>urn:uuid:resultset</id>
+   <link rel="self" href="http://192.168.1.8:8080/alfresco/service/api/query"/>
+   <link rel="first" href="http://192.168.1.8:8080/alfresco/service/api/query?maxItems=10&amp;skipCount=0&amp;guest=" type="application/atom+xml;type=feed"/>
+   <link rel="next" href="http://192.168.1.8:8080/alfresco/service/api/query?maxItems=10&amp;skipCount=10&amp;guest=" type="application/atom+xml;type=feed"/>
+   <title>Result set for SELECT * FROM DOCUMENT WHERE CONTAINS('alfresco')</title>
+   <updated>2009-07-09T11:54:05.908+02:00</updated>
+   <entry>
+      <author>
+         <name>System</name>
+      </author>
+      <content type="application/x-javascript" src="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/content.js"/>
+      <id>urn:uuid:e23cbf12-f45d-486b-8d3b-95ef13b375db</id>
+      <link rel="self" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db"/>
+      <link rel="edit" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db"/>
+      <link rel="enclosure" type="application/x-javascript" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/content.js"/>
+      <link rel="edit-media" type="application/x-javascript" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/content.js"/>
+      <link rel="allowableactions" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/permissions"/>
+      <link rel="relationships" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/rels"/>
+      <link rel="parents" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/parents"/>
+      <link rel="allversions" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/versions"/>
+      <link rel="stream" type="application/x-javascript" href="http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/content.js"/>
+      <link rel="type" href="http://192.168.1.8:8080/alfresco/service/api/type/document"/>
+      <link rel="repository" href="http://192.168.1.8:8080/alfresco/service/api/repository"/>
+      <title>alfresco docs.js</title>
+      <updated>2009-07-08T15:04:08.646+02:00</updated>
+      <cmis:object>
+         <cmis:properties>
+            <cmis:propertyString cmis:name="BaseType">
+               <cmis:value>document</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyString cmis:name="ContentStreamFilename">
+               <cmis:value>alfresco docs.js</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyString cmis:name="CheckinComment"/>
+            <cmis:propertyDateTime cmis:name="LastModificationDate">
+               <cmis:value>2009-07-08T15:04:08.646+02:00</cmis:value>
+            </cmis:propertyDateTime>
+            <cmis:propertyInteger cmis:name="ContentStreamLength">
+               <cmis:value>535</cmis:value>
+            </cmis:propertyInteger>
+            <cmis:propertyBoolean cmis:name="IsImmutable">
+               <cmis:value>false</cmis:value>
+            </cmis:propertyBoolean>
+            <cmis:propertyBoolean cmis:name="IsLatestMajorVersion">
+               <cmis:value>false</cmis:value>
+            </cmis:propertyBoolean>
+            <cmis:propertyString cmis:name="LastModifiedBy">
+               <cmis:value>System</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyString cmis:name="ContentStreamMimeType">
+               <cmis:value>application/x-javascript</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyBoolean cmis:name="IsMajorVersion">
+               <cmis:value>false</cmis:value>
+            </cmis:propertyBoolean>
+            <cmis:propertyUri cmis:name="Uri"/>
+            <cmis:propertyString cmis:name="ContentStreamAllowed">
+               <cmis:value>ALLOWED</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyId cmis:name="ObjectTypeId">
+               <cmis:value>document</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyString cmis:name="VersionLabel"/>
+            <cmis:propertyBoolean cmis:name="IsLatestVersion">
+               <cmis:value>true</cmis:value>
+            </cmis:propertyBoolean>
+            <cmis:propertyId cmis:name="VersionSeriesCheckedOutId"/>
+            <cmis:propertyBoolean cmis:name="IsVersionSeriesCheckedOut">
+               <cmis:value>false</cmis:value>
+            </cmis:propertyBoolean>
+            <cmis:propertyString cmis:name="CreatedBy">
+               <cmis:value>System</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyString cmis:name="ChangeToken"/>
+            <cmis:propertyString cmis:name="VersionSeriesCheckedOutBy"/>
+            <cmis:propertyId cmis:name="ObjectId">
+               <cmis:value>workspace://SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyUri cmis:name="ContentStreamUri">
+               <cmis:value>http://192.168.1.8:8080/alfresco/service/api/node/workspace/SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db/content.js</cmis:value>
+            </cmis:propertyUri>
+            <cmis:propertyId cmis:name="VersionSeriesId">
+               <cmis:value>workspace://SpacesStore/e23cbf12-f45d-486b-8d3b-95ef13b375db</cmis:value>
+            </cmis:propertyId>
+            <cmis:propertyString cmis:name="Name">
+               <cmis:value>alfresco docs.js</cmis:value>
+            </cmis:propertyString>
+            <cmis:propertyDateTime cmis:name="CreationDate">
+               <cmis:value>2009-07-08T15:04:08.566+02:00</cmis:value>
+            </cmis:propertyDateTime>
+         </cmis:properties>
+      </cmis:object>
+      <cmis:terminator/>
+      <alf:icon>http://192.168.1.8:8080/alfresco/images/filetypes/js.gif</alf:icon>
+   </entry>
+   <cmis:hasMoreItems>true</cmis:hasMoreItems>
+   <opensearch:totalResults>11</opensearch:totalResults>
+   <opensearch:startIndex>0</opensearch:startIndex>
+   <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+</feed>
