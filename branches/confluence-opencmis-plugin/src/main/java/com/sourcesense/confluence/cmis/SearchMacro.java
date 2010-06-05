@@ -17,15 +17,15 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 import com.atlassian.renderer.RenderContext;
+import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
+import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.QueryResult;
-import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
-import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -39,30 +39,31 @@ public class SearchMacro extends BaseCMISMacro {
   }
 
   @Override
-  protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) {
+  protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
 
-    Session session = repository.createSession();
+    Session session = confluenceCmisRepository.getRepository().createSession();
+    boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
 
     List<String> properties = getProperties(params.get(BaseCMISMacro.PARAM_PROPERTIES));
 
     ItemIterable<QueryResult> results = session.query(body, false);
     StringBuilder out = new StringBuilder();
 
-    renderResults(out, results, properties, repository);
+    renderResults(out, results, properties, confluenceCmisRepository, session, useProxy);
 
     logger.debug("results:");
     logger.debug(out.toString());
     return out.toString();
   }
 
-  private void renderResults(StringBuilder out, ItemIterable<QueryResult> results, List<String> properties, Repository repository) {
+  private void renderResults(StringBuilder out, ItemIterable<QueryResult> results, List<String> properties, ConfluenceCMISRepository confluenceCmisRepository, Session session, boolean useProxy) throws MacroException {
     renderTableHeader(out, properties);
     for (QueryResult res : results) {
-      renderResult(out, res, properties, repository);
+      renderResult(out, res, properties, confluenceCmisRepository, session, useProxy);
     }
   }
 
-  private void renderResult(StringBuilder out, QueryResult queryResult, List<String> properties, Repository repository) {
+  private void renderResult(StringBuilder out, QueryResult queryResult, List<String> properties, ConfluenceCMISRepository confluenceCmisRepository, Session session, boolean useProxy) throws MacroException {
 
     //Defining a map id -> value for all properties of the current result; easier to handle
     Map<String, List> cmisQueryProperties = new HashMap<String, List>();
@@ -74,7 +75,7 @@ public class SearchMacro extends BaseCMISMacro {
     List listVal = cmisQueryProperties.get(PropertyIds.NAME);
     String objectId = (String) queryResult.getPropertyById(PropertyIds.OBJECT_ID).getFirstValue();
     String name = (String) listVal.get(0);
-    String link = Utils.getLink(repository.getId(), objectId, Constants.REL_EDITMEDIA, repository.createSession());
+    String link = Utils.getLink(session, confluenceCmisRepository, objectId, useProxy);
     listVal.set(0, String.format("[%s|%s]", name, link));
 
     //Displaying the 3 principal and mandatory columns

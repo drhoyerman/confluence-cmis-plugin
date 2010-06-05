@@ -17,30 +17,30 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
-import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.commons.impl.Constants;
 
 import java.util.Map;
 
 public class DoclinkMacro extends BaseCMISMacro {
 
   @Override
-  protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
-    Session session = repository.createSession();
+  protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
+    Session session = confluenceCmisRepository.getRepository().createSession();
 
     String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
     ObjectId objectId = session.createObjectId(documentId);
+    boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
 
     Document document = (Document) session.getObject(objectId);
 
     if (document == null) {
       throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
-    String link = Utils.getLink(session.getRepositoryInfo().getId(), documentId, Constants.REL_EDITMEDIA, session);
+    String link = Utils.getLink(session, confluenceCmisRepository, documentId, useProxy);
 
     return renderDocumentLink(document, link);
   }

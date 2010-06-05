@@ -63,8 +63,8 @@ h1. Performs the CMIS-SQL query specified as the body of the macro and displays 
 
 5. Additional features
 
-No Format - encloses the document in a {noformat} macro; default is 'yes'
-{cmis-embed:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|nf=no}
+No Format - encloses the document in a {noformat} macro; default is 'no'
+{cmis-embed:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|nf=yes}
 
 Specify another server - you can specify on every macro servername=<your server name>, if you have more than one repository configured
 {cmis-embed:servername=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
@@ -73,3 +73,6 @@ Custom properties in the search results - you can specify which properties to sh
 {cmis-search:properties=<objectId;objectTypeId;createdBy;creationDate;lastModifiedBy}
 SELECT * FROM cmis:document
 {cmis-search}
+
+Disable Link Proxy - on all macros that generate links, you can specify whether to skip the Proxy servlet and get the direct CMIS link
+{cmis-doclink:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|useproxy=no}

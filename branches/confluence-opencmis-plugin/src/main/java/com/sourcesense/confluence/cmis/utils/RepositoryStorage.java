@@ -2,6 +2,7 @@ package com.sourcesense.confluence.cmis.utils;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
+import com.sourcesense.confluence.cmis.BaseCMISMacro;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
@@ -20,8 +21,10 @@ public class RepositoryStorage {
   protected static final Logger logger = Logger.getLogger(RepositoryStorage.class);
 
   private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
-  private Map<String, Repository> repositories;
+  private Map<String, ConfluenceCMISRepository> repositories;
   private BandanaManager bandanaManager;
+
+  //Singleton
   private static RepositoryStorage repositoryStorage;
 
   public static RepositoryStorage getInstance(BandanaManager bandanaManager) {
@@ -33,16 +36,16 @@ public class RepositoryStorage {
     return repositoryStorage;
   }
 
-  public static RepositoryStorage resetAndGetInstance(Map<String, Repository> cache, BandanaManager bandanaManager) {
+  public static RepositoryStorage resetAndGetInstance(Map<String, ConfluenceCMISRepository> cache, BandanaManager bandanaManager) {
     repositoryStorage = new RepositoryStorage(cache);
     return getInstance(bandanaManager);
   }
 
   public RepositoryStorage() {
-    this.repositories = new WeakHashMap<String, Repository>();
+    this.repositories = new WeakHashMap<String, ConfluenceCMISRepository>();
   }
 
-  public RepositoryStorage(Map<String, Repository> cache) {
+  public RepositoryStorage(Map<String, ConfluenceCMISRepository> cache) {
     this.repositories = cache;
   }
 
@@ -60,11 +63,11 @@ public class RepositoryStorage {
    * @return
    * @throws CmisRuntimeException
    */
-  public Repository getRepository(String repoName) throws CmisRuntimeException {
+  public ConfluenceCMISRepository getRepository(String repoName) throws CmisRuntimeException {
     if (!repositories.containsKey(repoName)) {
       List<String> repositoryConfig = getRepositoriesMap().get(repoName);
       if (repositoryConfig != null) {
-        Repository repo = getCMISRepository(repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
+        ConfluenceCMISRepository repo = getCMISRepository(repoName, repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
             repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
             repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD),
             repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REPOID));
@@ -86,9 +89,10 @@ public class RepositoryStorage {
    * @return
    * @throws CmisRuntimeException
    */
-  private Repository getCMISRepository(String serverUrl, String username, String password, String repositoryId) throws CmisRuntimeException {
+  private ConfluenceCMISRepository getCMISRepository(String repositoryName, String serverUrl, String username, String password, String repositoryId) throws CmisRuntimeException {
     Map<String, String> parameters = new HashMap<String, String>();
 
+    parameters.put(BaseCMISMacro.REPOSITORY_NAME, repositoryName);
     parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
     parameters.put(SessionParameter.ATOMPUB_URL, serverUrl);
     parameters.put(SessionParameter.USER, username);
@@ -99,6 +103,8 @@ public class RepositoryStorage {
     }
 
     List<Repository> repos = SessionFactoryImpl.newInstance().getRepositories(parameters);
+
+
 
     if (repos == null || repos.size() <= 0) {
       parameters.remove(SessionParameter.PASSWORD);
@@ -111,7 +117,9 @@ public class RepositoryStorage {
       logger.warn("There is more than one repository supported in this realm; you should define a Repository Id in your configuration; currently, the first is used; Repository ID : " + repo.getId());
     }
 
-    return repo;
+    ConfluenceCMISRepository confluenceCmisRepo = new ConfluenceCMISRepository(repositoryName,repo);
+
+    return confluenceCmisRepo;
 
   }
 
@@ -124,7 +132,7 @@ public class RepositoryStorage {
     this.bandanaManager = bandanaManager;
   }
 
-  public Repository getRepository() {
+  public ConfluenceCMISRepository getRepository() {
     if (getRepositoryNames().isEmpty())
       throw new CmisRuntimeException("No CMIS repositories configured! Check the Plugin configuration.");
     String firstRepository = getRepositoryNames().iterator().next();

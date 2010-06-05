@@ -21,8 +21,8 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
@@ -38,9 +38,13 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected static final String PARAM_ID = "id";
   protected static final String PARAM_RESULTS_NUMBER = "maxResults";
   protected static final String PARAM_NOFORMAT = "nf";
-  protected static String PARAM_PROPERTIES = "properties";
+  protected static final String PARAM_USEPROXY = "useproxy";
+  protected static final String PARAM_PROPERTIES = "properties";
+
+  public static final java.lang.String REPOSITORY_NAME = "com.sourcesense.confluence.cmis.repository.name";
 
   protected static final int DEFAULT_RESULTS_NUMBER = 20;
+  protected static final String DEFAULT_USEPROXY = "yes";
 
   //TODO : make this regexp configurable, along with the locale
   protected static SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy");
@@ -66,9 +70,11 @@ public abstract class BaseCMISMacro extends BaseMacro {
       Thread.currentThread().setContextClassLoader(cl);
 
       RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
-      Repository repository = getRepositoryFromParams(params, repositoryStorage);
+      ConfluenceCMISRepository repositoryConfluence = getRepositoryFromParams(params, repositoryStorage);
 
-      return executeImpl(params, body, renderContext, repository);
+      populateParams(params, body, renderContext, repositoryConfluence);
+
+      return executeImpl(params, body, renderContext, repositoryConfluence);
     }
     catch (Exception e) {
       logger.error("Cannot open a session with the CMIS repository", e);
@@ -80,7 +86,26 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
   }
 
-  protected abstract String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;
+  /**
+   * Parses and provides common casting for mosly used and wide-spread macro parameters
+   * @param params
+   * @param body
+   * @param renderContext
+   * @param repositoryConfluence
+   */
+  private void populateParams(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repositoryConfluence) {
+    String useProxy = (String) params.get(BaseCMISMacro.PARAM_USEPROXY);
+    if (useProxy == null || useProxy.isEmpty()) {
+      useProxy = BaseCMISMacro.DEFAULT_USEPROXY;
+    }
+    if (useProxy.equals("y") || useProxy.equals("yes")) {
+      params.put(BaseCMISMacro.PARAM_USEPROXY, Boolean.TRUE);
+    } else {
+      params.put(BaseCMISMacro.PARAM_USEPROXY, Boolean.FALSE);
+    }
+  }
+
+  protected abstract String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repositoryConfluence) throws MacroException;
   
   /**
    * Retrieves a Repository descriptor depending by the macro parameters:
@@ -91,9 +116,9 @@ public abstract class BaseCMISMacro extends BaseMacro {
    * @return
    * @throws CmisRuntimeException
    */
-  protected Repository getRepositoryFromParams(Map params, RepositoryStorage repositoryStorage) throws CmisRuntimeException {
+  protected ConfluenceCMISRepository getRepositoryFromParams(Map params, RepositoryStorage repositoryStorage) throws CmisRuntimeException {
     String repoId = (String) params.get(PARAM_REPOSITORY_ID);
-    if (repoId != null && !"".equals(repoId)) {
+    if (repoId != null && !repoId.isEmpty()) {
       return repositoryStorage.getRepository(repoId);
     } else return repositoryStorage.getRepository();
   }

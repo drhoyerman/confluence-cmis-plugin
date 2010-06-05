@@ -20,6 +20,7 @@ import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import junit.framework.TestCase;
 import org.apache.chemistry.opencmis.client.api.*;
@@ -60,7 +61,7 @@ public class TestBaseCMISMacro extends TestCase {
       }
 
       @Override
-      protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repo) {
+      protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repo) {
         return "OK";
       }
     };
@@ -94,13 +95,13 @@ public class TestBaseCMISMacro extends TestCase {
 
     for (String repo : repos) {
       try {
-        Repository repoDesc = repoStorage.getRepository(repo);
+        ConfluenceCMISRepository repoDesc = repoStorage.getRepository(repo);
 
         logger.debug("name: " + repoDesc.getName());
-        logger.debug("id: " + repoDesc.getId());
-        logger.debug("productName : " + repoDesc.getProductName());
-        logger.debug("cmisVersionSupported: " + repoDesc.getCmisVersionSupported());
-        logger.debug("description: " + repoDesc.getDescription());
+        logger.debug("id: " + repoDesc.getRepository().getId());
+        logger.debug("productName : " + repoDesc.getRepository().getProductName());
+        logger.debug("cmisVersionSupported: " + repoDesc.getRepository().getCmisVersionSupported());
+        logger.debug("description: " + repoDesc.getRepository().getDescription());
       }
       catch (CmisRuntimeException e) {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -114,8 +115,8 @@ public class TestBaseCMISMacro extends TestCase {
     RepositoryStorage repoStorage = RepositoryStorage.getInstance(new MockBandanaManager());
 
     try {
-      Repository repo = repoStorage.getRepository("test");
-      Session session = repo.createSession();
+      ConfluenceCMISRepository repo = repoStorage.getRepository("test");
+      Session session = repo.getRepository().createSession();
       ItemIterable<CmisObject> children = session.getRootFolder().getChildren();
       for (CmisObject obj : children) {
         if ("TODO.txt".equals(obj.getName())) {

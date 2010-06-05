@@ -17,6 +17,7 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 
@@ -29,8 +30,8 @@ public class FolderExplorerMacro extends BaseCMISMacro {
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext,
-                               Repository repository) throws MacroException {
-    Session session = repository.createSession();
+                               ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
+    Session session = confluenceCmisRepository.getRepository().createSession();
     String folderId = (String) params.get(BaseCMISMacro.PARAM_ID);
     int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
     if (resultsNumber < 1) resultsNumber = BaseCMISMacro.DEFAULT_RESULTS_NUMBER;
