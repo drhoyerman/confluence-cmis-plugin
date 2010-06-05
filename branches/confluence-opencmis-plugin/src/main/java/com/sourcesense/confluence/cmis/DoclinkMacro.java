@@ -16,7 +16,6 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -28,50 +27,12 @@ import org.apache.chemistry.opencmis.commons.impl.Constants;
 import java.util.Map;
 
 public class DoclinkMacro extends BaseCMISMacro {
-  public static final String PARAM_DOCUMENT_ID = "id";
-
-  public boolean isInline() {
-    return true;
-  }
-
-  public boolean hasBody() {
-    return false;
-  }
-
-  public RenderMode getBodyRenderMode() {
-    return null;
-  }
-
-/*
-    protected String doExecute(Map<String, String> params, String body, RenderContext renderContext, Session session) throws MacroException {
-        String id = (String) params.get("id");
-        CMISObject obj = repository.getConnection(null).getObject(Utils.getEntryViaID(repository, id, BaseType.DOCUMENT), null);
-        if (obj == null) {
-            throw new MacroException("No such object: " + id);
-        }
-        return renderEntry(obj);
-
-    }
-*/
-
-/*
-    private String renderEntry(CMISObject entry) {
-        StringBuilder out = new StringBuilder();
-        URI url = entry.getURI(Property.CONTENT_STREAM_URI); // XXX Should there be a constant definition in CMIS class for this?
-        out.append("[");
-        out.append(entry.getName());
-        out.append("|");
-        out.append(Utils.rewriteUrl(url, serverName));
-        out.append("]");
-        return out.toString();
-    }
-*/
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
     Session session = repository.createSession();
 
-    String documentId = (String) params.get(PARAM_DOCUMENT_ID);
+    String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
     ObjectId objectId = session.createObjectId(documentId);
 
     Document document = (Document) session.getObject(objectId);

@@ -1,17 +1,11 @@
 package com.sourcesense.confluence.cmis.utils;
 
-import com.atlassian.confluence.setup.settings.SettingsManager;
-import com.atlassian.spring.container.ContainerManager;
-import com.sourcesense.confluence.servlets.CMISProxyServlet;
-import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.bindings.spi.atompub.AbstractAtomPubService;
 import org.apache.chemistry.opencmis.client.bindings.spi.atompub.ObjectServiceImpl;
-import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
-import java.net.URI;
 
 public class Utils {
 

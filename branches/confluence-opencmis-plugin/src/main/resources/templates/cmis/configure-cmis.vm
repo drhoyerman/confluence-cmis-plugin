@@ -67,9 +67,6 @@
                         	<th>Search configuration</th>
                         		<tr>
                         			<td>
-                        				Name <input name="name" id="name" type="checkbox" #if ($action.hasName()) checked #end />
-                        			</td>
-                        			<td>
                         				ObjectId <input name="objectId" id="objectId" type="checkbox" #if ($action.hasObjectId()) checked #end/>
                         			</td>
                         			<td>
@@ -83,9 +80,6 @@
                         			</td>
                         			<td>
                         				LastModifiedBy <input name="lastModifiedBy" id="lastModifiedBy" type="checkbox"#if ($action.hasLastModifiedBy()) checked #end/>
-                        			</td>
-                        			<td>
-                        				LastModificationDate <input name="lastModificationDate" id="lastModificationDate" type="checkbox"#if ($action.hasLastModificationDate()) checked #end/>
                         			</td>
                         			<td>
                         				IsLatestVersion <input name="isLatestVersion" id="isLatestVersion" type="checkbox"#if ($action.hasIsLatestVersion()) checked #end/>

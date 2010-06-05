@@ -70,6 +70,6 @@ Specify another server - you can specify on every macro servername=<your server 
 {cmis-embed:servername=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
 Custom properties in the search results - you can specify which properties to show by using
-{cmis-search:properties=<name;objectId;objectTypeId;createdBy;creationDate;lastModifiedBy;lastModificationDate}
+{cmis-search:properties=<objectId;objectTypeId;createdBy;creationDate;lastModifiedBy}
 SELECT * FROM cmis:document
 {cmis-search}

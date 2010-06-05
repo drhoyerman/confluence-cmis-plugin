@@ -16,7 +16,6 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.*;
@@ -31,20 +30,11 @@ import java.util.Map;
 
 public class DocinfoMacro extends BaseCMISMacro {
 
-  public static final String PARAM_DOCUMENT_ID = "id";
-
-  public boolean hasBody() {
-    return false;
-  }
-
-  public RenderMode getBodyRenderMode() {
-    return null;
-  }
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
     Session session = repository.createSession();
-    String documentId = (String) params.get(PARAM_DOCUMENT_ID);
+    String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
 
     ObjectId objectId = session.createObjectId(documentId);
     CmisObject cmisObject = (Document) session.getObject(objectId);

@@ -18,6 +18,7 @@ package com.sourcesense.confluence.cmis;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.settings.SettingsManager;
 import com.atlassian.renderer.RenderContext;
+import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
@@ -25,6 +26,7 @@ import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 // TODO: put back in place the subclass delegation of behavior
@@ -32,7 +34,16 @@ import java.util.Map;
 public abstract class BaseCMISMacro extends BaseMacro {
   protected static final Logger logger = Logger.getLogger(BaseCMISMacro.class);
 
-  public static final String PARAM_REPOSITORY_ID = "servername";
+  protected static final String PARAM_REPOSITORY_ID = "servername";
+  protected static final String PARAM_ID = "id";
+  protected static final String PARAM_RESULTS_NUMBER = "maxResults";
+  protected static final String PARAM_NOFORMAT = "nf";
+  protected static String PARAM_PROPERTIES = "properties";
+
+  protected static final int DEFAULT_RESULTS_NUMBER = 20;
+
+  //TODO : make this regexp configurable, along with the locale
+  protected static SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy");
 
   protected BandanaManager bandanaManager;
   protected SettingsManager settingsManager;
@@ -61,6 +72,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
     catch (Exception e) {
       logger.error("Cannot open a session with the CMIS repository", e);
+      e.printStackTrace();
       throw new MacroException(e);
     }
     finally {
@@ -68,6 +80,8 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
   }
 
+  protected abstract String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;
+  
   /**
    * Retrieves a Repository descriptor depending by the macro parameters:
    * - The user must provide the repository id ("servername") than the repository details are taken from the plugin configuration
@@ -79,12 +93,17 @@ public abstract class BaseCMISMacro extends BaseMacro {
    */
   protected Repository getRepositoryFromParams(Map params, RepositoryStorage repositoryStorage) throws CmisRuntimeException {
     String repoId = (String) params.get(PARAM_REPOSITORY_ID);
-
     if (repoId != null && !"".equals(repoId)) {
       return repositoryStorage.getRepository(repoId);
     } else return repositoryStorage.getRepository();
   }
 
-  protected abstract String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException;
+  public RenderMode getBodyRenderMode() {
+    return null;
+  }
 
+  public boolean hasBody() {
+    return false;
+  }
+  
 }

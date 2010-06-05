@@ -17,7 +17,6 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -29,20 +28,14 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.log4j.Logger;
 
-import java.text.DateFormat;
 import java.util.*;
 
 public class SearchMacro extends BaseCMISMacro {
-  private static final Logger logger = Logger.getLogger("com.sourcesense.confluence.cmis");
+  protected static final Logger logger = Logger.getLogger(SearchMacro.class);
 
-  public static String PARAM_PROPERTIES = "properties";
-
+  @Override
   public boolean hasBody() {
     return true;
-  }
-
-  public RenderMode getBodyRenderMode() {
-    return null;
   }
 
   @Override
@@ -50,61 +43,59 @@ public class SearchMacro extends BaseCMISMacro {
 
     Session session = repository.createSession();
 
-    List<String> properties = getProperties(params.get(PARAM_PROPERTIES));
-    logger.debug("Iterating over the following properties:");
-    for (String prop : properties) {
-      logger.debug("\t - " + prop);
-    }
+    List<String> properties = getProperties(params.get(BaseCMISMacro.PARAM_PROPERTIES));
 
     ItemIterable<QueryResult> results = session.query(body, false);
     StringBuilder out = new StringBuilder();
 
     renderResults(out, results, properties, repository);
 
-    logger.debug("result:");
+    logger.debug("results:");
     logger.debug(out.toString());
-
     return out.toString();
   }
 
   private void renderResults(StringBuilder out, ItemIterable<QueryResult> results, List<String> properties, Repository repository) {
-    renderTitle(out, properties);
-
-    out.append("|");
+    renderTableHeader(out, properties);
     for (QueryResult res : results) {
-      renderEntry(out, res, properties, repository);
+      renderResult(out, res, properties, repository);
     }
   }
 
-  private void renderEntry(StringBuilder out, QueryResult res, List<String> properties, Repository repository) {
-    List<PropertyData<?>> cmisPropsList = res.getProperties();
-    Map<String, List> cmisPropMap = new HashMap<String, List>();
+  private void renderResult(StringBuilder out, QueryResult queryResult, List<String> properties, Repository repository) {
 
-    for (PropertyData prop : cmisPropsList) {
-      cmisPropMap.put(prop.getId(), prop.getValues());
+    //Defining a map id -> value for all properties of the current result; easier to handle
+    Map<String, List> cmisQueryProperties = new HashMap<String, List>();
+    for (PropertyData prop : queryResult.getProperties()) {
+      cmisQueryProperties.put(prop.getId(), prop.getValues());
     }
 
     // replace the node name with a wiki-style link
-    List listVal = cmisPropMap.get(PropertyIds.NAME);
+    List listVal = cmisQueryProperties.get(PropertyIds.NAME);
+    String objectId = (String) queryResult.getPropertyById(PropertyIds.OBJECT_ID).getFirstValue();
     String name = (String) listVal.get(0);
-    listVal.set(0, String.format("[%s|%s]", name, Utils.getLink(repository.getId(),
-        (String) res.getPropertyById(PropertyIds.OBJECT_ID).getFirstValue(),
-        Constants.REL_EDITMEDIA,
-        repository.createSession())));
+    String link = Utils.getLink(repository.getId(), objectId, Constants.REL_EDITMEDIA, repository.createSession());
+    listVal.set(0, String.format("[%s|%s]", name, link));
 
-    renderProperty(out, PropertyIds.NAME, cmisPropMap);
-    renderProperty(out, PropertyIds.LAST_MODIFICATION_DATE, cmisPropMap);
-    renderProperty(out, PropertyIds.CONTENT_STREAM_LENGTH, cmisPropMap);
+    //Displaying the 3 principal and mandatory columns
+    renderProperty(out, PropertyIds.NAME, cmisQueryProperties);
+    renderProperty(out, PropertyIds.LAST_MODIFICATION_DATE, cmisQueryProperties);
+    renderProperty(out, PropertyIds.CONTENT_STREAM_LENGTH, cmisQueryProperties);
 
+    //Displaying the additional and configurable columns
     for (String property : properties) {
-      property = getCMISPropertyName(property);
-      renderProperty(out, property, cmisPropMap);
+      renderProperty(out, property, cmisQueryProperties);
     }
+
+    //End of a table row
+    out.append("|");
+    out.append("\n");
   }
 
   private void renderProperty(StringBuilder out, String property, Map<String, List> cmisPropMap) {
     List valueList = cmisPropMap.get(property);
     if (valueList != null && valueList.size() > 0) {
+      out.append("|");
       Iterator i = valueList.iterator();
       while (i.hasNext()) {
         renderPropertyValue(out, i.next());
@@ -112,40 +103,36 @@ public class SearchMacro extends BaseCMISMacro {
           out.append(";");
         }
       }
-
-      out.append("|");
     }
   }
 
   private void renderPropertyValue(StringBuilder out, Object o) {
     if (o instanceof Calendar) {
       Calendar cal = (Calendar) o;
-      DateFormat df = DateFormat.getDateTimeInstance();
-      out.append(df.format(cal.getTime()));
+      out.append(sdf.format(cal.getTime()));
     } else {
       out.append(o);
     }
   }
 
-  private void renderTitle(StringBuilder out, List<String> columns) {
+  private void renderTableHeader(StringBuilder out, List<String> columns) {
     out.append("||Title||Last Modified||Size||");
-
     if (columns.size() > 0) {
       for (String prop : columns) {
-        out.append(getCMISPropertyTitle(prop)).append("||");
+        out.append(getCMISPropertyTitle(prop));
+        out.append("||");
       }
     }
-
     out.append("\n");
   }
 
   private String getCMISPropertyTitle(String property) {
-    String title = property.substring(property.charAt(':'));
+    String title = getCMISPropertyName(property);
     return Character.toUpperCase(title.charAt(0)) + title.substring(1);
   }
 
   private String getCMISPropertyName(String property) {
-    return property.substring(property.charAt(':'));
+    return property.substring(property.lastIndexOf(':')+1);
   }
 
   /**
@@ -156,11 +143,9 @@ public class SearchMacro extends BaseCMISMacro {
    * @return The input properties or the saved onse in case of no 'properties' macro parameter
    */
   private List<String> getProperties(Object properties) {
-    if (properties instanceof String && !"".equals(properties)) {
+    if (properties instanceof String && !((String) properties).isEmpty()) {
       return Arrays.asList(((String) properties).split(";"));
     }
-
-
     logger.debug("Fetching the properties from the global plugin configuration");
 
     // get the properties enumeration from the plugin conf

@@ -135,16 +135,10 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     this.indexToDelete = indexToDelete;
   }
 
-  public boolean hasName() {
-    return this.searchProperties.contains(PropertyIds.NAME);
-  }
-  public void setName(String name) {
-    this.searchProperties.add(PropertyIds.NAME);
-  }
-
   public boolean hasObjectId() {
     return this.searchProperties.contains(PropertyIds.OBJECT_ID);
   }
+
   public void setObjectId(String objectId) {
     this.searchProperties.add(PropertyIds.OBJECT_ID);
   }
@@ -152,6 +146,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   public boolean hasObjectTypeId() {
     return this.searchProperties.contains(PropertyIds.OBJECT_TYPE_ID);
   }
+
   public void setObjectTypeId(String objectTypeId) {
     this.searchProperties.add(PropertyIds.OBJECT_TYPE_ID);
   }
@@ -159,6 +154,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   public boolean hasCreatedBy() {
     return this.searchProperties.contains(PropertyIds.CREATED_BY);
   }
+
   public void setCreatedBy(String createdBy) {
     this.searchProperties.add(PropertyIds.CREATED_BY);
   }
@@ -166,6 +162,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   public boolean hasCreationDate() {
     return this.searchProperties.contains(PropertyIds.CREATION_DATE);
   }
+
   public void setCreationDate(String creationDate) {
     this.searchProperties.add(PropertyIds.CREATION_DATE);
   }
@@ -174,20 +171,15 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   public boolean hasLastModifiedBy() {
     return this.searchProperties.contains(PropertyIds.LAST_MODIFIED_BY);
   }
+
   public void setLastModifiedBy(String lastModifiedBy) {
     this.searchProperties.add(PropertyIds.LAST_MODIFIED_BY);
-  }
-
-  public boolean hasLastModificationDate() {
-    return this.searchProperties.contains(PropertyIds.LAST_MODIFICATION_DATE);
-  }
-  public void setLastModificationDate(String lastModificationDate) {
-    this.searchProperties.add(PropertyIds.LAST_MODIFICATION_DATE);
   }
 
   public boolean hasIsLatestVersion() {
     return this.searchProperties.contains(PropertyIds.IS_LATEST_VERSION);
   }
+
   public void setIsLatestVersion(String isLatestVersion) {
     this.searchProperties.add(PropertyIds.IS_LATEST_VERSION);
   }

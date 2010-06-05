@@ -65,12 +65,12 @@ public class RepositoryStorage {
       List<String> repositoryConfig = getRepositoriesMap().get(repoName);
       if (repositoryConfig != null) {
         Repository repo = getCMISRepository(repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
-        repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
-        repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD),
-        repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REPOID));
+            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
+            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD),
+            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REPOID));
         this.repositories.put(repoName, repo);
       } else {
-        throw new CmisRuntimeException(String.format("No repository found with name '%s'; check the Plugin configuration.",repoName));
+        throw new CmisRuntimeException(String.format("No repository found with name '%s'; check the Plugin configuration.", repoName));
       }
     }
 
@@ -103,16 +103,16 @@ public class RepositoryStorage {
     if (repos == null || repos.size() <= 0) {
       parameters.remove(SessionParameter.PASSWORD);
       parameters.put(SessionParameter.PASSWORD, "*********");
-      throw new CmisRuntimeException("Could not retrieve any CMIS repository with the following parameters: "+parameters);
+      throw new CmisRuntimeException("Could not retrieve any CMIS repository with the following parameters: " + parameters);
     }
 
     Repository repo = repos.get(0);
     if (repos.size() > 1) {
-      logger.warn("There is more than one repository supported in this realm; you should define a Repository Id in your configuration; currently, the first is used; Repository ID : "+repo.getId());
+      logger.warn("There is more than one repository supported in this realm; you should define a Repository Id in your configuration; currently, the first is used; Repository ID : " + repo.getId());
     }
 
     return repo;
-    
+
   }
 
 

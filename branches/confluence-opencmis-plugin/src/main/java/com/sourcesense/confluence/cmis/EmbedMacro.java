@@ -16,7 +16,6 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import org.apache.chemistry.opencmis.client.api.*;
 
@@ -26,32 +25,18 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 public class EmbedMacro extends BaseCMISMacro {
-  public static final String PARAM_DOCUMENT_ID = "id";
-  public static final String PARAM_NOFORMAT = "nf";
-
-  public boolean isInline() {
-    return false;
-  }
-
-  public boolean hasBody() {
-    return false;
-  }
-
-  public RenderMode getBodyRenderMode() {
-    return null;
-  }
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, Repository repository) throws MacroException {
-    String documentId = (String) params.get(PARAM_DOCUMENT_ID);
-    String noformat = (String) params.get(PARAM_NOFORMAT);
+    String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
+    String noformat = (String) params.get(BaseCMISMacro.PARAM_NOFORMAT);
 
     boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
 
     Session session = repository.createSession();
 
     ObjectId objectId = session.createObjectId(documentId);
-    CmisObject cmisObject = (Document) session.getObject(objectId);
+    CmisObject cmisObject = session.getObject(objectId);
 
     String result = "";
 
@@ -80,9 +65,8 @@ public class EmbedMacro extends BaseCMISMacro {
       if (noformat) {
         out.append("{noformat}");
       }
-    }
-    catch (IOException e) {
-      throw new MacroException(e.getMessage(), e);
+    } catch (IOException e) {
+      throw new MacroException(e);
     }
     return out.toString();
 

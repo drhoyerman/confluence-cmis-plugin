@@ -16,7 +16,6 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
@@ -27,16 +26,14 @@ import java.util.Map;
 
 public class FolderExplorerMacro extends BaseCMISMacro {
 
-  public static final String PARAM_FOLDER_ID = "id";
-
-  public static final String PARAM_RESULTS_NUMBER = "maxResults";
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext,
                                Repository repository) throws MacroException {
     Session session = repository.createSession();
-    String folderId = (String) params.get(PARAM_FOLDER_ID);
+    String folderId = (String) params.get(BaseCMISMacro.PARAM_ID);
     int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
+    if (resultsNumber < 1) resultsNumber = BaseCMISMacro.DEFAULT_RESULTS_NUMBER;
     Folder folder = (Folder) session.getObject(session.createObjectId(folderId));
     ItemIterable<CmisObject> children = folder.getChildren();
     List<CmisObject> filteredResults = new LinkedList<CmisObject>();
@@ -48,7 +45,6 @@ public class FolderExplorerMacro extends BaseCMISMacro {
       } else {
         break;
       }
-
     }
     return renderResults(filteredResults);
   }
@@ -56,14 +52,6 @@ public class FolderExplorerMacro extends BaseCMISMacro {
   private String renderResults(List<CmisObject> objects) {
     // TODO Auto-generated method stub
     return null;
-  }
-
-  public RenderMode getBodyRenderMode() {
-    return null;
-  }
-
-  public boolean hasBody() {
-    return false;
   }
 
 }

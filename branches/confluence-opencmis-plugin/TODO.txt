@@ -15,6 +15,7 @@
 #
 
 !- Tests for all Macros
+- Add path property, everywhere an id is used; easier to use
 - External Attachments view (using CMIS queries)
 - CMIS Navigation Services (Browse CMIS repository)
 - Write support - see it/IntegrationTestCmisPlugin.java in the branch

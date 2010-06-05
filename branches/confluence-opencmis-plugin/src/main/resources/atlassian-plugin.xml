@@ -40,6 +40,10 @@
     <description>Displays properties of a CMIS document.</description>
   </macro>
 
+  <macro name='cmis-folder' class='com.sourcesense.confluence.cmis.FolderExplorerMacro' key='cmis-folder'>
+    <description>Displays the list of children contained in a CMIS folder.</description>
+  </macro>
+
   <servlet name="Proxy Link" key="proxy-link" class="com.sourcesense.confluence.servlets.CMISProxyServlet">
     <description>A servlet version of the proxy CMIS.</description>
     <url-pattern>/CMISProxy/*</url-pattern>
