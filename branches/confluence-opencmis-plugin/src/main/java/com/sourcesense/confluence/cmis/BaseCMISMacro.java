@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sourcesense <http://www.sourcesense.com>
+ * Copyright 2010 Sourcesense <http://www.sourcesense.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import java.util.Map;
 public abstract class BaseCMISMacro extends BaseMacro {
   protected static final Logger logger = Logger.getLogger(BaseCMISMacro.class);
 
-  public static final String PARAM_REPOSITORY_ID = "n";
+  public static final String PARAM_REPOSITORY_ID = "servername";
 
   protected BandanaManager bandanaManager;
   protected SettingsManager settingsManager;
@@ -70,7 +70,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
   /**
    * Retrieves a Repository descriptor depending by the macro parameters:
-   * - The user must provide the repository id ("n") than the repository details are taken from the plugin configuration
+   * - The user must provide the repository id ("servername") than the repository details are taken from the plugin configuration
    *
    * @param params            Parameter map holding the macro parameters
    * @param repositoryStorage Cached repository retriever

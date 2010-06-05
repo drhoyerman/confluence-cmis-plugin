@@ -1,5 +1,5 @@
 <!--
- * Copyright 2009 Sourcesense <http://www.sourcesense.com>
+ * Copyright 2010 Sourcesense <http://www.sourcesense.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 <atlassian-plugin name="${pom.name}" key="${atlassian.plugin.key}" pluginsVersion="2" enabled="true">
   <plugin-info>
     <description>Access content in an external CMIS repository</description>
-    <version>1.0-SNAPSHOT</version>
+    <version>${pom.version}</version>
     <vendor name="Sourcesense" url="http://www.sourcesense.com"/>
     <param name="configure.url">/admin/plugins/cmis/configure.action</param>
   </plugin-info>

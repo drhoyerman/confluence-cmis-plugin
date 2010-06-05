@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sourcesense <http://www.sourcesense.com>
+ * Copyright 2010 Sourcesense <http://www.sourcesense.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class TestBaseCMISMacro extends TestCase {
 
   public void testRepositoryConnection() throws Exception {
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put("n", "test");
+    parameters.put("servername", "test");
 
     /**
          * You can use -Drealm -Duser and -Dpwd in order to override the default values

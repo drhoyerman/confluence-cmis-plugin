@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sourcesense <http://www.sourcesense.com>
+ * Copyright 2010 Sourcesense <http://www.sourcesense.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     this.bandanaManager = bandanaManager;
   }
 
-  @SuppressWarnings("unchecked")
   public String input() {
     this.credentialsMap = (Map<String, List<String>>) this.bandanaManager.getValue(context, CREDENTIALS_KEY);
     this.searchProperties = (List<String>) this.bandanaManager.getValue(context, SEARCH_PROPERTIES_KEY);
@@ -96,7 +95,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   private Map<String, List<String>> convertToCredentialsMap(int indexToDelete) {
     Map<String, List<String>> map = new TreeMap<String, List<String>>();
     for (int i = 0; i < servernames.length; ++i) {
-      if (i != indexToDelete && !"".equals(servernames[i].trim())) {
+      if (i != indexToDelete && !servernames[i].trim().isEmpty()) {
         List<String> list = new ArrayList<String>();
         list.add(realms[i]);
         list.add(usernames[i]);

@@ -1,3 +1,16 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.sourcesense.confluence.servlets;
 
 import com.atlassian.bandana.BandanaManager;
@@ -26,8 +39,8 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 /**
- * ProxyServlet from http://edwardstx.net/wiki/attach/HttpProxyServlet/ProxyServlet.java
- * (This seems to be a derivative of Noodle -- http://noodle.tigris.org/)
+ * Thanks to for sharing this implementation! More information can be found here
+ * http://edwardstx.net/wiki/Wiki.jsp?page=HttpProxyServlet
  * <p/>
  * Patched to skip "Transfer-Encoding: chunked" headers, avoid double slashes
  * in proxied URLs, handle GZip and allow GWT RPC.

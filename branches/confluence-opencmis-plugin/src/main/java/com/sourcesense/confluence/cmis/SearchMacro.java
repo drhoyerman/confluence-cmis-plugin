@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sourcesense <http://www.sourcesense.com>
+ * Copyright 2010 Sourcesense <http://www.sourcesense.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,10 +76,7 @@ public class SearchMacro extends BaseCMISMacro {
     }
   }
 
-  private void renderEntry(StringBuilder out, QueryResult res, List<String> filters, Repository repository) {
-    // TODO: the name should be clickable and should point to the raw binary
-    // TODO: review how to handle filter properties
-
+  private void renderEntry(StringBuilder out, QueryResult res, List<String> properties, Repository repository) {
     List<PropertyData<?>> cmisPropsList = res.getProperties();
     Map<String, List> cmisPropMap = new HashMap<String, List>();
 
@@ -99,8 +96,9 @@ public class SearchMacro extends BaseCMISMacro {
     renderProperty(out, PropertyIds.LAST_MODIFICATION_DATE, cmisPropMap);
     renderProperty(out, PropertyIds.CONTENT_STREAM_LENGTH, cmisPropMap);
 
-    for (String filter : filters) {
-      renderProperty(out, filter, cmisPropMap);
+    for (String property : properties) {
+      property = getCMISPropertyName(property);
+      renderProperty(out, property, cmisPropMap);
     }
   }
 
@@ -129,16 +127,25 @@ public class SearchMacro extends BaseCMISMacro {
     }
   }
 
-  private void renderTitle(StringBuilder out, List<String> filterProperties) {
+  private void renderTitle(StringBuilder out, List<String> columns) {
     out.append("||Title||Last Modified||Size||");
 
-    if (filterProperties.size() > 0) {
-      for (String prop : filterProperties) {
-        out.append(prop).append("||");
+    if (columns.size() > 0) {
+      for (String prop : columns) {
+        out.append(getCMISPropertyTitle(prop)).append("||");
       }
     }
 
     out.append("\n");
+  }
+
+  private String getCMISPropertyTitle(String property) {
+    String title = property.substring(property.charAt(':'));
+    return Character.toUpperCase(title.charAt(0)) + title.substring(1);
+  }
+
+  private String getCMISPropertyName(String property) {
+    return property.substring(property.charAt(':'));
   }
 
   /**

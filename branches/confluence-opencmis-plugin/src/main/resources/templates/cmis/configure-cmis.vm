@@ -22,19 +22,19 @@
 									#set ($index = $velocityCount - 1)
 	                                <tr>
 	                                	<td>
-	                                		<input type="text" name="servernames" size="50" value="$servername">
+	                                		<input type="text" name="servernames" size="15" value="$servername">
 	                                	</td>
 	                                    <td>
-	                                        <input type="text" name="realms" size="50" value="$credentials.get($servername).get(0)">
+	                                        <input type="text" name="realms" size="35" value="$credentials.get($servername).get(0)">
 	                                    </td>
 	                                    <td>
-	                                        <input type="text" name="usernames" size="20" value="$credentials.get($servername).get(1)">
+	                                        <input type="text" name="usernames" size="15" value="$credentials.get($servername).get(1)">
 	                                    </td>
 	                                    <td>
-	                                        <input type="password" name="passwords" size="20" value="$credentials.get($servername).get(2)">
+	                                        <input type="password" name="passwords" size="15" value="$credentials.get($servername).get(2)">
 	                                    </td>
 	                                    <td>
-	                                        <input type="text" name="repoids" size="50" value="$credentials.get($servername).get(3)">
+	                                        <input type="text" name="repoids" size="35" value="$credentials.get($servername).get(3)">
 	                                    </td>
                                         <td>
                                             <a href="#" onclick="forms.configuration.action='delete.action'; forms.configuration.indexToDelete.value = $index; forms.configuration.submit();"><img src="$req.contextPath/images/icons/trash_16.gif" border="0"></a>
@@ -60,7 +60,7 @@
 	                                </td>
 	                            </tr>
 	                        #end
-                            <tr><td colspan="4" align="right"><input type="submit" value="$action.getText("cmis.config.button.add")" onclick="forms.configuration.action='add.action';"></td></tr>
+                            <tr><td colspan="5" align="right"><input type="submit" value="$action.getText("cmis.config.button.add")" onclick="forms.configuration.action='add.action';"></td></tr>
                         </table>
                         
                         <table>

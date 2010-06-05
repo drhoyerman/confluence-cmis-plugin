@@ -50,20 +50,26 @@ The ID of the item can be safely retrieved from the Alfresco Admin Node Browser
 - Add a Page on Confluence (http://localhost:8085/pages/createpage.action?spaceKey=ds) and dump the following code:
 
 h1. Embedding an CMIS Document
-{cmis-embed:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
+{cmis-embed:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
 h1. Embedding CMIS Document informations
-{cmis-docinfo:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
+{cmis-docinfo:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
 h1. Linking to an CMIS Document
-{cmis-doclink:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
+{cmis-doclink:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
 
 h1. Performs the CMIS-SQL query specified as the body of the macro and displays the results as a table
-{cmis-search:n=alfresco|properties=ObjectId;Name|}
-SELECT * FROM cmis:document
-{cmis-search}
+{cmis-search}SELECT * FROM cmis:document{cmis-search}
 
 5. Additional features
 
-No Format - encloses the document in a {noformat} macro
-{cmis-embed:n=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|nf=yes}
+No Format - encloses the document in a {noformat} macro; default is 'yes'
+{cmis-embed:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|nf=no}
+
+Specify another server - you can specify on every macro servername=<your server name>, if you have more than one repository configured
+{cmis-embed:servername=alfresco|id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6}
+
+Custom properties in the search results - you can specify which properties to show by using
+{cmis-search:properties=<name;objectId;objectTypeId;createdBy;creationDate;lastModifiedBy;lastModificationDate}
+SELECT * FROM cmis:document
+{cmis-search}
