@@ -39,7 +39,8 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Thanks to for sharing this implementation! More information can be found here
+ * Thanks to Jason Edwards for sharing this implementation! More informations regarding
+ * the original implementation can be found here
  * http://edwardstx.net/wiki/Wiki.jsp?page=HttpProxyServlet
  * <p/>
  * Patched to skip "Transfer-Encoding: chunked" headers, avoid double slashes
