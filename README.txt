@@ -76,3 +76,4 @@ SELECT * FROM cmis:document
 
 Disable Link Proxy - on all macros that generate links, you can specify whether to skip the Proxy servlet and get the direct CMIS link
 {cmis-doclink:id=workspace://SpacesStore/096a6cc4-9c03-4606-afe0-16278ca484f6|useproxy=no}
+
