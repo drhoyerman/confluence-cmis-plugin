@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+!- Resolve SNAPSHOT dependencies
+!- Maven Release and deploy on repository.sourcsense.com
 !- Tests for all Macros
 - Add path property, everywhere an id is used; easier to use
 - External Attachments view (using CMIS queries)
