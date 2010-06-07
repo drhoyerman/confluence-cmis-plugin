@@ -2,9 +2,6 @@ package com.sourcesense.confluence.cmis;
 
 import junit.framework.TestCase;
 import org.apache.chemistry.opencmis.client.api.Property;
-import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
-import org.apache.chemistry.opencmis.commons.enums.PropertyType;
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -23,8 +20,6 @@ import static org.mockito.Mockito.when;
  */
 public class TestDocInfoMacro extends TestCase
 {
-    private static Logger log = Logger.getLogger (TestDocInfoMacro.class);
-
     protected VelocityEngine ve;
     protected VelocityContext vc;
 
@@ -48,6 +43,7 @@ public class TestDocInfoMacro extends TestCase
         ve.init (p);
     }
 
+    @SuppressWarnings("unchecked")
     public void testRenderDocumentInfo() throws Exception
     {
         List<Property<?>> documentProperties = new ArrayList<Property<?>> ();
