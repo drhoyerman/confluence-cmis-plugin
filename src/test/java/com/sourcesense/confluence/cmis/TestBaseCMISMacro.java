@@ -38,50 +38,9 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestBaseCMISMacro extends TestCase {
+public class TestBaseCMISMacro extends AbstractBaseUnitTest {
 
   Logger logger = Logger.getLogger(TestBaseCMISMacro.class);
-
-  protected VelocityEngine ve;
-  protected VelocityContext vc;
-  protected BandanaManager bandanaManager;
-
-  String cmisRealm = "http://cmis.alfresco.com:80/service/cmis";
-  String cmisUser = "admin";
-  String cmisPwd = "admin";
-
-  public void setUp () throws Exception
-  {
-      super.setUp();
-
-      // log4j:
-      PropertyConfigurator.configure(this.getClass().getClassLoader().getResource("log4j.properties"));
-
-      // Velocity:
-      Properties p = new Properties();
-      p.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-      p.setProperty("resource.loader", "class");
-      p.setProperty("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.Log4JLogChute");
-      p.setProperty("runtime.log.logsystem.log4j.category", "velocity");
-
-      vc = new VelocityContext();
-      ve = new VelocityEngine();
-      ve.init(p);
-
-      // Confluence
-      Map<String, List<String>> repoConfigs = new WeakHashMap<String, List<String>>();
-      List<String> repoConfig = new ArrayList<String>();
-
-      repoConfig.add(cmisRealm);
-      repoConfig.add(cmisUser);
-      repoConfig.add(cmisPwd);
-      //No need to specify a RepositoryID
-      repoConfig.add(null);
-      repoConfigs.put("test", repoConfig);
-
-      bandanaManager = mock (BandanaManager.class);
-      when(bandanaManager.getValue((BandanaContext)anyObject(), anyString())).thenReturn(repoConfigs);
-  }
 
   public void testRepositoryConnection() throws Exception {
     Map<String, String> parameters = new HashMap<String, String>();
