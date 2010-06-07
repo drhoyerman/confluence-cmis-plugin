@@ -1,16 +1,11 @@
 package com.sourcesense.confluence.cmis;
 
-import junit.framework.TestCase;
 import org.apache.chemistry.opencmis.client.api.Property;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

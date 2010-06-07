@@ -15,24 +15,20 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import com.atlassian.bandana.BandanaContext;
-import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import junit.framework.TestCase;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
