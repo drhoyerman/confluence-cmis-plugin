@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestDocInfoMacro extends TestBaseCMISMacro
+public class TestDocInfoMacro extends AbstractBaseUnitTest
 {
     @SuppressWarnings("unchecked")
     public void testRenderDocumentInfo() throws Exception
