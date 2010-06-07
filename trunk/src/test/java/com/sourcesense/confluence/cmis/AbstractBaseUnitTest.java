@@ -2,6 +2,7 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
+import com.sourcesense.confluence.cmis.utils.VelocityNullChecker;
 import junit.framework.TestCase;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.VelocityContext;
@@ -42,6 +43,7 @@ public abstract class AbstractBaseUnitTest extends TestCase
         p.setProperty("runtime.log.logsystem.log4j.category", "velocity");
 
         vc = new VelocityContext();
+        vc.put("check", new VelocityNullChecker());
         ve = new VelocityEngine();
         ve.init(p);
 
