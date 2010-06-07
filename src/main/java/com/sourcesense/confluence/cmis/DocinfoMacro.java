@@ -15,6 +15,7 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
@@ -30,7 +31,6 @@ import java.util.Map;
 
 public class DocinfoMacro extends BaseCMISMacro {
 
-
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
     Session session = confluenceCmisRepository.getRepository().createSession();
@@ -38,34 +38,15 @@ public class DocinfoMacro extends BaseCMISMacro {
     boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
 
     ObjectId objectId = session.createObjectId(documentId);
-    CmisObject cmisObject = (Document) session.getObject(objectId);
+    CmisObject cmisObject = session.getObject(objectId);
 
     if (cmisObject == null) {
       throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
 
-    String title = cmisObject.getProperty(PropertyIds.NAME).getValueAsString();
-    String link = Utils.getLink(session, confluenceCmisRepository, documentId, useProxy);
+    renderContext.addParam(VM_DOCUMENT_PROPERTIES, getPropertiesMap(cmisObject));
+    renderContext.addParam(VM_DOCUMENT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
 
-    StringBuilder sb = new StringBuilder(String.format("*Details of %s*\n", String.format("[%s|%s]", title, link)));
-
-    return renderDocumentInfo(sb, cmisObject);
-  }
-
-  protected String renderDocumentInfo(StringBuilder sb, CmisObject cmisObject) {
-    List<Property<?>> properties = cmisObject.getProperties();
-
-    sb.append("||Property||Value||\n");
-    for (Property<?> prop : properties) {
-      String stringValue = prop.getValueAsString();
-      if (PropertyType.DATETIME.equals(prop.getType())) {
-        Calendar cal = (Calendar) prop.getFirstValue();
-        DateFormat df = DateFormat.getDateTimeInstance();
-        stringValue = df.format(cal.getTime());
-      }
-      sb.append(String.format("|%s|%s|\n", prop.getDisplayName(), stringValue));
-    }
-
-    return sb.toString();
+    return VelocityUtils.getRenderedTemplate("templates/cmis/docinfo.vm", renderContext.getParams());
   }
 }

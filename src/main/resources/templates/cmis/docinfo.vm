@@ -1,3 +1,8 @@
+*Details of [$documentProperties.get("Name")|$documentLink]*
 ||Property||Value||
-#foreach( $prop in $documentProperties )
-|$prop.displayName|$prop.valueAsString|#end
+#foreach( $entry in $documentProperties.entrySet() )
+#if($check.isNull($entry.value))
+#set( $entry.value = " " )
+#end
+|$entry.key|$entry.value|
+#end

@@ -110,7 +110,7 @@ public class TestBaseCMISMacro extends AbstractBaseUnitTest {
       for (CmisObject obj : children) {
         if ("TODO.txt".equals(obj.getName())) {
           Document doc = (Document) obj;
-          System.out.println(doc);
+          logger.debug(doc);
         }
       }
     }
