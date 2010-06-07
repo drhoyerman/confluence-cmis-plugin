@@ -65,6 +65,7 @@ public abstract class AbstractBaseUnitTest extends TestCase
         when(bandanaManager.getValue((BandanaContext) anyObject(), anyString())).thenReturn(repoConfigs);
     }
 
+    @SuppressWarnings("unchecked")
     protected Property<String> createMockedProperty (String displayName, String value)
     {
         Property<String> property = mock(Property.class);
