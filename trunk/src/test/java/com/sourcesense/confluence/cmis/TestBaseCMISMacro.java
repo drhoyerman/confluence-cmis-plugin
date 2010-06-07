@@ -18,12 +18,14 @@ package com.sourcesense.confluence.cmis;
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import junit.framework.TestCase;
-import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -32,12 +34,17 @@ import org.apache.velocity.app.VelocityEngine;
 
 import java.util.*;
 
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class TestBaseCMISMacro extends TestCase {
 
   Logger logger = Logger.getLogger(TestBaseCMISMacro.class);
 
   protected VelocityEngine ve;
   protected VelocityContext vc;
+  protected BandanaManager bandanaManager;
 
   String cmisRealm = "http://cmis.alfresco.com:80/service/cmis";
   String cmisUser = "admin";
@@ -60,6 +67,20 @@ public class TestBaseCMISMacro extends TestCase {
       vc = new VelocityContext();
       ve = new VelocityEngine();
       ve.init(p);
+
+      // Confluence
+      Map<String, List<String>> repoConfigs = new WeakHashMap<String, List<String>>();
+      List<String> repoConfig = new ArrayList<String>();
+
+      repoConfig.add(cmisRealm);
+      repoConfig.add(cmisUser);
+      repoConfig.add(cmisPwd);
+      //No need to specify a RepositoryID
+      repoConfig.add(null);
+      repoConfigs.put("test", repoConfig);
+
+      bandanaManager = mock (BandanaManager.class);
+      when(bandanaManager.getValue((BandanaContext)anyObject(), anyString())).thenReturn(repoConfigs);
   }
 
   public void testRepositoryConnection() throws Exception {
@@ -76,23 +97,10 @@ public class TestBaseCMISMacro extends TestCase {
     String cmisPwdProp = System.getProperty("pwd");
     if (cmisPwdProp != null) cmisPwd = cmisPwdProp;
 
-    BaseCMISMacro baseMacro = new BaseCMISMacro() {
-
-      public boolean hasBody() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-      }
-
-      public RenderMode getBodyRenderMode() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-      }
-
-      @Override
-      protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repo) {
-        return "OK";
-      }
-    };
-
-    baseMacro.setBandanaManager(new MockBandanaManager());
+    BaseCMISMacro baseMacro = mock (BaseCMISMacro.class);
+    when(baseMacro.execute(anyMap(), anyString(), (RenderContext)anyObject())).thenReturn("OK");
+    when(baseMacro.hasBody()).thenReturn(false);
+    baseMacro.setBandanaManager(bandanaManager);
 
     String result = null;
 
@@ -112,7 +120,7 @@ public class TestBaseCMISMacro extends TestCase {
 
   public void testRepositoryEnumeration() {
 
-    RepositoryStorage repoStorage = RepositoryStorage.getInstance(new MockBandanaManager());
+    RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
 
     Set<String> repos = repoStorage.getRepositoryNames();
 
@@ -138,7 +146,7 @@ public class TestBaseCMISMacro extends TestCase {
   }
 
   public void testCMISLinkGeneration() {
-    RepositoryStorage repoStorage = RepositoryStorage.getInstance(new MockBandanaManager());
+    RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
 
     try {
       ConfluenceCMISRepository repo = repoStorage.getRepository("test");
@@ -154,46 +162,6 @@ public class TestBaseCMISMacro extends TestCase {
     catch (CmisRuntimeException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       fail(e.getMessage());
-    }
-  }
-
-  class MockBandanaManager implements BandanaManager {
-
-    public void init() {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void setValue(BandanaContext bandanaContext, String s, Object o) {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    // used in RepositoryStorage
-
-    public Object getValue(BandanaContext bandanaContext, String s) {
-      Map<String, List<String>> repoConfigs = new WeakHashMap<String, List<String>>();
-      List<String> repoConfig = new ArrayList<String>();
-
-      repoConfig.add(cmisRealm);
-      repoConfig.add(cmisUser);
-      repoConfig.add(cmisPwd);
-      //No need to specify a RepositoryID
-      repoConfig.add(null);
-
-      repoConfigs.put("test", repoConfig);
-
-      return repoConfigs;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Object getValue(BandanaContext bandanaContext, String s, boolean b) {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public String exportValues(BandanaContext bandanaContext) {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void importValues(BandanaContext bandanaContext, String s) {
-      //To change body of implemented methods use File | Settings | File Templates.
     }
   }
 }
