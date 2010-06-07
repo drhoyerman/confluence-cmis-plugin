@@ -26,15 +26,41 @@ import junit.framework.TestCase;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import java.util.*;
 
 public class TestBaseCMISMacro extends TestCase {
+
   Logger logger = Logger.getLogger(TestBaseCMISMacro.class);
+
+  protected VelocityEngine ve;
+  protected VelocityContext vc;
 
   String cmisRealm = "http://cmis.alfresco.com:80/service/cmis";
   String cmisUser = "admin";
   String cmisPwd = "admin";
+
+  public void setUp () throws Exception
+  {
+      super.setUp();
+
+      // log4j:
+      PropertyConfigurator.configure(this.getClass().getClassLoader().getResource("log4j.properties"));
+
+      // Velocity:
+      Properties p = new Properties();
+      p.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+      p.setProperty("resource.loader", "class");
+      p.setProperty("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.Log4JLogChute");
+      p.setProperty("runtime.log.logsystem.log4j.category", "velocity");
+
+      vc = new VelocityContext();
+      ve = new VelocityEngine();
+      ve.init(p);
+  }
 
   public void testRepositoryConnection() throws Exception {
     Map<String, String> parameters = new HashMap<String, String>();

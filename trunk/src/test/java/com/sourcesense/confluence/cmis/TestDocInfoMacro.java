@@ -18,35 +18,13 @@ import static org.mockito.Mockito.when;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestDocInfoMacro extends TestCase
+public class TestDocInfoMacro extends TestBaseCMISMacro
 {
-    protected VelocityEngine ve;
-    protected VelocityContext vc;
-
-    @Override
-    public void setUp () throws Exception
-    {
-        super.setUp();
-
-        // log4j:
-        PropertyConfigurator.configure(this.getClass().getClassLoader().getResource("log4j.properties"));
-
-        // Velocity:
-        Properties p = new Properties();
-        p.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-        p.setProperty("resource.loader", "class");
-        p.setProperty ("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.Log4JLogChute");
-        p.setProperty ("runtime.log.logsystem.log4j.category", "velocity");
-
-        vc = new VelocityContext();
-        ve = new VelocityEngine();
-        ve.init (p);
-    }
-
     @SuppressWarnings("unchecked")
     public void testRenderDocumentInfo() throws Exception
     {
         List<Property<?>> documentProperties = new ArrayList<Property<?>> ();
+
         Property<String> property = mock(Property.class);
         when(property.getValueAsString()).thenReturn("value");
         when(property.getDisplayName()).thenReturn("displayName");
