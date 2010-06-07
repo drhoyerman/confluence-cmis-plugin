@@ -1,4 +1,4 @@
-*Details of [$documentProperties.get("Name")|$documentLink]*
+*Details of #parse("/templates/cmis/doclink.vm")*
 ||Property||Value||
 #foreach( $entry in $documentProperties.entrySet() )
 #if($check.isNull($entry.value))
