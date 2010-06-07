@@ -15,6 +15,7 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
@@ -40,20 +41,9 @@ public class DoclinkMacro extends BaseCMISMacro {
     if (document == null) {
       throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
-    String link = Utils.getLink(session, confluenceCmisRepository, documentId, useProxy);
+      
+    renderContext.addParam(VM_DOCUMENT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
 
-    return renderDocumentLink(document, link);
-  }
-
-  protected String renderDocumentLink(Document document, String link) {
-    StringBuilder out = new StringBuilder();
-
-    out.append("[");
-    out.append(document.getName());
-    out.append("|");
-    out.append(link);
-    out.append("]");
-
-    return out.toString();
+    return VelocityUtils.getRenderedTemplate("templates/cmis/doclink.vm", renderContext.getParams());
   }
 }

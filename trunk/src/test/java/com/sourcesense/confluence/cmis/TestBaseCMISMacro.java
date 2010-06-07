@@ -99,24 +99,4 @@ public class TestBaseCMISMacro extends AbstractBaseUnitTest {
     }
 
   }
-
-  public void testCMISLinkGeneration() {
-    RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
-
-    try {
-      ConfluenceCMISRepository repo = repoStorage.getRepository("test");
-      Session session = repo.getRepository().createSession();
-      ItemIterable<CmisObject> children = session.getRootFolder().getChildren();
-      for (CmisObject obj : children) {
-        if ("TODO.txt".equals(obj.getName())) {
-          Document doc = (Document) obj;
-          logger.debug(doc);
-        }
-      }
-    }
-    catch (CmisRuntimeException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      fail(e.getMessage());
-    }
-  }
 }
