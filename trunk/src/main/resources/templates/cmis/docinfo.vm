@@ -1,0 +1,3 @@
+||Property||Value||
+#foreach( $prop in $documentProperties )
+|$prop.displayName|$prop.valueAsString|#end
