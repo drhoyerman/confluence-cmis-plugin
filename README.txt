@@ -8,8 +8,11 @@ For more information on CMIS see http://www.cmisdev.org
 
 + Maven 2.0.9+ (Maven 2.2.1 is recommended)
 + Atlassian Confluence 3.x
-+ Alfresco 3.3 (or any other Content Management System supporting CMIS 1.0 spec)
-NOTE! Be sure that you define different port numbers; both platforms bind on port 8080 (and 8000 for shutdown) by default.
+
+Optional:
++ Any Content Management System supporting CMIS 1.0 spec (e.g. Alfresco 3.3)
+NOTE! If you use a local Alfresco instance for your tests, be sure that you define different port numbers as
+both platforms bind on port 8080 (and 8000 for shutdown) by default.
 You can either edit Alfresco/tomcat/conf/server.xml or confluence-3.2.1_01-std/conf/server.xml
 
 The plugin has been tested on Confluence 3.2.1_01 and Alfresco Community/Enterprise 3.3
@@ -20,14 +23,16 @@ From the project's root folder, run:
 
 > mvn clean package
 
-After testing the application against a public CMIS server,
-the plugin will be located in target/cmis-confluence-plugin-<version>.jar
+Testing the application is performed against a public CMIS server provided by Alfresco at
+http://cmis.alfresco.com/service/cmis
 
-If you
-- Don't want to run the test
-> mvn clean package -DskipTests
-- Want to run test against your CMIS server
-> mvn clean package -Drealm=http://localhost:8080/alfresco/service/api/cmis -Duser=admin -Dpwd=admin
+After testing, the plugin will be located in target/cmis-confluence-plugin-<version>.jar
+
+You can customize the build behaviour as follows:
+- Don't run the test
+    > mvn clean package -DskipTests
+- Run tests against your CMIS server
+    > mvn clean package -Drealm=http://localhost:8080/alfresco/service/api/cmis -Duser=admin -Dpwd=admin
 
 3. Installing the plugin on Confluence
 
@@ -39,7 +44,12 @@ If you
   - Username : admin
   - Password : admin
 
-4. Test it!
+NOTE! Uploading again the jar file from the Confluence Admin Plugin interface it will update the plugin to the version
+you're providing, while keeping your previous configuration.
+
+4. Use it!
+
+This is how you can use the macros provided by the CMIS plugin with a local running Alfresco instance:
 
 - Log into Alfresco - http://localhost:8080/alfresco (admin/admin)
 - Upload some content
