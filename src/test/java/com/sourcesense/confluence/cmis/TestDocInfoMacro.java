@@ -1,14 +1,9 @@
 package com.sourcesense.confluence.cmis;
 
 import org.apache.chemistry.opencmis.client.api.Property;
-import org.apache.velocity.Template;
 
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
@@ -29,14 +24,10 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
         prop = createMockedProperty ("nullProperty", null);
         documentProperties.put(prop.getDisplayName(), prop.getValueAsString());
 
-        Template t = ve.getTemplate("templates/cmis/docinfo.vm");
-        StringWriter sw = new StringWriter();
-
         vc.put("documentProperties", documentProperties);
         vc.put("documentLink", "http://www.sourcesense.com");
-        t.merge(vc, sw);
 
-        String renderedView = sw.getBuffer().toString();
+        String renderedView = render ("templates/cmis/docinfo.vm");
 
         assertNotNull(renderedView);
         assertTrue(renderedView.length() > 0);
@@ -48,13 +39,5 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
                 "|displayName|value|\n";
 
         assertEquals(expectedResult, renderedView);
-    }
-
-    private Property<String> createMockedProperty (String displayName, String value)
-    {
-        Property<String> property = mock(Property.class);
-        when(property.getDisplayName()).thenReturn(displayName);
-        when(property.getValueAsString()).thenReturn(value);
-        return property;
     }
 }

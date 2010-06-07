@@ -4,10 +4,13 @@ import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
 import com.sourcesense.confluence.cmis.utils.VelocityNullChecker;
 import junit.framework.TestCase;
+import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
+import java.io.StringWriter;
 import java.util.*;
 
 import static org.mockito.Matchers.anyObject;
@@ -60,5 +63,22 @@ public abstract class AbstractBaseUnitTest extends TestCase
 
         bandanaManager = mock(BandanaManager.class);
         when(bandanaManager.getValue((BandanaContext) anyObject(), anyString())).thenReturn(repoConfigs);
+    }
+
+    protected Property<String> createMockedProperty (String displayName, String value)
+    {
+        Property<String> property = mock(Property.class);
+        when(property.getDisplayName()).thenReturn(displayName);
+        when(property.getValueAsString()).thenReturn(value);
+        return property;
+    }
+
+    protected String render (String template) throws Exception
+    {
+        Template t = ve.getTemplate(template);
+        StringWriter sw = new StringWriter();
+        t.merge(vc, sw);
+
+        return sw.getBuffer().toString();
     }
 }
