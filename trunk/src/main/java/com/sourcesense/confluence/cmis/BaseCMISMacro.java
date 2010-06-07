@@ -29,8 +29,6 @@ import org.apache.log4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
-// TODO: put back in place the subclass delegation of behavior
-
 public abstract class BaseCMISMacro extends BaseMacro {
   protected static final Logger logger = Logger.getLogger(BaseCMISMacro.class);
 
