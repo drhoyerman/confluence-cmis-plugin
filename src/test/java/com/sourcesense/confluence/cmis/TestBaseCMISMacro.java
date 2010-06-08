@@ -19,6 +19,7 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
+import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
@@ -81,12 +82,13 @@ public class TestBaseCMISMacro extends AbstractBaseUnitTest {
     for (String repo : repos) {
       try {
         ConfluenceCMISRepository repoDesc = repoStorage.getRepository(repo);
+        RepositoryInfo repoInfo = repoDesc.getSession().getRepositoryInfo();
 
-        logger.debug("name: " + repoDesc.getName());
-        logger.debug("id: " + repoDesc.getRepository().getId());
-        logger.debug("productName : " + repoDesc.getRepository().getProductName());
-        logger.debug("cmisVersionSupported: " + repoDesc.getRepository().getCmisVersionSupported());
-        logger.debug("description: " + repoDesc.getRepository().getDescription());
+        logger.debug("name: " + repoDesc.getName());        
+        logger.debug("id: " + repoInfo.getId());
+        logger.debug("productName : " + repoInfo.getProductName());
+        logger.debug("cmisVersionSupported: " + repoInfo.getCmisVersionSupported());
+        logger.debug("description: " + repoInfo.getDescription());
       }
       catch (CmisRuntimeException e) {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

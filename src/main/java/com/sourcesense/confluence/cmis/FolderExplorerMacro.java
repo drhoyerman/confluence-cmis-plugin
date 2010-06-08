@@ -31,7 +31,7 @@ public class FolderExplorerMacro extends BaseCMISMacro {
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext,
                                ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
-    Session session = confluenceCmisRepository.getRepository().createSession();
+    Session session = confluenceCmisRepository.getSession();
     String folderId = (String) params.get(BaseCMISMacro.PARAM_ID);
     int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
     if (resultsNumber < 1) resultsNumber = BaseCMISMacro.DEFAULT_RESULTS_NUMBER;

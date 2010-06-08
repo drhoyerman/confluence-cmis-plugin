@@ -38,7 +38,7 @@ public class TestDocLinkMacro extends AbstractBaseUnitTest
         try
         {
             ConfluenceCMISRepository repo = repoStorage.getRepository("test");
-            Session session = repo.getRepository().createSession();
+            Session session = repo.getSession();
             ItemIterable<CmisObject> children = session.getRootFolder().getChildren();
             for (CmisObject obj : children)
             {

@@ -33,7 +33,7 @@ public class DocinfoMacro extends BaseCMISMacro {
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
-    Session session = confluenceCmisRepository.getRepository().createSession();
+    Session session = confluenceCmisRepository.getSession();
     String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
     boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
 

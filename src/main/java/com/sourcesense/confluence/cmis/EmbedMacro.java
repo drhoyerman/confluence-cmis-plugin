@@ -33,7 +33,7 @@ public class EmbedMacro extends BaseCMISMacro {
     String noformat = (String) params.get(BaseCMISMacro.PARAM_NOFORMAT);
     boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
 
-    Session session = confluenceCmisRepository.getRepository().createSession();
+    Session session = confluenceCmisRepository.getSession();
 
     ObjectId objectId = session.createObjectId(documentId);
     CmisObject cmisObject = session.getObject(objectId);
