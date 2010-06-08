@@ -1,13 +1,13 @@
 package com.sourcesense.confluence.cmis;
 
-import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
-import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import org.apache.chemistry.opencmis.client.api.*;
+import com.atlassian.renderer.v2.macro.MacroException;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
@@ -18,12 +18,11 @@ public class TestDocLinkMacro extends AbstractBaseUnitTest
 
     public void testRenderDocumentLink() throws Exception
     {
-        Map<String, String> documentProperties = new HashMap<String, String>();
+        CmisObject object = createMockedCmisObject(new String[][]{
+                {PropertyIds.NAME, "Name", "A document name.txt"},
+                {PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length", "210"}});
 
-        Property<String> prop = createMockedProperty("Name", "A document name.txt");
-        documentProperties.put(prop.getDisplayName(), prop.getValueAsString());
-
-        vc.put("documentProperties", documentProperties);
+        vc.put("cmisObject", object);
         vc.put("documentLink", "http://www.sourcesense.com");
 
         String result = render("templates/cmis/doclink.vm");
@@ -33,19 +32,21 @@ public class TestDocLinkMacro extends AbstractBaseUnitTest
 
     public void testCMISLinkGeneration()
     {
-        RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
-
+        String result = null;
         try
         {
-            ConfluenceCMISRepository repo = repoStorage.getRepository("test");
-            Session session = repo.getSession();
+            Session session = getSession(TEST_REPOSITORY_NAME);
             ItemIterable<CmisObject> children = session.getRootFolder().getChildren();
             for (CmisObject obj : children)
             {
-                if ("TODO.txt".equals(obj.getName()))
+                if ("testcontent.txt".equals(obj.getName()))
                 {
                     Document doc = (Document) obj;
-                    logger.debug(doc);
+
+                    vc.put("cmisObject", doc);
+                    vc.put("documentLink", "http://www.sourcesense.com");
+
+                    result = render ("templates/cmis/doclink.vm");
                 }
             }
         }
@@ -54,5 +55,21 @@ public class TestDocLinkMacro extends AbstractBaseUnitTest
             e.printStackTrace();
             fail(e.getMessage());
         }
+        catch (MacroException e)
+        {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            fail (e.getMessage());
+        }
+
+        assertNotNull(result);
+        assertFalse("".equals(result));
+        assertEquals ("[testcontent.txt|http://www.sourcesense.com]", result);
+        
+        logger.debug("result: " + result);
     }
 }

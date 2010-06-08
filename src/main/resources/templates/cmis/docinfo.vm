@@ -1,8 +1,5 @@
 *Details of #parse("/templates/cmis/doclink.vm")*
 ||Property||Value||
-#foreach( $entry in $documentProperties.entrySet() )
-#if($check.isNull($entry.value))
-#set( $entry.value = " " )
-#end
-|$entry.key|$entry.value|
+#foreach( $prop in $cmisUtils.getPropertiesMap($cmisObject).values() )
+|$prop.displayName|$cmisUtils.nullSafe($cmisUtils.render($prop))|
 #end

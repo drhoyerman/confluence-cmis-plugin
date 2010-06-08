@@ -1,9 +1,16 @@
 package com.sourcesense.confluence.cmis;
 
+import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Property;
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
@@ -13,18 +20,14 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
     @SuppressWarnings("unchecked")
     public void testRenderDocumentInfo() throws Exception
     {
-        Map<String, String> documentProperties = new HashMap<String, String>();
 
-        Property<String> prop = createMockedProperty ("displayName", "value");
-        documentProperties.put(prop.getDisplayName(), prop.getValueAsString());
+        CmisObject object = createMockedCmisObject(new String[][]{
+                {"fake", "displayName", "value"},
+                {PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Lenght", "210"},
+                {PropertyIds.NAME, "Name", "A nice document.txt"},
+                {"", "nullProperty", null}});
 
-        prop = createMockedProperty ("Name", "A nice document.txt");
-        documentProperties.put(prop.getDisplayName(), prop.getValueAsString());
-
-        prop = createMockedProperty ("nullProperty", null);
-        documentProperties.put(prop.getDisplayName(), prop.getValueAsString());
-
-        vc.put("documentProperties", documentProperties);
+        vc.put("cmisObject", object);
         vc.put("documentLink", "http://www.sourcesense.com");
 
         String renderedView = render ("templates/cmis/docinfo.vm");
@@ -34,8 +37,9 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
 
         String expectedResult = "*Details of [A nice document.txt|http://www.sourcesense.com]*\n" +
                 "||Property||Value||\n" +
-                "|Name|A nice document.txt|\n" +
                 "|nullProperty| |\n" +
+                "|Content Stream Lenght|210|\n" +
+                "|Name|A nice document.txt|\n" +
                 "|displayName|value|\n";
 
         assertEquals(expectedResult, renderedView);

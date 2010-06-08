@@ -36,13 +36,19 @@ public class DoclinkMacro extends BaseCMISMacro {
     ObjectId objectId = session.createObjectId(documentId);
     boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
 
-    Document document = (Document) session.getObject(objectId);
+    Object object = session.getObject(objectId);
 
-    if (document == null) {
+    if (object == null) {
       throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
+    else if (!(object instanceof Document)){
+      throw new MacroException("The requested CMIS object cannot be linked, only cmis:document objects are supported");
+    }
+
+    Document document = (Document)object;
       
-    renderContext.addParam(VM_DOCUMENT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
+    renderContext.addParam(VM_CMIS_OBJECT, document);
+    renderContext.addParam(VM_CMIS_OBJECT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
 
     return VelocityUtils.getRenderedTemplate("templates/cmis/doclink.vm", renderContext.getParams());
   }

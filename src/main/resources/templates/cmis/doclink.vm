@@ -1,1 +1,3 @@
-[$documentProperties.get("Name")|$documentLink]
+#if( $cmisUtils.isContent($cmisObject) )
+[$cmisObject.name|$documentLink]#else
+$cmisObject.name#end

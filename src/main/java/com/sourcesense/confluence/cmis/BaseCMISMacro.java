@@ -23,7 +23,7 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import com.sourcesense.confluence.cmis.utils.VelocityNullChecker;
+import com.sourcesense.confluence.cmis.utils.VelocityUtils;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
@@ -47,9 +47,11 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected static final String PARAM_PROPERTIES = "properties";
 
   // Velocity placeholders
-  protected static final String VM_DOCUMENT_PROPERTIES = "documentProperties";
-  protected static final String VM_DOCUMENT_LINK = "documentLink";
-
+  protected static final String VM_CMIS_OBJECT = "cmisObject";  
+  protected static final String VM_CMIS_OBJECT_LINK = "documentLink";
+  protected static final String VM_CMIS_OBJECT_LIST = "cmisObjects";
+  protected static final String VM_CMIS_PROPERTY_LIST = "cmisProperties";
+  
   public static final java.lang.String REPOSITORY_NAME = "com.sourcesense.confluence.cmis.repository.name";
 
   protected static final int DEFAULT_RESULTS_NUMBER = 20;
@@ -61,7 +63,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected BandanaManager bandanaManager;
   protected SettingsManager settingsManager;
 
-  public void setBandanaManager(BandanaManager bandanaManager) {
+    public void setBandanaManager(BandanaManager bandanaManager) {
     this.bandanaManager = bandanaManager;
   }
 
@@ -83,7 +85,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
       populateParams(params, body, renderContext, repositoryConfluence);
 
-      renderContext.addParam("check", new VelocityNullChecker());
+      renderContext.addParam("cmisUtils", new VelocityUtils());
 
       return executeImpl(params, body, renderContext, repositoryConfluence);
     }
@@ -114,25 +116,6 @@ public abstract class BaseCMISMacro extends BaseMacro {
     } else {
       params.put(BaseCMISMacro.PARAM_USEPROXY, Boolean.FALSE);
     }
-  }
-
-  protected Map<String, String> getPropertiesMap (CmisObject object)
-  {
-      Map<String, String> propMap = new HashMap<String, String>();
-
-      for (Property<?> prop : object.getProperties())
-      {
-          String stringValue = prop.getValueAsString();
-          if (PropertyType.DATETIME.equals(prop.getType()))
-          {
-              Calendar cal = (Calendar) prop.getFirstValue();
-              DateFormat df = DateFormat.getDateTimeInstance();
-              stringValue = df.format(cal.getTime());
-          }
-          propMap.put(prop.getDisplayName(), stringValue);
-      }
-
-      return propMap;
   }
 
   protected abstract String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repositoryConfluence) throws MacroException;
