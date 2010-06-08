@@ -1,0 +1,5 @@
+||Title||Last Modified||Size||Type||
+#foreach( $cmisObj in $cmisObjects )
+#set ( $props = $cmisUtils.getPropertiesMap($cmisObj) )
+|$cmisUtils.render($props.get("cmis:name"))|$cmisUtils.render($props.get("cmis:lastModificationDate"))|$cmisUtils.nullSafe($cmisUtils.render($props.get("cmis:contentStreamLength")))|$cmisUtils.nullSafe($cmisUtils.render($props.get("cmis:contentStreamMimeType")))|
+#end

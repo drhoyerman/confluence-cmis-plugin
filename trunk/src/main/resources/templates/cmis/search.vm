@@ -1,0 +1,7 @@
+||#foreach( $prop in $cmisProperties )$cmisUtils.renderPropertyName($prop)||#end
+
+#foreach( $cmisObj in $cmisObjects )
+#set ( $props = $cmisUtils.getPropertiesMap($cmisObj) )
+|#foreach( $prop in $cmisProperties )$cmisUtils.render($props.get($prop))|#end
+
+#end

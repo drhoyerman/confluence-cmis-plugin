@@ -21,12 +21,7 @@ import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.*;
-import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 public class DocinfoMacro extends BaseCMISMacro {
@@ -44,8 +39,8 @@ public class DocinfoMacro extends BaseCMISMacro {
       throw new MacroException("Cannot find any document with the following ID: " + documentId);
     }
 
-    renderContext.addParam(VM_DOCUMENT_PROPERTIES, getPropertiesMap(cmisObject));
-    renderContext.addParam(VM_DOCUMENT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
+    renderContext.addParam(VM_CMIS_OBJECT, cmisObject);
+    renderContext.addParam(VM_CMIS_OBJECT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
 
     return VelocityUtils.getRenderedTemplate("templates/cmis/docinfo.vm", renderContext.getParams());
   }

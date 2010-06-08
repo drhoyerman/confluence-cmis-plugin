@@ -29,7 +29,7 @@ public class Utils {
     } catch (Exception e) {
       logger.error(e.getMessage() + "Link retrieval failed");
     }
-    if (rewrite) {
+    if (rewrite && res != null) {
       try {
         res = rewriteUrl(res, repositoryConfluence.getName());
       } catch(MalformedURLException e) {

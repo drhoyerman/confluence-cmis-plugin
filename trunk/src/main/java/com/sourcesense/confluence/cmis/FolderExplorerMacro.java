@@ -15,9 +15,11 @@
  */
 package com.sourcesense.confluence.cmis;
 
+import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
+import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 
@@ -25,34 +27,45 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class FolderExplorerMacro extends BaseCMISMacro {
+public class FolderExplorerMacro extends BaseCMISMacro
+{
 
 
-  @Override
-  protected String executeImpl(Map params, String body, RenderContext renderContext,
-                               ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
-    Session session = confluenceCmisRepository.getSession();
-    String folderId = (String) params.get(BaseCMISMacro.PARAM_ID);
-    int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
-    if (resultsNumber < 1) resultsNumber = BaseCMISMacro.DEFAULT_RESULTS_NUMBER;
-    Folder folder = (Folder) session.getObject(session.createObjectId(folderId));
-    ItemIterable<CmisObject> children = folder.getChildren();
-    List<CmisObject> filteredResults = new LinkedList<CmisObject>();
-    for (CmisObject cmisObject : children) {
-      if (filteredResults.size() < resultsNumber) {
-        if (cmisObject.getBaseType().getId().equals(BaseTypeId.CMIS_DOCUMENT.value())) {
-          filteredResults.add(cmisObject);
+    @Override
+    protected String executeImpl(Map params, String body, RenderContext renderContext,
+                                 ConfluenceCMISRepository confluenceCmisRepository) throws MacroException
+    {
+        Session session = confluenceCmisRepository.getSession();
+        String folderId = (String) params.get(BaseCMISMacro.PARAM_ID);
+        boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
+        int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
+
+        if (resultsNumber < 1)
+        {
+            resultsNumber = BaseCMISMacro.DEFAULT_RESULTS_NUMBER;
         }
-      } else {
-        break;
-      }
+
+        Folder folder = (Folder) session.getObject(session.createObjectId(folderId));
+        ItemIterable<CmisObject> children = folder.getChildren();
+        List<CmisObject> filteredResults = new LinkedList<CmisObject>();
+        for (CmisObject cmisObject : children)
+        {
+            if (filteredResults.size() < resultsNumber)
+            {
+                if (cmisObject.getBaseType().getId().equals(BaseTypeId.CMIS_DOCUMENT.value()))
+                {
+                    filteredResults.add(cmisObject);
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        renderContext.addParam(VM_CMIS_OBJECT, folder);
+        renderContext.addParam(VM_CMIS_OBJECT_LIST, filteredResults);        
+
+        return VelocityUtils.getRenderedTemplate("templates/cmis/folderbrowser.vm", renderContext.getParams());
     }
-    return renderResults(filteredResults);
-  }
-
-  private String renderResults(List<CmisObject> objects) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
 }
