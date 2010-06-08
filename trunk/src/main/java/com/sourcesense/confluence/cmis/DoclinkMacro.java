@@ -30,7 +30,7 @@ public class DoclinkMacro extends BaseCMISMacro {
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
-    Session session = confluenceCmisRepository.getRepository().createSession();
+    Session session = confluenceCmisRepository.getSession();
 
     String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
     ObjectId objectId = session.createObjectId(documentId);

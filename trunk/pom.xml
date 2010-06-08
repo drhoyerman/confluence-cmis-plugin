@@ -57,9 +57,15 @@
     <!-- Confluence plugin functional test library version -->
     <atlassian.product.test-lib.version>1.4.1</atlassian.product.test-lib.version>
     <!-- Confluence data version -->
-    <atlassian.product.data.version>3.1-SNAPSHOT</atlassian.product.data.version>
-
-    <!-- Confluence data version -->
+    <atlassian.product.data.version>3.1</atlassian.product.data.version>
+   
+    <maven.deploy.repository.releases.id>sose-public</maven.deploy.repository.releases.id>
+    <maven.deploy.repository.releases.url>http://repository.sourcesense.com/nexus/content/repositories/sose.public.releases</maven.deploy.repository.releases.url>
+    <maven.deploy.repository.snapshots.id>sose-public-snapshots</maven.deploy.repository.snapshots.id>
+    <maven.deploy.repository.snapshots.url>http://repository.sourcesense.com/nexus/content/repositories/sose.public.snapshots</maven.deploy.repository.snapshots.url>
+    <maven.deploy.repository.sites.id>sose-public-sites</maven.deploy.repository.sites.id>
+    <maven.deploy.repository.sites.url>dav:http://repository.sourcesense.com/nexus/content/repositories/sose.public.sites</maven.deploy.repository.sites.url>
+ 
     <maven.release.scm.url>https://confluence-cmis-plugin.googlecode.com/svn</maven.release.scm.url>
     <maven.release.goals>install deploy</maven.release.goals>
     <maven.release.arguments>-Dmaven.test.skip=true</maven.release.arguments>
@@ -82,6 +88,8 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
       <artifactId>jaxb-impl</artifactId>

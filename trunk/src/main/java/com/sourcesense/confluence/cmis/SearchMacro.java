@@ -41,7 +41,7 @@ public class SearchMacro extends BaseCMISMacro {
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
 
-    Session session = confluenceCmisRepository.getRepository().createSession();
+    Session session = confluenceCmisRepository.getSession();
     boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
 
     List<String> properties = getProperties(params.get(BaseCMISMacro.PARAM_PROPERTIES));

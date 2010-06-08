@@ -1,14 +1,15 @@
 package com.sourcesense.confluence.cmis.utils;
 
 import org.apache.chemistry.opencmis.client.api.Repository;
+import org.apache.chemistry.opencmis.client.api.Session;
 
 public class ConfluenceCMISRepository {
   private String name;
-  private Repository repository;
+  private Session session;
 
   public ConfluenceCMISRepository(String name, Repository repository) {
     this.name = name;
-    this.repository = repository;
+    this.session = repository.createSession();
   }
 
   public String getName() {
@@ -19,11 +20,8 @@ public class ConfluenceCMISRepository {
     this.name = name;
   }
 
-  public Repository getRepository() {
-    return repository;
+  public Session getSession() {
+    return session;
   }
 
-  public void setRepository(Repository repository) {
-    this.repository = repository;
-  }
 }
