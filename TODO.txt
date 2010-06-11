@@ -46,6 +46,9 @@ testable.
 
 ** Write support - see it/IntegrationTestCmisPlugin.java in the branch **
 
+** Code documentation **
+JavaDoc are missing for big part of either public, private or protected APIs
+
 =========
 = [LOW] =
 =========
@@ -53,3 +56,6 @@ testable.
 ==============
 = [WISHLIST] =
 ==============
+
+** Introduce some QA checks in the build process **
+PMD, FindBugs, Sonar, Checkstyle, everything is better than nothing
