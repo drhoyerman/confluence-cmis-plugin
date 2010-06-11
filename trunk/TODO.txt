@@ -14,10 +14,42 @@
 # limitations under the License.
 #
 
-!- Resolve SNAPSHOT dependencies
-!- Maven Release and deploy on repository.sourcsense.com
-!- Tests for all Macros
-- Add path property, everywhere an id is used; easier to use
-- External Attachments view (using CMIS queries)
-- CMIS Navigation Services (Browse CMIS repository)
-- Write support - see it/IntegrationTestCmisPlugin.java in the branch
+Issues are grouped by priority
+
+==========
+= [HIGH] =
+==========
+
+** Resolve SNAPSHOT dependencies **
+Only chemistry artifacts are SNAPSHOTS at the moment
+
+** Maven Release and deploy on repository.sourcsense.com **
+This depends on the SNAPSHOT dependencies issue.
+
+** Tests for all Macros **
+Tests do exist for each macro, but they are mostly limited to Velocity macros tests. Macro code is not currently tested,
+with some dependencies to Confluence internals that are not mockable (e.g. VelocityUtils) that make the code not well
+testable.
+
+** Test with CMIS providers other than Alfresco **
+ There's some documentation coming for Microsoft SharePoint http://bit.ly/c9gN7b
+
+============
+= [MEDIUM] =
+============
+
+** Add path property, everywhere an id is used; easier to use **
+
+** External Attachments view (using CMIS queries) **
+
+** CMIS Navigation Services (Browse CMIS repository) **
+
+** Write support - see it/IntegrationTestCmisPlugin.java in the branch **
+
+=========
+= [LOW] =
+=========
+
+==============
+= [WISHLIST] =
+==============
