@@ -22,15 +22,14 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
 /**
@@ -56,9 +55,6 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
   protected static final int DEFAULT_RESULTS_NUMBER = 20;
   protected static final String DEFAULT_USEPROXY = "yes";
-
-  //TODO : make this regexp configurable, along with the locale
-  protected static SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy");
 
   protected BandanaManager bandanaManager;
   protected SettingsManager settingsManager;
