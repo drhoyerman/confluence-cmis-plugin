@@ -28,7 +28,7 @@ public class TestSearchMacro extends AbstractBaseUnitTest
         String result = null;
         try
         {
-            result = render ("templates/cmis/search.vm");
+            result = renderTemplate("templates/cmis/search.vm");
         }
         catch (Exception e)
         {

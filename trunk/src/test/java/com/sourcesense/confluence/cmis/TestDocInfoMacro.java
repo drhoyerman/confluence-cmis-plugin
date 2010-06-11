@@ -1,16 +1,16 @@
 package com.sourcesense.confluence.cmis;
 
+import com.atlassian.renderer.RenderContext;
+import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
+import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.Property;
+import org.apache.chemistry.opencmis.client.api.Document;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
@@ -25,12 +25,12 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
                 {"fake", "displayName", "value"},
                 {PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Lenght", "210"},
                 {PropertyIds.NAME, "Name", "A nice document.txt"},
-                {"", "nullProperty", null}});
+                {"", "nullProperty", null}}, CmisObject.class);
 
         vc.put("cmisObject", object);
         vc.put("documentLink", "http://www.sourcesense.com");
 
-        String renderedView = render ("templates/cmis/docinfo.vm");
+        String renderedView = renderTemplate("templates/cmis/docinfo.vm");
 
         assertNotNull(renderedView);
         assertTrue(renderedView.length() > 0);
@@ -43,5 +43,36 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
                 "|displayName|value|\n";
 
         assertEquals(expectedResult, renderedView);
+    }
+
+    public void testDocinfoMacro()
+    {
+        try
+        {
+            DocinfoMacro macro = createCMISMockMacro(DocinfoMacro.class);
+
+            Map<String, Object> userParams = new HashMap<String, Object>();
+
+            userParams.put(BaseCMISMacro.PARAM_ID, TEST_DOCUMENT_ID);
+            userParams.put(BaseCMISMacro.PARAM_USEPROXY, false);
+
+            String result = macro.executeImpl(userParams, "", new RenderContext(), confluenceCMISRepository);
+
+            String expectedResult = "*Details of [A document name.txt|http://www.sourcesense.com]*\n" +
+                    "||Property||Value||\n" +
+                    "|Content Stream Length|210|\n" +
+                    "|Object Type Id|cmis:document|\n" +
+                    "|Name|A document name.txt|\n" +
+                    "|Object Type Id|aCmisDocument|\n" +
+                    "|Base Type Id|cmis:document|\n";
+
+            assertNotNull (result);
+            assertEquals(expectedResult, result);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 }

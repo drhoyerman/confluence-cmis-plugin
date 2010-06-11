@@ -1,6 +1,6 @@
 package com.sourcesense.confluence.cmis;
 
-import com.sourcesense.confluence.cmis.utils.VelocityUtils;
+import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import junit.framework.TestCase;
 
 /**
@@ -16,7 +16,7 @@ public class TestVelocityUtils extends TestCase
 
     void testRenderer(String propName, String expected)
     {
-        String result = VelocityUtils.renderPropertyName(propName);
+        String result = CMISVelocityUtils.renderPropertyName(propName);
 
         assertEquals(expected, result);
     }

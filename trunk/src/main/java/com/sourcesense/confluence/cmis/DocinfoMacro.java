@@ -40,8 +40,14 @@ public class DocinfoMacro extends BaseCMISMacro {
     }
 
     renderContext.addParam(VM_CMIS_OBJECT, cmisObject);
-    renderContext.addParam(VM_CMIS_OBJECT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
+    renderContext.addParam(VM_CMIS_OBJECT_LINK, fetchDocumentLink(confluenceCmisRepository, session, documentId, useProxy));
 
-    return VelocityUtils.getRenderedTemplate("templates/cmis/docinfo.vm", renderContext.getParams());
+    return render (getTemplate(), renderContext);
+  }
+
+  @Override
+  protected String getTemplate ()
+  {
+      return "templates/cmis/docinfo.vm";
   }
 }
