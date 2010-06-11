@@ -31,6 +31,9 @@ Only chemistry artifacts are SNAPSHOTS at the moment
 ** Maven Release and deploy on repository.sourcsense.com **
 This depends on the SNAPSHOT dependencies issue.
 
+** Add path property, everywhere an id is used **
+Normal users cannot be asked to use CMIS document IDs in macros, while paths are way more accessible
+
 ** Tests for all Macros **
 Tests do exist for each macro, but they are mostly limited to Velocity macros tests. Macro code is not currently tested,
 with some dependencies to Confluence internals that are not mockable (e.g. VelocityUtils) that make the code not well
@@ -40,7 +43,9 @@ testable.
 = [MEDIUM] =
 ============
 
-** Add path property, everywhere an id is used; easier to use **
+** Named queries **
+The Wiki Administrator should be able to configure some queries attaching some labels to them, in order for users to
+just refer to specific content without fiddling around with technicalities.
 
 ** External Attachments view (using CMIS queries) **
 
