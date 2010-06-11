@@ -59,6 +59,9 @@ JavaDoc are missing for big part of either public, private or protected APIs
 ** Test with CMIS providers other than Alfresco **
  There's some documentation coming for Microsoft SharePoint http://bit.ly/c9gN7b
 
+** Spike on empowering the cmis-embed macro **
+It could be possible to render content types other than text/plain (e.g. PDF conversion, Flash visualization, ...)
+
 =========
 = [LOW] =
 =========
