@@ -11,12 +11,12 @@ import junit.framework.TestCase;
 import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -35,6 +35,7 @@ public abstract class AbstractBaseUnitTest extends TestCase
 {
     protected static final String TEST_REPOSITORY_NAME = "test";
     protected static final String TEST_DOCUMENT_ID = "aCmisDocument";
+    protected static final String TEST_FOLDER_ID = "aCmisFolder";
 
     protected VelocityEngine ve;
     protected VelocityContext vc;
@@ -82,20 +83,56 @@ public abstract class AbstractBaseUnitTest extends TestCase
         ObjectId documentObjectId = mock (ObjectId.class);
         when (documentObjectId.getId()).thenReturn (TEST_DOCUMENT_ID);
 
-        Document documentObject = createMockedCmisObject(new String[][]{
+        Document documentObject = getTestDocument();
+
+        List <CmisObject> documentList = new ArrayList<CmisObject> ();
+        documentList.add(documentObject);
+
+        ObjectId folderObjectId = mock (ObjectId.class);
+        when (folderObjectId.getId()).thenReturn (TEST_FOLDER_ID);
+
+        ItemIterable<CmisObject> children = mock (ItemIterable.class);
+        when (children.getTotalNumItems()).thenReturn(1l);
+        when (children.getHasMoreItems()).thenReturn(true).thenReturn(false);
+        when (children.iterator()).thenReturn (documentList.iterator());
+        
+        Folder folderObject = createMockedCmisObject(new String[][]{
+                {PropertyIds.NAME, "Name", "A folder"},
+                {PropertyIds.BASE_TYPE_ID, "Base Type Id", "cmis:folder"},
+                {PropertyIds.OBJECT_TYPE_ID, "Object Type Id", "cmis:folder"},
+                {PropertyIds.OBJECT_ID, "Object Type Id", TEST_FOLDER_ID}}, Folder.class);
+        when (folderObject.getId()).thenReturn(TEST_FOLDER_ID);
+        when (folderObject.getChildren()).thenReturn(children);
+
+        Session session = mock (Session.class);
+
+        when (session.createObjectId(TEST_DOCUMENT_ID)).thenReturn(documentObjectId);
+        when (session.createObjectId(TEST_FOLDER_ID)).thenReturn(folderObjectId);
+        when (session.getObject(documentObjectId)).thenReturn(documentObject);
+        when (session.getObject(folderObjectId)).thenReturn(folderObject);
+        
+        confluenceCMISRepository = mock (ConfluenceCMISRepository.class);
+        when(confluenceCMISRepository.getSession()).thenReturn(session);
+    }
+
+    protected Document getTestDocument()
+    {
+        ObjectType documentObjectType = mock (ObjectType.class);
+        when (documentObjectType.getId()).thenReturn(BaseTypeId.CMIS_DOCUMENT.value());
+
+        Document documentObject = createMockedCmisObject(new Object[][]{
                 {PropertyIds.NAME, "Name", "A document name.txt"},
                 {PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length", "210"},
                 {PropertyIds.BASE_TYPE_ID, "Base Type Id", "cmis:document"},
                 {PropertyIds.OBJECT_TYPE_ID, "Object Type Id", "cmis:document"},
+                {PropertyIds.LAST_MODIFICATION_DATE, "Last Modification Date", new Date(0)},
+                {PropertyIds.OBJECT_TYPE_ID, "Object Type Id", "cmis:document"},
+                {PropertyIds.CONTENT_STREAM_MIME_TYPE, "Content Stream Mime Type", "text/plain"},
                 {PropertyIds.OBJECT_ID, "Object Type Id", TEST_DOCUMENT_ID}}, Document.class);
         when (documentObject.getId()).thenReturn(TEST_DOCUMENT_ID);
-
-        Session session = mock (Session.class);
-        when (session.createObjectId(TEST_DOCUMENT_ID)).thenReturn(documentObjectId);
-        when (session.getObject(argThat (new IsDocumentObjectId()))).thenReturn(documentObject);
+        when (documentObject.getBaseType()).thenReturn(documentObjectType);
         
-        confluenceCMISRepository = mock (ConfluenceCMISRepository.class);
-        when(confluenceCMISRepository.getSession()).thenReturn(session);
+        return documentObject;
     }
 
     /**
@@ -139,13 +176,13 @@ public abstract class AbstractBaseUnitTest extends TestCase
     }
 
     @SuppressWarnings("unchecked")
-    protected Property<?> createMockedProperty(String id, String displayName, String value)
+    protected Property<?> createMockedProperty(Object id, Object displayName, Object value)
     {
         Property<String> property = mock(Property.class);
 
-        when(property.getId()).thenReturn(id);
-        when(property.getDisplayName()).thenReturn(displayName);
-        when(property.getValueAsString()).thenReturn(value);
+        when(property.getId()).thenReturn(id.toString()).toString();
+        when(property.getDisplayName()).thenReturn(displayName.toString());
+        when(property.getValueAsString()).thenReturn(value == null ? "" : value.toString());
 
         PropertyDefinition def = mock(PropertyDefinition.class);
         when(def.getPropertyType()).thenReturn(PropertyType.STRING);
@@ -160,19 +197,19 @@ public abstract class AbstractBaseUnitTest extends TestCase
      * @param clazz Class object in the CmisObject hierarchy that has to be created 
      * @return The mocked CmisObject
      */
-    protected <T extends CmisObject> T createMockedCmisObject(String[][] properties, Class<T> clazz)
+    protected <T extends CmisObject> T createMockedCmisObject(Object[][] properties, Class<T> clazz)
     {
         T object = mock(clazz);
         List<Property<?>> documentProperties = new ArrayList<Property<?>>();
-        for (String[] mockProp : properties)
+        for (Object[] mockProp : properties)
         {
             Property prop = createMockedProperty(mockProp[0], mockProp[1], mockProp[2]);
             documentProperties.add(prop);
-            when(object.getProperty(mockProp[0])).thenReturn(prop);
+            when(object.getProperty(mockProp[0].toString())).thenReturn(prop);
 
             if (PropertyIds.NAME.equals(mockProp[0]))
             {
-                when(object.getName()).thenReturn(mockProp[2]);
+                when(object.getName()).thenReturn(mockProp[2].toString());
             }
         }
         when(object.getProperties()).thenReturn(documentProperties);
@@ -194,13 +231,5 @@ public abstract class AbstractBaseUnitTest extends TestCase
         RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
 
         return repoStorage.getRepository(repositoryId).getSession();
-    }
-
-    class IsDocumentObjectId extends ArgumentMatcher<ObjectId>
-    {
-        public boolean matches(Object objectId)
-        {
-            return TEST_DOCUMENT_ID.equals (((ObjectId) objectId).getId());
-        }
     }
 }

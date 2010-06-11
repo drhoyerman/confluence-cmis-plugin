@@ -15,12 +15,13 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
-import com.sourcesense.confluence.cmis.utils.Utils;
-import org.apache.chemistry.opencmis.client.api.*;
+import org.apache.chemistry.opencmis.client.api.CmisObject;
+import org.apache.chemistry.opencmis.client.api.Folder;
+import org.apache.chemistry.opencmis.client.api.ItemIterable;
+import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 
 import java.util.LinkedList;
@@ -37,8 +38,8 @@ public class FolderExplorerMacro extends BaseCMISMacro
     {
         Session session = confluenceCmisRepository.getSession();
         String folderId = (String) params.get(BaseCMISMacro.PARAM_ID);
-        boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
-        int resultsNumber = Integer.parseInt((String) params.get(PARAM_RESULTS_NUMBER));
+//        boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
+        int resultsNumber = (Integer)params.get(PARAM_RESULTS_NUMBER);
 
         if (resultsNumber < 1)
         {
@@ -66,6 +67,12 @@ public class FolderExplorerMacro extends BaseCMISMacro
         renderContext.addParam(VM_CMIS_OBJECT, folder);
         renderContext.addParam(VM_CMIS_OBJECT_LIST, filteredResults);        
 
-        return VelocityUtils.getRenderedTemplate("templates/cmis/folderbrowser.vm", renderContext.getParams());
+        return render(getTemplate(), renderContext);
+    }
+
+    @Override
+    protected String getTemplate ()
+    {
+        return "templates/cmis/folderbrowser.vm";
     }
 }

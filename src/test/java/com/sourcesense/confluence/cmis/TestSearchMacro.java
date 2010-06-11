@@ -38,4 +38,9 @@ public class TestSearchMacro extends AbstractBaseUnitTest
 
         log.info("result:\n" + result);
     }
+
+    public void testSearchMacro ()
+    {
+        
+    }
 }
