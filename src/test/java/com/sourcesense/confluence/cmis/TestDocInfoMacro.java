@@ -1,12 +1,7 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.macro.MacroException;
-import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
-import com.sourcesense.confluence.cmis.utils.Utils;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.Document;
-import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 
 import java.util.HashMap;
@@ -57,8 +52,6 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
             userParams.put(BaseCMISMacro.PARAM_USEPROXY, false);
 
             String result = macro.executeImpl(userParams, "", new RenderContext(), confluenceCMISRepository);
-
-            Document document = getTestDocument ();
 
             // TODO: render the test document
             String expectedResult = "*Details of [A document name.txt|http://www.sourcesense.com]*\n" +
