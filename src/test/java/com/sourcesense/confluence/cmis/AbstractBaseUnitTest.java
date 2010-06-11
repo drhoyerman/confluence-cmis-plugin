@@ -2,47 +2,44 @@ package com.sourcesense.confluence.cmis;
 
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
+import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import com.sourcesense.confluence.cmis.utils.VelocityUtils;
 import junit.framework.TestCase;
-import org.apache.chemistry.opencmis.client.api.CmisObject;
-import org.apache.chemistry.opencmis.client.api.Property;
-import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.client.bindings.spi.atompub.AbstractAtomPubService;
-import org.apache.chemistry.opencmis.client.bindings.spi.atompub.ObjectServiceImpl;
+import org.apache.chemistry.opencmis.client.api.*;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
-import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.mockito.ArgumentMatcher;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.StringWriter;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.util.*;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractBaseUnitTest extends TestCase
 {
     protected static final String TEST_REPOSITORY_NAME = "test";
+    protected static final String TEST_DOCUMENT_ID = "aCmisDocument";
 
     protected VelocityEngine ve;
     protected VelocityContext vc;
     protected BandanaManager bandanaManager;
+    protected ConfluenceCMISRepository confluenceCMISRepository;
 
     String cmisRealm = "http://cmis.alfresco.com:80/service/cmis";
     String cmisUser = "admin";
@@ -63,7 +60,7 @@ public abstract class AbstractBaseUnitTest extends TestCase
         p.setProperty("runtime.log.logsystem.log4j.category", "velocity");
 
         vc = new VelocityContext();
-        vc.put("cmisUtils", new VelocityUtils());
+        vc.put("cmisUtils", new CMISVelocityUtils());
         ve = new VelocityEngine();
         ve.init(p);
 
@@ -80,6 +77,65 @@ public abstract class AbstractBaseUnitTest extends TestCase
 
         bandanaManager = mock(BandanaManager.class);
         when(bandanaManager.getValue((BandanaContext) anyObject(), anyString())).thenReturn(repoConfigs);
+
+        // CMIS
+        ObjectId documentObjectId = mock (ObjectId.class);
+        when (documentObjectId.getId()).thenReturn (TEST_DOCUMENT_ID);
+
+        Document documentObject = createMockedCmisObject(new String[][]{
+                {PropertyIds.NAME, "Name", "A document name.txt"},
+                {PropertyIds.CONTENT_STREAM_LENGTH, "Content Stream Length", "210"},
+                {PropertyIds.BASE_TYPE_ID, "Base Type Id", "cmis:document"},
+                {PropertyIds.OBJECT_TYPE_ID, "Object Type Id", "cmis:document"},
+                {PropertyIds.OBJECT_ID, "Object Type Id", TEST_DOCUMENT_ID}}, Document.class);
+        when (documentObject.getId()).thenReturn(TEST_DOCUMENT_ID);
+
+        Session session = mock (Session.class);
+        when (session.createObjectId(TEST_DOCUMENT_ID)).thenReturn(documentObjectId);
+        when (session.getObject(argThat (new IsDocumentObjectId()))).thenReturn(documentObject);
+        
+        confluenceCMISRepository = mock (ConfluenceCMISRepository.class);
+        when(confluenceCMISRepository.getSession()).thenReturn(session);
+    }
+
+    /**
+     * Create a stubbed CMIS macro that allows testing without starting Confluence
+     * @param clazz The concrete Macro implementation to mock
+     * @return The stubbed CMIS macro
+     * @throws MacroException If the concrete macro logic fails
+     */
+    protected <T extends BaseCMISMacro> T createCMISMockMacro (Class<T> clazz) throws MacroException
+    {
+        T mockMacro = mock (clazz);
+
+        // VelocityUtils would brake with null pointers, override that
+        when(mockMacro.render(anyString(), (RenderContext)anyObject())).thenAnswer(new Answer()
+        {
+            public Object answer(InvocationOnMock invocation) throws Throwable
+            {
+                Object[] args = invocation.getArguments();
+
+                String template = (String)args[0];
+                RenderContext context = (RenderContext)args[1];
+
+                for (Map.Entry<Object, Object> entry : context.getParams().entrySet())
+                {
+                    String key = (String)entry.getKey();
+                    vc.put (key, entry.getValue());
+                }
+
+                return renderTemplate(template);
+            }
+        });
+
+        // avoid calls to Utils, as we cannot mock the private methods it uses
+        when(mockMacro.fetchDocumentLink((ConfluenceCMISRepository)anyObject(), (Session)anyObject(), anyString(), anyBoolean())).thenReturn("http://www.sourcesense.com");
+
+        // let the real business logic be executed, it's usually under test
+        when(mockMacro.executeImpl(anyMap(), anyString(), (RenderContext)anyObject(), (ConfluenceCMISRepository)anyObject())).thenCallRealMethod();
+        when(mockMacro.getTemplate()).thenCallRealMethod();
+
+        return mockMacro;
     }
 
     @SuppressWarnings("unchecked")
@@ -101,11 +157,12 @@ public abstract class AbstractBaseUnitTest extends TestCase
     /**
      * Create a mock CmisObject using Mockito that will contain the provided properties
      * @param properties Array of arrays in the form of {{propertyId, displayName, propertyValue}}
+     * @param clazz Class object in the CmisObject hierarchy that has to be created 
      * @return The mocked CmisObject
      */
-    protected CmisObject createMockedCmisObject(String[][] properties)
+    protected <T extends CmisObject> T createMockedCmisObject(String[][] properties, Class<T> clazz)
     {
-        CmisObject object = mock(CmisObject.class);
+        T object = mock(clazz);
         List<Property<?>> documentProperties = new ArrayList<Property<?>>();
         for (String[] mockProp : properties)
         {
@@ -123,7 +180,7 @@ public abstract class AbstractBaseUnitTest extends TestCase
         return object;
     }
 
-    protected String render(String template) throws Exception
+    protected String renderTemplate(String template) throws Exception
     {
         Template t = ve.getTemplate(template);
         StringWriter sw = new StringWriter();
@@ -137,5 +194,13 @@ public abstract class AbstractBaseUnitTest extends TestCase
         RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
 
         return repoStorage.getRepository(repositoryId).getSession();
+    }
+
+    class IsDocumentObjectId extends ArgumentMatcher<ObjectId>
+    {
+        public boolean matches(Object objectId)
+        {
+            return TEST_DOCUMENT_ID.equals (((ObjectId) objectId).getId());
+        }
     }
 }
