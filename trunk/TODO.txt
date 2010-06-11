@@ -36,9 +36,6 @@ Tests do exist for each macro, but they are mostly limited to Velocity macros te
 with some dependencies to Confluence internals that are not mockable (e.g. VelocityUtils) that make the code not well
 testable.
 
-** Test with CMIS providers other than Alfresco **
- There's some documentation coming for Microsoft SharePoint http://bit.ly/c9gN7b
-
 ============
 = [MEDIUM] =
 ============
@@ -53,6 +50,9 @@ testable.
 
 ** Code documentation **
 JavaDoc are missing for big part of either public, private or protected APIs
+
+** Test with CMIS providers other than Alfresco **
+ There's some documentation coming for Microsoft SharePoint http://bit.ly/c9gN7b
 
 =========
 = [LOW] =
