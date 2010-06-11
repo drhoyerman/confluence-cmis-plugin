@@ -58,13 +58,18 @@ public class TestDocInfoMacro extends AbstractBaseUnitTest
 
             String result = macro.executeImpl(userParams, "", new RenderContext(), confluenceCMISRepository);
 
+            Document document = getTestDocument ();
+
+            // TODO: render the test document
             String expectedResult = "*Details of [A document name.txt|http://www.sourcesense.com]*\n" +
                     "||Property||Value||\n" +
                     "|Content Stream Length|210|\n" +
                     "|Object Type Id|cmis:document|\n" +
                     "|Name|A document name.txt|\n" +
+                    "|Content Stream Mime Type|text/plain|\n" +
                     "|Object Type Id|aCmisDocument|\n" +
-                    "|Base Type Id|cmis:document|\n";
+                    "|Base Type Id|cmis:document|\n" +
+                    "|Last Modification Date|Thu Jan 01 01:00:00 CET 1970|\n";
 
             assertNotNull (result);
             assertEquals(expectedResult, result);
