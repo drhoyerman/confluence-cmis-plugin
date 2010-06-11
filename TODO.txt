@@ -43,6 +43,9 @@ testable.
 = [MEDIUM] =
 ============
 
+** Folder explorer should be able to actually explore **
+At the moment the macro is limited to display the cmis:document children of a folder, this should be extended
+
 ** Named queries **
 The Wiki Administrator should be able to configure some queries attaching some labels to them, in order for users to
 just refer to specific content without fiddling around with technicalities.
