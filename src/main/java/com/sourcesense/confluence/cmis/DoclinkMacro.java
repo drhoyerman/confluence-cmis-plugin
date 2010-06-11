@@ -15,7 +15,6 @@
  */
 package com.sourcesense.confluence.cmis;
 
-import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
@@ -48,8 +47,14 @@ public class DoclinkMacro extends BaseCMISMacro {
     Document document = (Document)object;
       
     renderContext.addParam(VM_CMIS_OBJECT, document);
-    renderContext.addParam(VM_CMIS_OBJECT_LINK, Utils.getLink(session, confluenceCmisRepository, documentId, useProxy));
+    renderContext.addParam(VM_CMIS_OBJECT_LINK, fetchDocumentLink(confluenceCmisRepository, session, documentId, useProxy));
 
-    return VelocityUtils.getRenderedTemplate("templates/cmis/doclink.vm", renderContext.getParams());
+    return render (getTemplate(), renderContext);
+  }
+
+  @Override
+  protected String getTemplate ()
+  {
+      return "templates/cmis/doclink.vm";
   }
 }
