@@ -16,7 +16,6 @@
 package com.sourcesense.confluence.cmis;
 
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
-import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
@@ -56,7 +55,7 @@ public class SearchMacro extends BaseCMISMacro {
     renderContext.addParam(VM_CMIS_OBJECT_LIST, results);
     renderContext.addParam(VM_CMIS_PROPERTY_LIST, properties);
 
-    return VelocityUtils.getRenderedTemplate("templates/cmis/search.vm", renderContext.getParams());
+    return render(getTemplate(), renderContext);
   }
 
   /**
@@ -76,5 +75,10 @@ public class SearchMacro extends BaseCMISMacro {
     // get the properties enumeration from the plugin conf
     return (List<String>) this.bandanaManager.getValue(new ConfluenceBandanaContext(), ConfigureCMISPluginAction.SEARCH_PROPERTIES_KEY);
 
+  }
+
+  protected String getTemplate ()
+  {
+      return "templates/cmis/search.vm";
   }
 }
