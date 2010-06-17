@@ -1,9 +1,6 @@
 package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
-import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
-import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
-import com.sourcesense.confluence.cmis.macros.DocinfoMacro;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 

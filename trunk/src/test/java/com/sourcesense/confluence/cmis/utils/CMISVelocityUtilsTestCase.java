@@ -1,6 +1,5 @@
 package com.sourcesense.confluence.cmis.utils;
 
-import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import junit.framework.TestCase;
 
 /**
