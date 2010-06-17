@@ -34,14 +34,14 @@ public class EmbedMacro extends BaseCMISMacro {
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
     String documentId = (String) params.get(PARAM_ID);
     String noformat = (String) params.get(PARAM_NOFORMAT);
-    boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
+    boolean isNoFormat = (noformat != null) && (noformat.startsWith("y"));
 
     Session session = confluenceCmisRepository.getSession();
 
     ObjectId objectId = session.createObjectId(documentId);
     CmisObject cmisObject = session.getObject(objectId);
 
-    String result = "";
+    String result;
 
     if (cmisObject != null && cmisObject instanceof Document) {
       result = renderDocument((Document) cmisObject, isNoFormat);
@@ -57,7 +57,7 @@ public class EmbedMacro extends BaseCMISMacro {
     StringBuilder out = new StringBuilder();
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(document.getContentStream().getStream()));
-      String line = null;
+      String line;
       if (noformat) {
         out.append("{noformat}");
       }

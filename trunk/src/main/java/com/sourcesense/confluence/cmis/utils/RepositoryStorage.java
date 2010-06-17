@@ -13,11 +13,11 @@ import java.util.WeakHashMap;
 /**
  * Implements a simple cache logic to handle repositories
  */
+@SuppressWarnings("unused,unchecked")
 public class RepositoryStorage {
 
   protected static final Logger logger = Logger.getLogger(RepositoryStorage.class);
 
-  private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
   private Map<String, ConfluenceCMISRepository> repositories;
 
   //Singleton
@@ -31,6 +31,7 @@ public class RepositoryStorage {
   }
 
   public RepositoryStorage(BandanaManager bandanaManager) {
+    ConfluenceBandanaContext context = new ConfluenceBandanaContext();
     Map storedConfiguration = (Map)bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY);
 
     //Ensure that the configuration object contains a Map<String, ConfluenceCMISRepository>

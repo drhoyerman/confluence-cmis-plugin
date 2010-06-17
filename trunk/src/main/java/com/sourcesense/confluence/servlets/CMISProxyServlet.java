@@ -46,6 +46,7 @@ import java.util.zip.GZIPInputStream;
  * Patched to skip "Transfer-Encoding: chunked" headers, avoid double slashes
  * in proxied URLs, handle GZip and allow GWT RPC.
  */
+@SuppressWarnings("unused")
 public class CMISProxyServlet extends HttpServlet {
 
   private static final int FOUR_KB = 4196;
@@ -169,8 +170,9 @@ public class CMISProxyServlet extends HttpServlet {
    *                               configuring to send a multipart POST request
    * @param httpServletRequest     The {@link HttpServletRequest} that contains
    *                               the mutlipart POST data to be sent via the {@link PostMethod}
+   * @throws javax.servlet.ServletException If something fails when uploading the content to the server
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "ToArrayCallWithZeroLengthArrayArgument"})
   private void handleMultipartPost(PostMethod postMethodProxyRequest, HttpServletRequest httpServletRequest) throws ServletException {
     // Create a factory for disk-based file items
     DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory();
@@ -229,7 +231,7 @@ public class CMISProxyServlet extends HttpServlet {
    * @param httpServletRequest     The {@link HttpServletRequest} that contains
    *                               the POST data to be sent via the {@link PostMethod}
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "ToArrayCallWithZeroLengthArrayArgument"})
   private void handleStandardPost(PostMethod postMethodProxyRequest, HttpServletRequest httpServletRequest) {
     // Get the client POST data as a Map
     Map<String, String[]> mapPostParameters = (Map<String, String[]>) httpServletRequest.getParameterMap();
@@ -257,6 +259,8 @@ public class CMISProxyServlet extends HttpServlet {
    *                               configuring to send a standard POST request
    * @param httpServletRequest     The {@link HttpServletRequest} that contains
    *                               the POST data to be sent via the {@link PostMethod}
+   * @throws java.io.IOException This can happen in different places in the code, e.g. when the request is empty
+   * @throws javax.servlet.ServletException When the requested character encoding is not supported
    */
   private void handleContentPost(PostMethod postMethodProxyRequest, HttpServletRequest httpServletRequest) throws IOException, ServletException {
     StringBuilder content = new StringBuilder();
@@ -303,6 +307,7 @@ public class CMISProxyServlet extends HttpServlet {
    * @param httpMethodProxyRequest An object representing the proxy request to be made
    * @param httpServletResponse    An object by which we can send the proxied
    *                               response back to the client
+   * @param httpServletRequest Request object pertaining to the proxied HTTP request
    * @throws IOException      Can be thrown by the {@link HttpClient}.executeMethod
    * @throws ServletException Can be thrown to indicate that another error has occurred
    */
@@ -411,9 +416,13 @@ public class CMISProxyServlet extends HttpServlet {
     if (credsMap == null || servername == null) {
       this.credentials = null;
     }
-    List<String> up = credsMap.get(servername);
-    if (up != null)
-      this.credentials = new UsernamePasswordCredentials(up.get(1), up.get(2));
+    else
+    {
+       List<String> up = credsMap.get(servername);
+       if (up != null)
+         this.credentials = new UsernamePasswordCredentials(up.get(1), up.get(2));
+
+    }
   }
 
   /**
