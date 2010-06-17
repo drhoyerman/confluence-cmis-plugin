@@ -165,7 +165,6 @@ public abstract class AbstractBaseUnitTest extends TestCase
             }
         });
 
-        // avoid calls to Utils, as we cannot mock the private methods it uses
         when(mockMacro.fetchDocumentLink((ConfluenceCMISRepository)anyObject(), (Session)anyObject(), anyString(), anyBoolean())).thenReturn("http://www.sourcesense.com");
 
         // let the real business logic be executed, it's usually under test
