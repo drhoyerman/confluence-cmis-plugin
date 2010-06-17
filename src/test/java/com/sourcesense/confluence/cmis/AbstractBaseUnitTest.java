@@ -33,7 +33,11 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("unchecked")
 public abstract class AbstractBaseUnitTest extends TestCase
 {
-    protected static final String TEST_REPOSITORY_NAME = "test";
+  protected static final String TEST_SERVER_NAME = "test";
+  protected static final String TEST_REALM = "http://cmis.alfresco.com:80/service/cmis";
+  protected static final String TEST_USERNAME = "admin";
+  protected static final String TEST_PASSWORD = "admin";
+
     protected static final String TEST_DOCUMENT_ID = "aCmisDocument";
     protected static final String TEST_FOLDER_ID = "aCmisFolder";
 
@@ -46,7 +50,8 @@ public abstract class AbstractBaseUnitTest extends TestCase
     String cmisUser = "admin";
     String cmisPwd = "admin";
 
-    public void setUp() throws Exception
+
+  public void setUp() throws Exception
     {
         super.setUp();
 
@@ -65,16 +70,16 @@ public abstract class AbstractBaseUnitTest extends TestCase
         ve = new VelocityEngine();
         ve.init(p);
 
-        // Confluence
-        Map<String, List<String>> repoConfigs = new WeakHashMap<String, List<String>>();
-        List<String> repoConfig = new ArrayList<String>();
+        // CMIS Repository
 
-        repoConfig.add(cmisRealm);
-        repoConfig.add(cmisUser);
-        repoConfig.add(cmisPwd);
-        //No need to specify a RepositoryID
-        repoConfig.add(null);
-        repoConfigs.put(TEST_REPOSITORY_NAME, repoConfig);
+        Map<String, ConfluenceCMISRepository> repoConfigs = new WeakHashMap<String, ConfluenceCMISRepository>();
+        ConfluenceCMISRepository repoConfig = new ConfluenceCMISRepository(TEST_SERVER_NAME,
+            TEST_REALM,
+            TEST_USERNAME,
+            TEST_PASSWORD,
+            null);
+
+        repoConfigs.put(TEST_SERVER_NAME, repoConfig);
 
         bandanaManager = mock(BandanaManager.class);
         when(bandanaManager.getValue((BandanaContext) anyObject(), anyString())).thenReturn(repoConfigs);
@@ -225,10 +230,10 @@ public abstract class AbstractBaseUnitTest extends TestCase
         return sw.getBuffer().toString();
     }
 
-    protected Session getSession(String repositoryId)
+    protected Session getSession(String serverName)
     {
         RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);
 
-        return repoStorage.getRepository(repositoryId).getSession();
+        return repoStorage.getRepository(serverName).getSession();
     }
 }

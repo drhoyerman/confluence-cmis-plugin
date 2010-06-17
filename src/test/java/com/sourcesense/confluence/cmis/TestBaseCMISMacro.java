@@ -84,7 +84,7 @@ public class TestBaseCMISMacro extends AbstractBaseUnitTest {
         ConfluenceCMISRepository repoDesc = repoStorage.getRepository(repo);
         RepositoryInfo repoInfo = repoDesc.getSession().getRepositoryInfo();
 
-        logger.debug("name: " + repoDesc.getName());        
+        logger.debug("name: " + repoDesc.getServerName());        
         logger.debug("id: " + repoInfo.getId());
         logger.debug("productName : " + repoInfo.getProductName());
         logger.debug("cmisVersionSupported: " + repoInfo.getCmisVersionSupported());

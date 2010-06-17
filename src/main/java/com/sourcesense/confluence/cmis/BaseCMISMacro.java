@@ -58,7 +58,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected static final String VM_CMIS_OBJECT_LIST = "cmisObjects";
   protected static final String VM_CMIS_PROPERTY_LIST = "cmisProperties";
 
-  public static final java.lang.String REPOSITORY_NAME = "com.sourcesense.confluence.cmis.repository.name";
+  public static final String REPOSITORY_NAME = "com.sourcesense.confluence.cmis.repository.name";
 
   protected static final int DEFAULT_RESULTS_NUMBER = 20;
   protected static final String DEFAULT_USEPROXY = "yes";
@@ -84,7 +84,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
       Thread.currentThread().setContextClassLoader(cl);
 
       RepositoryStorage repositoryStorage = RepositoryStorage.getInstance(bandanaManager);
-      ConfluenceCMISRepository repositoryConfluence = getRepositoryFromParams(params, repositoryStorage);
+      ConfluenceCMISRepository repositoryConfluence = repositoryStorage.getRepository();
 
       populateParams(params, body, renderContext, repositoryConfluence);
 
@@ -194,7 +194,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
     }
     if (useProxy && res != null) {
       try {
-        res = rewriteUrl(res, confluenceCmisRepository.getName());
+        res = rewriteUrl(res, confluenceCmisRepository.getServerName());
       } catch (MalformedURLException e) {
         throw new MacroException(e);
       }
