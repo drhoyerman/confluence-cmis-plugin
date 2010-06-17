@@ -4,7 +4,6 @@ import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
 import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;

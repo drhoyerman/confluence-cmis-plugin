@@ -1,9 +1,6 @@
 package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
-import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
-import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
-import com.sourcesense.confluence.cmis.macros.FolderExplorerMacro;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.log4j.Logger;

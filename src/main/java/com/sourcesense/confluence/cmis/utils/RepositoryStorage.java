@@ -6,7 +6,9 @@ import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * Implements a simple cache logic to handle repositories
