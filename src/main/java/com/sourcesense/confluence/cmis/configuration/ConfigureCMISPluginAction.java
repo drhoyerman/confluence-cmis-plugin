@@ -27,11 +27,6 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   public static final String CREDENTIALS_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".credential";
   public static final String SEARCH_PROPERTIES_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".searchProperties";
 
-  public static final Integer PARAM_REALM = 0;
-  public static final Integer PARAM_USERNAME = 1;
-  public static final Integer PARAM_PASSWORD = 2;
-  public static final Integer PARAM_REPOID = 3;
-
   private BandanaManager bandanaManager;
   private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
 

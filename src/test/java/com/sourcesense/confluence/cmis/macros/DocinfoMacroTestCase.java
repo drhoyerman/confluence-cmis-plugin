@@ -1,6 +1,9 @@
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
+import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
+import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
+import com.sourcesense.confluence.cmis.macros.DocinfoMacro;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 
@@ -10,7 +13,7 @@ import java.util.Map;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestDocInfoMacro extends AbstractBaseUnitTest
+public class DocinfoMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
     @SuppressWarnings("unchecked")
     public void testRenderDocumentInfo() throws Exception
