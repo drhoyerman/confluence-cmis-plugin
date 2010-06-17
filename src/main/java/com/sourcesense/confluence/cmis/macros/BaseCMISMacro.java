@@ -42,6 +42,7 @@ import java.util.Map;
 /**
  * Base macro implementation for CMIS interactions. Provides common utilities for derived classes.
  */
+@SuppressWarnings("unused,unchecked")
 public abstract class BaseCMISMacro extends BaseMacro {
   protected static final Logger logger = Logger.getLogger(BaseCMISMacro.class);
 
@@ -105,10 +106,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
   /**
    * Parses and provides common casting for mosly used and wide-spread macro parameters
    *
-   * @param params
-   * @param body
-   * @param renderContext
-   * @param repositoryConfluence
+   * @param params User provided parameters
+   * @param body  Macro body
+   * @param renderContext  Current rendering context
+   * @param repositoryConfluence CMIS repository to work against
    */
   private void populateParams(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repositoryConfluence) {
     String useProxy = (String) params.get(BaseCMISMacro.PARAM_USEPROXY);
@@ -135,9 +136,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected abstract String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repositoryConfluence) throws MacroException;
 
   /**
-   * Provide the location for the macro-specific template. A (currently meaningless) default is provided.
+   * Provide the location for the macro-specific template. A (currently meaningless) default is provided,
+   * so that each and every subclass should provide a custom implementation.
    *
-   * @return
+   * @return Velocity template to render at the end of the macro execution
    */
   protected String getTemplate() {
     return "templates/cmis/default.vm";
@@ -149,8 +151,8 @@ public abstract class BaseCMISMacro extends BaseMacro {
    *
    * @param params            Parameter map holding the macro parameters
    * @param repositoryStorage Cached repository retriever
-   * @return
-   * @throws CmisRuntimeException
+   * @return CMIS repository descriptor
+   * @throws CmisRuntimeException If no matching CMIS repository could be found
    */
   protected ConfluenceCMISRepository getRepositoryFromParams(Map params, RepositoryStorage repositoryStorage) throws CmisRuntimeException {
     String repoId = (String) params.get(PARAM_REPOSITORY_ID);
@@ -164,7 +166,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
    *
    * @param template      Velocity template location
    * @param renderContext Context holding parameters to be rendered in the template
-   * @return
+   * @return The string content that will be displayed in place of the macro declaration
    */
   protected String render(String template, RenderContext renderContext) {
     return VelocityUtils.getRenderedTemplate(template, renderContext.getParams());
@@ -218,6 +220,6 @@ public abstract class BaseCMISMacro extends BaseMacro {
       String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
       return baseUrl + CMISProxyServlet.SERVLET_CMIS_PROXY + url + "?servername=" + serverName;
     } else
-      return url.toString();
+      return url;
   }
 }

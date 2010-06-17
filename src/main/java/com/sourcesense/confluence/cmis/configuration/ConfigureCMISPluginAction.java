@@ -22,6 +22,7 @@ import org.apache.chemistry.opencmis.commons.PropertyIds;
 
 import java.util.*;
 
+@SuppressWarnings("unused, unchecked")
 public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
 
   public static final String CREDENTIALS_KEY = ConfigureCMISPluginAction.class.getPackage().getName() + ".credential";
@@ -49,7 +50,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     return INPUT;
   }
 
-  public String save() throws Exception {
+  public String save() {
     if (hasErrors()) {
       return ERROR;
     }
