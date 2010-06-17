@@ -22,11 +22,13 @@ import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,6 +37,7 @@ public class BaseCMISMacroTestCase extends AbstractMacroBaseUnitTestCase {
 
   Logger logger = Logger.getLogger(BaseCMISMacroTestCase.class);
 
+  @Test
   public void testRepositoryConnection() throws Exception {
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("servername", "test");
@@ -70,6 +73,7 @@ public class BaseCMISMacroTestCase extends AbstractMacroBaseUnitTestCase {
     logger.debug(result);
   }
 
+  @Test
   public void testRepositoryEnumeration() {
 
     RepositoryStorage repoStorage = RepositoryStorage.getInstance(bandanaManager);

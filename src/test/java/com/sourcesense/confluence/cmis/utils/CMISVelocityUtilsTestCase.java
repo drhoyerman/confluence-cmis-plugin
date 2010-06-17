@@ -1,12 +1,15 @@
 package com.sourcesense.confluence.cmis.utils;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class CMISVelocityUtilsTestCase extends TestCase
+public class CMISVelocityUtilsTestCase
 {
+    @Test
     public void testRenderPropertyName ()
     {
         testRenderer("cmis:name", "Name");

@@ -3,9 +3,12 @@ package com.sourcesense.confluence.cmis.macros;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
@@ -13,6 +16,8 @@ import java.util.List;
 public class SearchMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
     Logger log = Logger.getLogger (SearchMacroTestCase.class);
+
+    @Test
     public void testSearchTemplate()
     {
         Session session = getSession(TEST_SERVER_NAME);
