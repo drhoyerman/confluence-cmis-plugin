@@ -17,7 +17,7 @@ public class TestFolderExplorerMacro extends AbstractBaseUnitTest
 
     public void testBrowseTemplate () throws Exception
     {
-        Session session = getSession(TEST_REPOSITORY_NAME);
+        Session session = getSession(TEST_SERVER_NAME);
         Folder rootFolder = session.getRootFolder();
 
         vc.put("cmisObject", rootFolder);

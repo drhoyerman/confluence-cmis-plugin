@@ -35,7 +35,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   private BandanaManager bandanaManager;
   private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
 
-  private Map<String, List<String>> credentialsMap = new TreeMap<String, List<String>>();
+  private Map<String, List<String>> serverToCredentials = new TreeMap<String, List<String>>();
   private List<String> searchProperties = new LinkedList<String>();
   private String[] realms;
   private String[] usernames;
@@ -49,7 +49,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   }
 
   public String input() {
-    this.credentialsMap = (Map<String, List<String>>) this.bandanaManager.getValue(context, CREDENTIALS_KEY);
+    this.serverToCredentials = (Map<String, List<String>>) this.bandanaManager.getValue(context, CREDENTIALS_KEY);
     this.searchProperties = (List<String>) this.bandanaManager.getValue(context, SEARCH_PROPERTIES_KEY);
     return INPUT;
   }
@@ -58,32 +58,32 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
     if (hasErrors()) {
       return ERROR;
     }
-    this.credentialsMap = convertToCredentialsMap();
-    this.bandanaManager.setValue(context, CREDENTIALS_KEY, this.credentialsMap);
+    this.serverToCredentials = convertToCredentialsMap();
+    this.bandanaManager.setValue(context, CREDENTIALS_KEY, this.serverToCredentials);
     this.bandanaManager.setValue(context, SEARCH_PROPERTIES_KEY, this.searchProperties);
     addActionMessage("Successfully saved configuration");
     return SUCCESS;
   }
 
   public String add() {
-    this.credentialsMap = convertToCredentialsMap();
+    this.serverToCredentials = convertToCredentialsMap();
     List<String> list = new ArrayList<String>();
     list.add("http://");
     list.add("admin");
     list.add("admin");
     list.add("");
-    this.credentialsMap.put("insert server name", list);
+    this.serverToCredentials.put("insert server name", list);
     return SUCCESS;
   }
 
   public String delete() {
-    this.credentialsMap = convertToCredentialsMap();
-    if (indexToDelete < 0 || indexToDelete >= this.credentialsMap.size()) {
+    this.serverToCredentials = convertToCredentialsMap();
+    if (indexToDelete < 0 || indexToDelete >= this.serverToCredentials.size()) {
       addActionError(getText("invalid.index.to.delete"));
       return ERROR;
     }
-    this.credentialsMap = convertToCredentialsMap(indexToDelete);
-    this.bandanaManager.setValue(context, CREDENTIALS_KEY, this.credentialsMap);
+    this.serverToCredentials = convertToCredentialsMap(indexToDelete);
+    this.bandanaManager.setValue(context, CREDENTIALS_KEY, this.serverToCredentials);
     addActionMessage("Successfully deleted configuration");
     return SUCCESS;
   }
@@ -108,7 +108,7 @@ public class ConfigureCMISPluginAction extends ConfluenceActionSupport {
   }
 
   public Map<String, List<String>> getCredentials() {
-    return this.credentialsMap;
+    return this.serverToCredentials;
   }
 
   public void setRealms(String[] realms) {

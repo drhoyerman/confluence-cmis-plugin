@@ -15,7 +15,7 @@ public class TestSearchMacro extends AbstractBaseUnitTest
     Logger log = Logger.getLogger (TestSearchMacro.class);
     public void testSearchTemplate()
     {
-        Session session = getSession(TEST_REPOSITORY_NAME);
+        Session session = getSession(TEST_SERVER_NAME);
         Folder rootFolder = session.getRootFolder();
 
         List<String> properties = new ArrayList<String>();

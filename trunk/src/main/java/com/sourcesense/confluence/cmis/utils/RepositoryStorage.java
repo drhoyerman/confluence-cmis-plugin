@@ -22,121 +22,58 @@ public class RepositoryStorage {
 
   private ConfluenceBandanaContext context = new ConfluenceBandanaContext();
   private Map<String, ConfluenceCMISRepository> repositories;
-  private BandanaManager bandanaManager;
 
   //Singleton
   private static RepositoryStorage repositoryStorage;
 
   public static RepositoryStorage getInstance(BandanaManager bandanaManager) {
     if (repositoryStorage == null) {
-      repositoryStorage = new RepositoryStorage();
-      repositoryStorage.setBandanaManager(bandanaManager);
+      repositoryStorage = new RepositoryStorage(bandanaManager);
     }
-
     return repositoryStorage;
   }
 
-  public static RepositoryStorage resetAndGetInstance(Map<String, ConfluenceCMISRepository> cache, BandanaManager bandanaManager) {
-    repositoryStorage = new RepositoryStorage(cache);
-    return getInstance(bandanaManager);
-  }
+  public RepositoryStorage(BandanaManager bandanaManager) {
+    Map storedConfiguration = (Map)bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY);
 
-  public RepositoryStorage() {
-    this.repositories = new WeakHashMap<String, ConfluenceCMISRepository>();
-  }
-
-  public RepositoryStorage(Map<String, ConfluenceCMISRepository> cache) {
-    this.repositories = cache;
-  }
-
-
-  @SuppressWarnings("unchecked")
-  private Map<String, List<String>> getRepositoriesMap() {
-    return ((Map<String, List<String>>) this.bandanaManager.getValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY));
-  }
-
-
-  /**
-   * Gets a repository fetching its details from the plugin configuration using repoName as the key
-   *
-   * @param repoName Rpository ID as it was set in the plugin configuration
-   * @return
-   * @throws CmisRuntimeException
-   */
-  public ConfluenceCMISRepository getRepository(String repoName) throws CmisRuntimeException {
-    if (!repositories.containsKey(repoName)) {
-      List<String> repositoryConfig = getRepositoriesMap().get(repoName);
-      if (repositoryConfig != null) {
-        ConfluenceCMISRepository repo = getCMISRepository(repoName, repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REALM),
-            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_USERNAME),
-            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_PASSWORD),
-            repositoryConfig.get(ConfigureCMISPluginAction.PARAM_REPOID));
-        this.repositories.put(repoName, repo);
+    //Ensure that the configuration object contains a Map<String, ConfluenceCMISRepository>
+    boolean resetConfiguration = false;
+    if (storedConfiguration.keySet().size() > 0) {
+      Object firstKey = storedConfiguration.keySet().iterator().next();
+      Object firstVal = storedConfiguration.get(firstKey);
+      if (firstKey instanceof String && firstVal instanceof ConfluenceCMISRepository) {
+        this.repositories = (Map<String, ConfluenceCMISRepository>)storedConfiguration;
       } else {
-        throw new CmisRuntimeException(String.format("No repository found with name '%s'; check the Plugin configuration.", repoName));
+        resetConfiguration = true;
       }
+    } else {
+      resetConfiguration = true;
     }
 
-    return this.repositories.get(repoName);
+    if (resetConfiguration) {
+      bandanaManager.setValue(context, ConfigureCMISPluginAction.CREDENTIALS_KEY, null);
+      this.repositories = new WeakHashMap<String, ConfluenceCMISRepository>();
+    }
   }
 
-  /**
-   * Gets the repository identified by the provided coordinates
-   *
-   * @param serverUrl URL where the AtomPub CMIS repository service listens
-   * @param username  Username used to log into the repository
-   * @param password  Password used to log into the repository
-   * @return
-   * @throws CmisRuntimeException
-   */
-  private ConfluenceCMISRepository getCMISRepository(String repositoryName, String serverUrl, String username, String password, String repositoryId) throws CmisRuntimeException {
-    Map<String, String> parameters = new HashMap<String, String>();
-
-    parameters.put(BaseCMISMacro.REPOSITORY_NAME, repositoryName);
-    parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
-    parameters.put(SessionParameter.ATOMPUB_URL, serverUrl);
-    parameters.put(SessionParameter.USER, username);
-    parameters.put(SessionParameter.PASSWORD, password);
-
-    if (repositoryId != null && !repositoryId.isEmpty()) {
-      parameters.put(SessionParameter.REPOSITORY_ID, repositoryId);
+  public ConfluenceCMISRepository getRepository() throws CmisRuntimeException {
+    if (repositories.entrySet().isEmpty()) {
+      throw new CmisRuntimeException("Could not find any CMIS repository; check your plugin configuration.");
+    } else {
+      String firstServerName = this.repositories.keySet().iterator().next();
+      return this.repositories.get(firstServerName);
     }
-
-    List<Repository> repos = SessionFactoryImpl.newInstance().getRepositories(parameters);
-
-
-
-    if (repos == null || repos.size() <= 0) {
-      parameters.remove(SessionParameter.PASSWORD);
-      parameters.put(SessionParameter.PASSWORD, "*********");
-      throw new CmisRuntimeException("Could not retrieve any CMIS repository with the following parameters: " + parameters);
-    }
-
-    Repository repo = repos.get(0);
-    if (repos.size() > 1) {
-      logger.warn("There is more than one repository supported in this realm; you should define a Repository Id in your configuration; currently, the first is used; Repository ID : " + repo.getId());
-    }
-
-    ConfluenceCMISRepository confluenceCmisRepo = new ConfluenceCMISRepository(repositoryName,repo);
-
-    return confluenceCmisRepo;
-
   }
 
+  public ConfluenceCMISRepository getRepository(String serverName) throws CmisRuntimeException {
+    if (!repositories.containsKey(serverName)) {
+      throw new CmisRuntimeException("Could not find a CMIS repository with name " + serverName + "; check your plugin configuration.");
+    } else {
+      return this.repositories.get(serverName);
+    }
+  }
 
   public Set<String> getRepositoryNames() {
-    return getRepositoriesMap().keySet();
-  }
-
-  private void setBandanaManager(BandanaManager bandanaManager) {
-    this.bandanaManager = bandanaManager;
-  }
-
-  public ConfluenceCMISRepository getRepository() {
-    if (getRepositoryNames().isEmpty())
-      throw new CmisRuntimeException("No CMIS repositories configured! Check the Plugin configuration.");
-    String firstRepository = getRepositoryNames().iterator().next();
-    logger.info("No Repository specified; using the first in the list : " + firstRepository);
-    return getRepository(firstRepository);
+    return repositories.keySet();
   }
 }

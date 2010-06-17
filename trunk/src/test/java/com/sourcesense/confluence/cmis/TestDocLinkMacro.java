@@ -39,7 +39,7 @@ public class TestDocLinkMacro extends AbstractBaseUnitTest
         String result = null;
         try
         {
-            Session session = getSession(TEST_REPOSITORY_NAME);
+            Session session = getSession(TEST_SERVER_NAME);
             ItemIterable<CmisObject> children = session.getRootFolder().getChildren();
             for (CmisObject obj : children)
             {
