@@ -13,7 +13,6 @@ import java.util.Map;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-@SuppressWarnings("unused")
 public class CMISVelocityUtils
 {
     public static final SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM d, ''yy");
@@ -47,8 +46,8 @@ public class CMISVelocityUtils
 
     public static boolean isContent(CmisObject object)
     {
-        Property contentLenght = object.getProperty(PropertyIds.CONTENT_STREAM_LENGTH);
-        return contentLenght != null;
+        Property contentLength = object.getProperty(PropertyIds.CONTENT_STREAM_LENGTH);
+        return contentLength != null;
     }
 
     public static String render(Property property)

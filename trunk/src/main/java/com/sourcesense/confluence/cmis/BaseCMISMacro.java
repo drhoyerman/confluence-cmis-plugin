@@ -22,14 +22,21 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.spring.container.ContainerManager;
 import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
-import com.sourcesense.confluence.cmis.utils.Utils;
+import com.sourcesense.confluence.servlets.CMISProxyServlet;
 import org.apache.chemistry.opencmis.client.api.Session;
+import org.apache.chemistry.opencmis.client.bindings.spi.atompub.AbstractAtomPubService;
+import org.apache.chemistry.opencmis.client.bindings.spi.atompub.ObjectServiceImpl;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.log4j.Logger;
 
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -46,11 +53,11 @@ public abstract class BaseCMISMacro extends BaseMacro {
   public static final String PARAM_PROPERTIES = "properties";
 
   // Velocity placeholders
-  protected static final String VM_CMIS_OBJECT = "cmisObject";  
+  protected static final String VM_CMIS_OBJECT = "cmisObject";
   protected static final String VM_CMIS_OBJECT_LINK = "documentLink";
   protected static final String VM_CMIS_OBJECT_LIST = "cmisObjects";
   protected static final String VM_CMIS_PROPERTY_LIST = "cmisProperties";
-  
+
   public static final java.lang.String REPOSITORY_NAME = "com.sourcesense.confluence.cmis.repository.name";
 
   protected static final int DEFAULT_RESULTS_NUMBER = 20;
@@ -59,7 +66,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected BandanaManager bandanaManager;
   protected SettingsManager settingsManager;
 
-    public void setBandanaManager(BandanaManager bandanaManager) {
+  public void setBandanaManager(BandanaManager bandanaManager) {
     this.bandanaManager = bandanaManager;
   }
 
@@ -97,6 +104,7 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
   /**
    * Parses and provides common casting for mosly used and wide-spread macro parameters
+   *
    * @param params
    * @param body
    * @param renderContext
@@ -116,9 +124,10 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
   /**
    * Every CMIS macro provide a concrete implementation of this method with the macro specific logic
-   * @param params User provided parameters
-   * @param body Text contained between the open and close macro tag
-   * @param renderContext Rendering context holding the to be rendered model
+   *
+   * @param params               User provided parameters
+   * @param body                 Text contained between the open and close macro tag
+   * @param renderContext        Rendering context holding the to be rendered model
    * @param repositoryConfluence CMIS repository to connect with
    * @return The rendered String content for the macro
    * @throws MacroException When and whether exceptions are thrown by subclasses , they are converted to MacroException's
@@ -126,14 +135,14 @@ public abstract class BaseCMISMacro extends BaseMacro {
   protected abstract String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository repositoryConfluence) throws MacroException;
 
   /**
-   * Provide the location for the macro-specific template. A (currently meaningless) default is provided. 
+   * Provide the location for the macro-specific template. A (currently meaningless) default is provided.
+   *
    * @return
    */
-  protected String getTemplate ()
-  {
-      return "templates/cmis/default.vm";
+  protected String getTemplate() {
+    return "templates/cmis/default.vm";
   }
-  
+
   /**
    * Retrieves a Repository descriptor depending by the macro parameters:
    * - The user must provide the repository id ("servername") than the repository details are taken from the plugin configuration
@@ -152,29 +161,46 @@ public abstract class BaseCMISMacro extends BaseMacro {
 
   /**
    * Render a Velocity template using renderContext parameters
-   * @param template Velocity template location
+   *
+   * @param template      Velocity template location
    * @param renderContext Context holding parameters to be rendered in the template
    * @return
    */
-  protected String render (String template, RenderContext renderContext)
-  {
-      return VelocityUtils.getRenderedTemplate(template, renderContext.getParams());
+  protected String render(String template, RenderContext renderContext) {
+    return VelocityUtils.getRenderedTemplate(template, renderContext.getParams());
   }
 
-    /**
-     * Grabs the link to a cmis:document content stream. Put in a separate method to ease testing.
-     * @param confluenceCmisRepository CMIS Repository descriptor
-     * @param session CMIS Session object already opened with the CMIS Repository
-     * @param documentId ID of the document we want to link to
-     * @param useProxy Whether communication should be proxied by the CMIS plugin or issued directly to the CMIS provider
-     * @return The fetched link
-     * @throws MacroException When fetched URL is malformed
-     */
-    protected String fetchDocumentLink(ConfluenceCMISRepository confluenceCmisRepository, Session session, String documentId, boolean useProxy)
-            throws MacroException
-    {
-        return Utils.getLink(session, confluenceCmisRepository, documentId, useProxy);
+  /**
+   * Grabs the link to a cmis:document content stream. Put in a separate method to ease testing.
+   *
+   * @param confluenceCmisRepository CMIS Repository descriptor
+   * @param session                  CMIS Session object already opened with the CMIS Repository
+   * @param documentId               ID of the document we want to link to
+   * @param useProxy                 Whether communication should be proxied by the CMIS plugin or issued directly to the CMIS provider
+   * @return The fetched link
+   * @throws MacroException When fetched URL is malformed
+   */
+  protected String fetchDocumentLink(ConfluenceCMISRepository confluenceCmisRepository, Session session, String documentId, boolean useProxy)
+      throws MacroException {
+    ObjectServiceImpl objectServices = (ObjectServiceImpl) session.getBinding().getObjectService();
+    Class<?>[] parameterTypes = {String.class, String.class, String.class, String.class};
+    String res = null;
+    try {
+      Method loadLink = AbstractAtomPubService.class.getDeclaredMethod("loadLink", parameterTypes);
+      loadLink.setAccessible(true);
+      res = (String) loadLink.invoke(objectServices, session.getRepositoryInfo().getId(), documentId, Constants.REL_EDITMEDIA, null);
+    } catch (Exception e) {
+      logger.error(e.getMessage() + "Link retrieval failed");
     }
+    if (useProxy && res != null) {
+      try {
+        res = rewriteUrl(res, confluenceCmisRepository.getName());
+      } catch (MalformedURLException e) {
+        throw new MacroException(e);
+      }
+    }
+    return res;
+  }
 
   public RenderMode getBodyRenderMode() {
     return null;
@@ -183,5 +209,15 @@ public abstract class BaseCMISMacro extends BaseMacro {
   public boolean hasBody() {
     return false;
   }
-  
+
+  private static String rewriteUrl(String url, String serverName) throws MalformedURLException {
+    URL urlObj = new URL(url);
+    url = urlObj.getPath();
+    if (serverName != null) {
+      SettingsManager settingsManager = (SettingsManager) ContainerManager.getComponent("settingsManager");
+      String baseUrl = settingsManager.getGlobalSettings().getBaseUrl();
+      return baseUrl + CMISProxyServlet.SERVLET_CMIS_PROXY + url + "?servername=" + serverName;
+    } else
+      return url.toString();
+  }
 }
