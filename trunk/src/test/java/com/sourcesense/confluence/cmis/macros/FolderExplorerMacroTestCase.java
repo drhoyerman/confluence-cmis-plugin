@@ -4,6 +4,9 @@ import com.atlassian.renderer.RenderContext;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +18,7 @@ public class FolderExplorerMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
     Logger log = Logger.getLogger(FolderExplorerMacroTestCase.class);
 
+    @Test
     public void testBrowseTemplate () throws Exception
     {
         Session session = getSession(TEST_SERVER_NAME);
@@ -28,6 +32,7 @@ public class FolderExplorerMacroTestCase extends AbstractMacroBaseUnitTestCase
         log.info("result:\n" + result);
     }
 
+    @Test
     public void testFolderExplorerMacro()
     {
         try

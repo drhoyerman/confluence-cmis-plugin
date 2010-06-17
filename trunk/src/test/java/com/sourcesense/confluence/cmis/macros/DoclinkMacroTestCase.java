@@ -9,6 +9,9 @@ import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +23,7 @@ public class DoclinkMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
     Logger logger = Logger.getLogger(DoclinkMacroTestCase.class);
 
+    @Test
     public void testRenderDocumentLink() throws Exception
     {
         CmisObject object = createMockedCmisObject(new String[][]{
@@ -34,6 +38,7 @@ public class DoclinkMacroTestCase extends AbstractMacroBaseUnitTestCase
         assertEquals("[A document name.txt|http://www.sourcesense.com]", result);
     }
 
+    @Test
     public void testCMISLinkGeneration()
     {
         String result = null;
@@ -77,6 +82,7 @@ public class DoclinkMacroTestCase extends AbstractMacroBaseUnitTestCase
         logger.debug("result: " + result);
     }
 
+    @Test
     public void testDoclinkMacro()
     {
         try

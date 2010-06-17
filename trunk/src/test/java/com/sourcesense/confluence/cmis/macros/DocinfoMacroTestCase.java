@@ -3,6 +3,9 @@ package com.sourcesense.confluence.cmis.macros;
 import com.atlassian.renderer.RenderContext;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +15,7 @@ import java.util.Map;
  */
 public class DocinfoMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
+    @Test
     @SuppressWarnings("unchecked")
     public void testRenderDocumentInfo() throws Exception
     {
@@ -40,6 +44,7 @@ public class DocinfoMacroTestCase extends AbstractMacroBaseUnitTestCase
         assertEquals(expectedResult, renderedView);
     }
 
+    @Test
     public void testDocinfoMacro()
     {
         try
