@@ -1,9 +1,10 @@
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.bandana.BandanaContext;
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
 import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.when;
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractBaseUnitTest extends TestCase
+public abstract class AbstractMacroBaseUnitTestCase extends TestCase
 {
   protected static final String TEST_SERVER_NAME = "test";
   protected static final String TEST_REALM = "http://cmis.alfresco.com:80/service/cmis";

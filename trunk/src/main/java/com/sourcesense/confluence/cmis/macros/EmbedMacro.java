@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
@@ -32,8 +32,8 @@ public class EmbedMacro extends BaseCMISMacro {
 
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
-    String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
-    String noformat = (String) params.get(BaseCMISMacro.PARAM_NOFORMAT);
+    String documentId = (String) params.get(PARAM_ID);
+    String noformat = (String) params.get(PARAM_NOFORMAT);
     boolean isNoFormat = (noformat == null) ? false : (noformat.startsWith("y") ? true : false);
 
     Session session = confluenceCmisRepository.getSession();

@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
+import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
 import com.sourcesense.confluence.cmis.utils.ConfluenceCMISRepository;
 import com.sourcesense.confluence.cmis.utils.RepositoryStorage;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
@@ -31,9 +33,9 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestBaseCMISMacro extends AbstractBaseUnitTest {
+public class BaseCMISMacroTestCase extends AbstractMacroBaseUnitTestCase {
 
-  Logger logger = Logger.getLogger(TestBaseCMISMacro.class);
+  Logger logger = Logger.getLogger(BaseCMISMacroTestCase.class);
 
   public void testRepositoryConnection() throws Exception {
     Map<String, String> parameters = new HashMap<String, String>();

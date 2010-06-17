@@ -1,5 +1,6 @@
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
+import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.log4j.Logger;
@@ -10,9 +11,9 @@ import java.util.List;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestSearchMacro extends AbstractBaseUnitTest
+public class SearchMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
-    Logger log = Logger.getLogger (TestSearchMacro.class);
+    Logger log = Logger.getLogger (SearchMacroTestCase.class);
     public void testSearchTemplate()
     {
         Session session = getSession(TEST_SERVER_NAME);

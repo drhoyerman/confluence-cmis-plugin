@@ -1,4 +1,4 @@
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.utils;
 
 import com.sourcesense.confluence.cmis.utils.CMISVelocityUtils;
 import junit.framework.TestCase;
@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestVelocityUtils extends TestCase
+public class CMISVelocityUtilsTestCase extends TestCase
 {
     public void testRenderPropertyName ()
     {

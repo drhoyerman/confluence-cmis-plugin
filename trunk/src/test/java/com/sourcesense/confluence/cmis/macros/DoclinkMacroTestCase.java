@@ -1,7 +1,10 @@
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
+import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
+import com.sourcesense.confluence.cmis.macros.DoclinkMacro;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.chemistry.opencmis.client.api.ItemIterable;
@@ -16,9 +19,9 @@ import java.util.Map;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestDocLinkMacro extends AbstractBaseUnitTest
+public class DoclinkMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
-    Logger logger = Logger.getLogger(TestDocLinkMacro.class);
+    Logger logger = Logger.getLogger(DoclinkMacroTestCase.class);
 
     public void testRenderDocumentLink() throws Exception
     {

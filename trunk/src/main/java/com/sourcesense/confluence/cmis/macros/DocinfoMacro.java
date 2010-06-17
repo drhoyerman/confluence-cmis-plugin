@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.macro.MacroException;
@@ -29,8 +29,8 @@ public class DocinfoMacro extends BaseCMISMacro {
   @Override
   protected String executeImpl(Map params, String body, RenderContext renderContext, ConfluenceCMISRepository confluenceCmisRepository) throws MacroException {
     Session session = confluenceCmisRepository.getSession();
-    String documentId = (String) params.get(BaseCMISMacro.PARAM_ID);
-    boolean useProxy = (Boolean) params.get(BaseCMISMacro.PARAM_USEPROXY);
+    String documentId = (String) params.get(PARAM_ID);
+    boolean useProxy = (Boolean) params.get(PARAM_USEPROXY);
 
     ObjectId objectId = session.createObjectId(documentId);
     CmisObject cmisObject = session.getObject(objectId);

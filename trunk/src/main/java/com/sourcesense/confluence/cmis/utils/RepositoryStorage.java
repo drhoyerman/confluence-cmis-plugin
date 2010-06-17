@@ -2,12 +2,7 @@ package com.sourcesense.confluence.cmis.utils;
 
 import com.atlassian.bandana.BandanaManager;
 import com.atlassian.confluence.setup.bandana.ConfluenceBandanaContext;
-import com.sourcesense.confluence.cmis.BaseCMISMacro;
 import com.sourcesense.confluence.cmis.configuration.ConfigureCMISPluginAction;
-import org.apache.chemistry.opencmis.client.api.Repository;
-import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
-import org.apache.chemistry.opencmis.commons.SessionParameter;
-import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.log4j.Logger;
 

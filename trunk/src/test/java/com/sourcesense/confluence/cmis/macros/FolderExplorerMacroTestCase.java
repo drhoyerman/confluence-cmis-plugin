@@ -1,6 +1,9 @@
-package com.sourcesense.confluence.cmis;
+package com.sourcesense.confluence.cmis.macros;
 
 import com.atlassian.renderer.RenderContext;
+import com.sourcesense.confluence.cmis.macros.AbstractMacroBaseUnitTestCase;
+import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
+import com.sourcesense.confluence.cmis.macros.FolderExplorerMacro;
 import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.log4j.Logger;
@@ -11,9 +14,9 @@ import java.util.Map;
 /**
  * @author Carlo Sciolla &lt;c.sciolla@sourcesense.com&gt;
  */
-public class TestFolderExplorerMacro extends AbstractBaseUnitTest
+public class FolderExplorerMacroTestCase extends AbstractMacroBaseUnitTestCase
 {
-    Logger log = Logger.getLogger(TestFolderExplorerMacro.class);
+    Logger log = Logger.getLogger(FolderExplorerMacroTestCase.class);
 
     public void testBrowseTemplate () throws Exception
     {

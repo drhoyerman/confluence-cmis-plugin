@@ -1,6 +1,6 @@
 package com.sourcesense.confluence.cmis.utils;
 
-import com.sourcesense.confluence.cmis.BaseCMISMacro;
+import com.sourcesense.confluence.cmis.macros.BaseCMISMacro;
 import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;

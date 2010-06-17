@@ -24,23 +24,23 @@
 
   <resource type="i18n" name="i18n" location="cmis"/>
 
-  <macro name='cmis-search' class='com.sourcesense.confluence.cmis.SearchMacro' key='cmis-search'>
+  <macro name='cmis-search' class='com.sourcesense.confluence.cmis.macros.SearchMacro' key='cmis-search'>
     <description>Performs a search on a CMIS repository and presents the results.</description>
   </macro>
 
-  <macro name='cmis-doclink' class='com.sourcesense.confluence.cmis.DoclinkMacro' key='cmis-doclink'>
+  <macro name='cmis-doclink' class='com.sourcesense.confluence.cmis.macros.DoclinkMacro' key='cmis-doclink'>
     <description>Provides a link to a document stored in a CMIS repository.</description>
   </macro>
 
-  <macro name='cmis-embed' class='com.sourcesense.confluence.cmis.EmbedMacro' key='cmis-embed'>
+  <macro name='cmis-embed' class='com.sourcesense.confluence.cmis.macros.EmbedMacro' key='cmis-embed'>
     <description>Embeds a document stored in a CMIS repository in the current page.</description>
   </macro>
 
-  <macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.DocinfoMacro' key='cmis-docinfo'>
+  <macro name='cmis-docinfo' class='com.sourcesense.confluence.cmis.macros.DocinfoMacro' key='cmis-docinfo'>
     <description>Displays properties of a CMIS document.</description>
   </macro>
 
-  <macro name='cmis-folder' class='com.sourcesense.confluence.cmis.FolderExplorerMacro' key='cmis-folder'>
+  <macro name='cmis-folder' class='com.sourcesense.confluence.cmis.macros.FolderExplorerMacro' key='cmis-folder'>
     <description>Displays the list of children contained in a CMIS folder.</description>
   </macro>
 
