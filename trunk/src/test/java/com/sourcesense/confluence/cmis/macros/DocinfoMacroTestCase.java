@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,9 +68,9 @@ public class DocinfoMacroTestCase extends AbstractMacroBaseUnitTestCase
                     "|Content Stream Mime Type|text/plain|\n" +
                     "|Object Type Id|aCmisDocument|\n" +
                     "|Base Type Id|cmis:document|\n" +
-                    "|Last Modification Date|Thu Jan 01 01:00:00 CET 1970|\n";
+                    "|Last Modification Date|" + new Date(0) + "|\n";
 
-            assertNotNull (result);
+            assertNotNull(result);
             assertEquals(expectedResult, result);
         }
         catch (Exception e)

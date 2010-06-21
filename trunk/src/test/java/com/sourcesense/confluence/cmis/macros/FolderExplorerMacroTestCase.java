@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class FolderExplorerMacroTestCase extends AbstractMacroBaseUnitTestCase
             String result = macro.executeImpl (userParams, "", new RenderContext(), confluenceCMISRepository);
             String expectedResult = "" +
                     "||Title||Last Modified||Size||Type||\n" +
-                    "|A document name.txt|Thu Jan 01 01:00:00 CET 1970|210|text/plain|\n";
+                    "|A document name.txt|" + new Date(0) + "|210|text/plain|\n";
 
             log.debug("resulting text is:\n" + result);
             assertEquals (expectedResult, result);
